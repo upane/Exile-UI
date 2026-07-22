@@ -2080,20 +2080,6 @@ Settings_hotkeys()
 		vars.hwnd.help_tooltips["settings_hotkeys ingame-keybinds"] := hwnd0
 	}
 
-	If !vars.client.stream && !vars.poe_version
-	{
-		Gui, %GUI%: Add, Checkbox, % "xs Section HWNDhwnd 0x400 gSettings_hotkeys2 Checked"settings.hotkeys.rebound_alt, % Lang_Trans("m_hotkeys_descriptions")
-		vars.hwnd.settings.rebound_alt := hwnd
-		If settings.hotkeys.rebound_alt
-		{
-			Gui, %GUI%: Add, Text, % "xs Section xp+" settings.general.fWidth * 1.5 " h" settings.general.fHeight, % Lang_Trans("m_hotkeys_descriptions", 2)
-			Gui, %GUI%: font, % "s"settings.general.fSize - 4
-			Gui, %GUI%: Add, Text, % "ys x+" settings.general.fWidth/2 " w" wEdits " hp BackgroundTrans Border"
-			Gui, %GUI%: Add, Edit, % "xp yp wp hp Border gSettings_hotkeys2 HWNDhwnd cBlack", % settings.hotkeys.item_descriptions
-			vars.hwnd.settings.item_descriptions := vars.hwnd.help_tooltips["settings_hotkeys formatting|"] := hwnd
-			Gui, %GUI%: font, % "s"settings.general.fSize
-		}
-	}
 	If !vars.client.stream
 	{
 		Gui, %GUI%: Add, Checkbox, % "xs Section x" x_anchor " HWNDhwnd 0x400 gSettings_hotkeys2 Checked" settings.hotkeys.rebound_c . (settings.hotkeys.rebound_c ? " cAqua" : ""), % Lang_Trans("m_hotkeys_ckey")
@@ -2196,8 +2182,6 @@ Settings_hotkeys2(cHWND)
 	If (check = 0)
 		check := A_GuiControl
 
-	settings.hotkeys.item_descriptions := LLK_ControlGet(vars.hwnd.settings.item_descriptions)
-
 	settings.hotkeys.omnikey := LLK_ControlGet(vars.hwnd.settings.omnikey)
 	settings.hotkeys.omnikey2 := LLK_ControlGet(vars.hwnd.settings.omnikey2)
 	settings.hotkeys.tab := LLK_ControlGet(vars.hwnd.settings.tab), settings.hotkeys.tabblock := vars.settings.tabblock_provisional
@@ -2206,9 +2190,6 @@ Settings_hotkeys2(cHWND)
 
 	Switch check
 	{
-		Case "rebound_alt":
-			settings.hotkeys.rebound_alt := LLK_ControlGet(cHWND)
-			Settings_menu("hotkeys", 1)
 		Case "rebound_c":
 			settings.hotkeys.rebound_c := LLK_ControlGet(cHWND)
 			Settings_menu("hotkeys", 1)
@@ -2225,19 +2206,13 @@ Settings_hotkeys2(cHWND)
 			GuiControl, % "+c" (vars.settings[check "_provisional"] ? "Lime" : "Gray"), % cHWND
 			GuiControl, % "movedraw", % cHWND
 		Case "apply":
-			If LLK_ControlGet(vars.hwnd.settings.rebound_alt) && !LLK_ControlGet(vars.hwnd.settings.item_descriptions)
-			{
-				WinGetPos, xControl, yControl, wControl, hControl, % "ahk_id " vars.hwnd.settings.item_descriptions
-				LLK_ToolTip(Lang_Trans("m_hotkeys_error", 3), 3, xControl + wControl, yControl,, "red")
-				Return
-			}
 			If LLK_ControlGet(vars.hwnd.settings.rebound_c) && !LLK_ControlGet(vars.hwnd.settings.omnikey2)
 			{
 				WinGetPos, xControl, yControl, wControl, hControl, % "ahk_id " vars.hwnd.settings.omnikey2
 				LLK_ToolTip(Lang_Trans("m_hotkeys_error", 4), 3, xControl + wControl, yControl,, "red")
 				Return
 			}
-			For index, val in ["item_descriptions", "omnikey", "omnikey2", "tab", "emergencykey", "movekey", "menuwidget"]
+			For index, val in ["omnikey", "omnikey2", "tab", "emergencykey", "movekey", "menuwidget"]
 			{
 				If !vars.hwnd.settings[val]
 					Continue
@@ -2258,8 +2233,6 @@ Settings_hotkeys2(cHWND)
 				If !Blank(hotkey)
 					keycheck[(LLK_ControlGet(vars.hwnd.settings[val "_ctrl"]) ? "^" : "") . (LLK_ControlGet(vars.hwnd.settings[val "_alt"]) ? "!" : "") . hotkey] := 1
 			}
-			IniWrite, % """" LLK_ControlGet(vars.hwnd.settings.rebound_alt) """", % "ini" vars.poe_version "\hotkeys.ini", settings, advanced item-info rebound
-			IniWrite, % """" LLK_ControlGet(vars.hwnd.settings.item_descriptions) """", % "ini" vars.poe_version "\hotkeys.ini", hotkeys, item-descriptions key
 			IniWrite, % """" LLK_ControlGet(vars.hwnd.settings.rebound_c) """", % "ini" vars.poe_version "\hotkeys.ini", settings, c-key rebound
 
 			IniWrite, % """" LLK_ControlGet(vars.hwnd.settings.omnikey) """", % "ini" vars.poe_version "\hotkeys.ini", hotkeys, omni-hotkey
