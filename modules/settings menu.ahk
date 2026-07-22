@@ -2760,6 +2760,13 @@ Settings_leveltracker()
 		Gui, %GUI%: Add, Text, % "xs Section Border BackgroundTrans gSettings_leveltracker2 HWNDhwnd" (settings.leveltracker.timer ? " cLime" : " cGray"), % " " Lang_Trans("m_lvltracker_timer") " "
 		Gui, %GUI%: Add, Progress, % "Disabled xp yp wp hp Border HWNDhwnd1 Background" vars.settings.cButtons2 " c" vars.settings.cButtons, 100
 		vars.hwnd.settings.timer := hwnd, vars.hwnd.help_tooltips["settings_leveltracker timer"] := hwnd1
+
+		If settings.leveltracker.timer
+		{
+			Gui, %GUI%: Add, Text, % "ys x+-1 Border BackgroundTrans gSettings_leveltracker2 HWNDhwnd" (settings.leveltracker.timer_flash ? " cLime" : " cGray"), % " " Lang_Trans("global_flash") " "
+			Gui, %GUI%: Add, Progress, % "Disabled xp yp wp hp Border HWNDhwnd1 Background" vars.settings.cButtons2 " c" vars.settings.cButtons, 100
+			vars.hwnd.settings.timer_flash := hwnd, vars.hwnd.help_tooltips["settings_leveltracker timer flash"] := hwnd1
+		}
 	}
 	Gui, %GUI%: Add, Text, % "ys Border BackgroundTrans gSettings_leveltracker2 HWNDhwnd" (settings.leveltracker.fade ? " cLime": " cGray"), % " " Lang_Trans("m_lvltracker_fadeout") " "
 	Gui, %GUI%: Add, Progress, % "Disabled xp yp wp hp Border HWNDhwnd1 Background" vars.settings.cButtons2 " c" vars.settings.cButtons, 100
@@ -2793,7 +2800,7 @@ Settings_leveltracker()
 		vars.hwnd.settings.geartracker := hwnd, vars.hwnd.help_tooltips["settings_leveltracker geartracker"] := hwnd1
 	}
 
-	line_break := (!vars.poe_version && settings.leveltracker.fade || vars.poe_version && !settings.leveltracker.fade)
+	line_break := (!vars.poe_version && settings.leveltracker.fade && settings.leveltracker.hotkeys || vars.poe_version && !settings.leveltracker.fade)
 	Gui, %GUI%: Add, Text, % "Section " (line_break ? "xs" : "ys") " Border BackgroundTrans Center gSettings_leveltracker2 HWNDhwnd" (settings.leveltracker.hotkeys ? " cLime w" settings.general.fWidth * 16 - 3  : " cGray"), % " " Lang_Trans("m_lvltracker_pagehotkeys") " "
 	Gui, %GUI%: Add, Progress, % "Disabled xp yp wp hp Border HWNDhwnd1 Background" vars.settings.cButtons2 " c" vars.settings.cButtons, 100
 	vars.hwnd.settings.hotkeys_enable := hwnd, vars.hwnd.help_tooltips["settings_leveltracker hotkeys enable"] := hwnd1
@@ -3039,6 +3046,13 @@ Settings_leveltracker2(cHWND := "")
 			Leveltracker_Progress(1)
 		vars.leveltracker.timer.pause := -1
 		GuiControl, % "+c" (settings.leveltracker.timer ? "Lime" : "Gray"), % cHWND
+		GuiControl, % "movedraw", % cHWND
+		Settings_menu("leveling tracker")
+	}
+	Else If (check = "timer_flash")
+	{
+		IniWrite, % (settings.leveltracker.timer_flash := !settings.leveltracker.timer_flash), % "ini" vars.poe_version "\leveling tracker.ini", settings, enable timer flashing
+		GuiControl, % "+c" (settings.leveltracker.timer_flash ? "Lime" : "Gray"), % cHWND
 		GuiControl, % "movedraw", % cHWND
 	}
 	Else If (check = "fade")

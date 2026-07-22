@@ -729,14 +729,14 @@ Loop()
 {
 	local
 	global vars, settings
-	static news_tick := 0
+	static news_tick := 0, tick := 0, timer_flash
 
 	If !WinExist("ahk_group poe_window")
 		vars.client.closed := 1, vars.hwnd.poe_client := ""
 
 	If WinExist("ahk_group poe_window")
 	{
-		vars.general.runcheck := A_TickCount
+		vars.general.runcheck := A_TickCount, tick := !tick
 		If !vars.hwnd.poe_client
 			If (vars.poe_version != CheckClient())
 			{
@@ -782,6 +782,25 @@ Loop()
 			If vars.actdecoder.updater.available && vars.actdecoder.tab && WinExist("ahk_id " vars.hwnd.actdecoder.main)
 				GuiControl, % "+Background" (Mod(news_tick, 2) ? "Black" : "Lime"), % vars.hwnd.actdecoder.helppanel_bar
 		}
+
+		If settings.features.leveltracker && settings.leveltracker.timer && (settings.leveltracker.timer_flash || timer_flash) && vars.hwnd.leveltracker.main && WinExist("ahk_id " vars.hwnd.leveltracker.main)
+			If ((vars.leveltracker.timer.total_time + vars.leveltracker.timer.current_split) && (vars.leveltracker.timer.current_act != 11) || RegexMatch(vars.log.areaID, "i)^(1_1_1|g1_1)$"))
+			&& (vars.leveltracker.timer.pause != 0) && settings.leveltracker.timer_flash && (vars.log.areaID != "login")
+			{
+				GuiControl, % "+c" (tick ? "Yellow" : "Gray"), % vars.hwnd.leveltracker.timer_total
+				GuiControl, % "movedraw", % vars.hwnd.leveltracker.timer_total
+				GuiControl, % "+c" (tick ? "Yellow" : "Gray"), % vars.hwnd.leveltracker.timer_act
+				GuiControl, % "movedraw", % vars.hwnd.leveltracker.timer_act
+				timer_flash := 1
+			}
+			Else If timer_flash
+			{
+				GuiControl, % "+c" (vars.leveltracker.timer.pause = 0 ? "White" : "Gray"), % vars.hwnd.leveltracker.timer_total
+				GuiControl, % "movedraw", % vars.hwnd.leveltracker.timer_total
+				GuiControl, % "+c" (vars.leveltracker.timer.pause = 0 ? "White" : "Gray"), % vars.hwnd.leveltracker.timer_act
+				GuiControl, % "movedraw", % vars.hwnd.leveltracker.timer_act
+				timer_flash := 0
+			}
 	}
 
 	If !WinExist("ahk_group poe_window") && (A_TickCount >= vars.general.runcheck + settings.general.kill.2 * 60000) && settings.general.kill.1

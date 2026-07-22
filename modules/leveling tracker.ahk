@@ -97,6 +97,7 @@
 		FileCreateDir, % "img\GUI\skill-tree" profile "\PoE 2\"
 
 	settings.leveltracker.timer := vars.client.stream ? 0 : !Blank(check := ini.settings["enable timer"]) ? check : 0
+	settings.leveltracker.timer_flash := vars.client.stream ? 0 : !Blank(check := ini.settings["enable timer flashing"]) ? check : 1
 	settings.leveltracker.fade := !Blank(check := ini.settings["enable fading"]) ? check : 0
 	settings.leveltracker.fadetime := !Blank(check := ini.settings["fade-time"]) ? check : 5000
 	settings.leveltracker.fade_hover := !Blank(check := ini.settings["show on hover"]) ? check : 1
@@ -3613,7 +3614,7 @@ Leveltracker_Timer(mode := "")
 				FormatTime, date,, ShortDate
 				FormatTime, time,, Time
 				timer.name := date ", " time
-				IniWrite, % """"timer.name """", % "ini" vars.poe_version "\leveling tracker.ini", % "current run" settings.leveltracker.profile, name
+				IniWrite, % """" timer.name """", % "ini" vars.poe_version "\leveling tracker.ini", % "current run" settings.leveltracker.profile, name
 				new_run := 1
 			}
 			LLK_ToolTip(new_run ? Lang_Trans("lvltracker_timermessage", 1) : (timer.pause != 0) ? Lang_Trans("lvltracker_timermessage", 2) : Lang_Trans("lvltracker_timermessage", 3),, vars.leveltracker.coords.x1 + vars.leveltracker.coords.w / 2, yTooltip,, "lime",,,, 1)
@@ -3641,6 +3642,13 @@ Leveltracker_Timer(mode := "")
 		If vars.log.act && (timer.current_act + 1 = vars.log.act) ;player enters the next act: save previous act's time, add it to total time, then reset it
 		{
 			IniWrite, % timer.current_split, % "ini" vars.poe_version "\leveling tracker.ini", % "current run" settings.leveltracker.profile, % "act "timer.current_act
+			If !InStr(timer.name, ",") && (timer.current_act = 1)
+			{
+				FormatTime, date,, ShortDate
+				FormatTime, time,, Time
+				IniWrite, % """" (timer.name := date ", " time) """", % "ini" vars.poe_version "\leveling tracker.ini", % "current run" settings.leveltracker.profile, name
+				timer.late_start := 1
+			}
 			If InStr(timer.name, ",")
 				Leveltracker_TimerCSV()
 			timer.total_time += timer.current_split, timer.current_act += 1, timer.current_act := (vars.poe_version && timer.current_act = 8) ? 11 : timer.current_act
@@ -3667,15 +3675,16 @@ Leveltracker_TimerCSV()
 	global vars, settings
 	static csv
 
+	timer := vars.leveltracker.timer
 	If !FileExist("exports\campaign runs" (vars.poe_version ? " (PoE 2)" : "") ".csv")
 		FileAppend, % """date, time"",act 1,act 2,act 3,act 4,act 5,act 6,act 7" (!vars.poe_version ? ",act 8,act 9,act 10" : ""), % "exports\campaign runs" (vars.poe_version ? " (PoE 2)" : "") ".csv"
 
 	If !csv
 		FileRead, csv, % "exports\campaign runs" (vars.poe_version ? " (PoE 2)" : "") ".csv"
-	If InStr(csv, vars.leveltracker.timer.name)
-		FileAppend, % (append := ","""FormatSeconds(vars.leveltracker.timer.current_split) ".00"""), % "exports\campaign runs" (vars.poe_version ? " (PoE 2)" : "") ".csv"
-	Else FileAppend, % (append := "`n"""vars.leveltracker.timer.name ""","""FormatSeconds(vars.leveltracker.timer.current_split) ".00"""), % "exports\campaign runs" (vars.poe_version ? " (PoE 2)" : "") ".csv"
-	csv .= append
+	If InStr(csv, timer.name)
+		FileAppend, % (append := ",""" FormatSeconds(timer.current_split) ".00"""), % "exports\campaign runs" (vars.poe_version ? " (PoE 2)" : "") ".csv"
+	Else FileAppend, % (append := "`n""" timer.name """,""" FormatSeconds(timer.current_split) ".00" (timer.late_start ? "*" : "") """"), % "exports\campaign runs" (vars.poe_version ? " (PoE 2)" : "") ".csv"
+	csv .= append, vars.leveltracker.timer.late_start := 0
 }
 
 Leveltracker_Toggle(mode, toggle := 1)

@@ -499,6 +499,9 @@
       "click <act #> to pause/resume the timer",
       "how to reset: in the first zone or town, long-right-click on <act #>"
     ],
+    "leveltracker timer flash": [
+      "the timer will flash while paused to prevent you from leaving it paused accidentally"
+    ],
     "leveltracker fade-timer": [
       "automatically hides the overlay after a delay (except when in towns)",
       "delay: x seconds after switching guide pages",
