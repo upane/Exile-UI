@@ -321,7 +321,7 @@
 		mechanic_purifier		=	"purifier"
 		mechanic_seer			=	"nameless seer"
 		mechanic_mist			=	"reflecting mist"
-		mechanic_infamous		=	"infamous mercenary"
+		mechanic_infamous		=	"infamous merc"
 		mechanic_graftblood		=	"high graftblood"
 
 

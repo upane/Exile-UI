@@ -932,8 +932,8 @@
       "hidden by default: hold down the <widget-key> to access it"
     ],
     "map-events enable": [
-      "displays notifications whenever certain map events spawn",
-      "examples: nameless seer, reflecting mist, infamous mercenary"
+      "displays notifications whenever certain events happen",
+      "examples: infamous mercenaries, graftblood (almost) full"
     ],
     "map-events enable event": [
       "click to enable/disable this event",

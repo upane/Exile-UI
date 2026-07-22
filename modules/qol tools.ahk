@@ -43,7 +43,7 @@
 		Lab("init")
 
 	settings.mapevents := {"fSize": !Blank(check := ini.mapevents["font-size"]) ? check : settings.general.fSize * 2}
-	settings.mapevents.event_list := ["seer", "mist", "graftblood"]
+	settings.mapevents.event_list := ["graftblood", "infamous"]
 	LLK_FontDimensions(settings.mapevents.fSize, font_height, font_width), settings.mapevents.fHeight := font_height, settings.mapevents.fWidth := font_width
 	settings.mapevents.color := !Blank(check := ini.mapevents["font-color"]) ? check : "FF0000"
 	settings.mapevents.color1 := !Blank(check := ini.mapevents["background color"]) ? check : "FFFFFF"
