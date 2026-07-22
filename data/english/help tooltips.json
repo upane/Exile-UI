@@ -1567,8 +1567,9 @@
       "(/highlight)applying/reverting changes will also reset your guide progress"
     ],
     "skillsets": [
-      "you can disable individual skill sets and automatically set the corresponding skills to <skip>",
-      "when you hover over individual skills on the right, the corresponding skill set(s) will be highlighted"
+      "you can disable individual skill sets and automatically set the corresponding gems to <skip>",
+      "right-click an !active! skill set to move every gem to A6 that is exclusive to it (among the currently active skill sets!)",
+      "(/highlight)these are simple on/off toggles, they will not reflect individual adjustments you make on the right afterwards"
     ]
   },
   "leveltrackerschematics": {

@@ -923,16 +923,17 @@ Loop_main()
 
 	If vars.hwnd.leveltracker_gempickups.main && WinExist("ahk_id " vars.hwnd.leveltracker_gempickups.main)
 	{
-		If vars.leveltracker_gempickups.hover && !InStr(LLK_HasVal(vars.hwnd.leveltracker_gempickups, vars.general.cMouse), "_panel")
+		hover := LLK_HasVal(vars.hwnd.leveltracker_gempickups, vars.general.cMouse)
+		If vars.leveltracker_gempickups.hover && !RegExMatch(hover, "i)_panel|_bar")
 		{
 			For index, val in vars.leveltracker.skillsets
 				GuiControl, % "+Background" vars.settings.cButtons2, % vars.hwnd.leveltracker_gempickups["skillset_" index "_bar"]
 			vars.leveltracker_gempickups.hover := ""
 		}
-		Else If vars.general.cMouse && InStr((hover := LLK_HasVal(vars.hwnd.leveltracker_gempickups, vars.general.cMouse)), "_panel") && (hover != vars.leveltracker_gempickups.hover) 
+		Else If vars.general.cMouse && RegExMatch(hover, "i)_panel|_bar") && (hover != vars.leveltracker_gempickups.hover) 
 		{
 			For index, val in vars.leveltracker.skillsets
-				GuiControl, % "+Background" (val[StrReplace(hover, "_panel")] ? "Yellow" : vars.settings.cButtons2), % vars.hwnd.leveltracker_gempickups["skillset_" index "_bar"]
+				GuiControl, % "+Background" (val[StrReplace(StrReplace(hover, "_bar"), "_panel")] ? "Yellow" : vars.settings.cButtons2), % vars.hwnd.leveltracker_gempickups["skillset_" index "_bar"]
 			vars.leveltracker_gempickups.hover := hover
 		}
 	}

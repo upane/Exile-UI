@@ -193,6 +193,8 @@ Gui_HelpToolTip(HWND_key)
 		tooltip_width := wWin * 2
 	Else If (check = "lootfilter")
 		tooltip_width := wWin/2
+	Else If (check = "leveltrackergems")
+		tooltip_width := settings.general.fWidth * 25
 
 	If !tooltip_width
 		Return
@@ -321,8 +323,8 @@ Gui_HelpToolTip(HWND_key)
 
 	If (check = "lootfilter")
 		xPos := xWin - width, yPos := y
-	Else If (check = "leveltrackergems") && !InStr(control, "save")
-		yPos := yWin - height + 1
+	Else If (check = "leveltrackergems")
+		xPos := xControl, yPos := y + h
 	Else If (check = "statlas")
 		yPos := yWin + hWin
 	Else If (check = "exchange")
@@ -346,7 +348,7 @@ Gui_HelpToolTip(HWND_key)
 	If (check = "alarm" && yPos < vars.monitor.y)
 		yPos := yWin + hWin - 1
 
-	If (check != "leveltrackereditor")
+	If !RegexMatch(check, "i)leveltrackereditor|leveltrackergems")
 		Gui_CheckBounds(xPos, yPos, width, height)
 	Gui, %GUI_name%: Show, % "NA x"xPos " y"(InStr("notepad, lab, leveltracker, snip, searchstrings, maptracker", check) ? yWin - (InStr("maptracker", check) ? height - 1 : 0) : yPos)
 	LLK_Overlay(tooltip, (width < 10) ? "hide" : "show",, GUI_name), LLK_Overlay(hwnd_old, "destroy")

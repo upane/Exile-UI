@@ -614,7 +614,10 @@ Leveltracker_GemPickups(cHWND := "")
 	check := LLK_HasVal(vars.hwnd.leveltracker_gempickups, cHWND), control := SubStr(check, InStr(check, "_") + 1)
 	profile := settings.leveltracker.profile
 	If !InStr(check, "winbar")
+	{
 		KeyWait, LButton
+		KeyWait, RButton
+	}
 
 	If (check = "xbutton")
 	{
@@ -645,12 +648,18 @@ Leveltracker_GemPickups(cHWND := "")
 	}
 	Else If InStr(check, "skillset_")
 	{
-		skillsets_provisional[control] := !skillsets_provisional[control]
-		GuiControl, % "+c" (skillsets_provisional[control] ? "Lime" : "Gray"), % cHWND
-		GuiControl, % "movedraw", % cHWND
+		If (vars.system.click = 2) && !skillsets_provisional[control]
+			Return
+		Else If (vars.system.click = 1)
+		{
+			skillsets_provisional[control] := !skillsets_provisional[control]
+			GuiControl, % "+c" (skillsets_provisional[control] ? "Lime" : "Gray"), % cHWND
+			GuiControl, % "movedraw", % cHWND
+		}
+		
 		For gem in vars.leveltracker.skillsets[control]
 		{
-			If skillsets_provisional[control]
+			If (vars.system.click = 1) && skillsets_provisional[control]
 			{
 				GuiControl, Text, % vars.hwnd.leveltracker_gempickups[gem "_ddl"], % Lang_Trans("global_act") " " default_acts[gem]
 				GuiControl, movedraw, % vars.hwnd.leveltracker_gempickups[gem "_ddl"]
@@ -663,9 +672,9 @@ Leveltracker_GemPickups(cHWND := "")
 				Else If vars.leveltracker.skillsets[index][gem] && skillsets_provisional[index]
 					Continue 2
 
-			GuiControl, Text, % vars.hwnd.leveltracker_gempickups[gem "_ddl"], % Lang_Trans("m_updater_skip")
-			GuiControl, movedraw, % vars.hwnd.leveltracker_gempickups[gem "_ddl"], % Lang_Trans("m_updater_skip")
-			GuiControl, % "+BackgroundFF8000", % vars.hwnd.leveltracker_gempickups[gem "_bar"]
+			GuiControl, Text, % vars.hwnd.leveltracker_gempickups[gem "_ddl"], % (vars.system.click = 1 ? Lang_Trans("m_updater_skip") : Lang_Trans("global_act") " 6")
+			GuiControl, movedraw, % vars.hwnd.leveltracker_gempickups[gem "_ddl"]
+			GuiControl, % "+Background" (vars.system.click = 1 ? "Red" : "Yellow"), % vars.hwnd.leveltracker_gempickups[gem "_bar"]
 		}
 		Return
 	}
@@ -678,7 +687,7 @@ Leveltracker_GemPickups(cHWND := "")
 		Loop, Parse, input
 			pick .= (IsNumber(A_LoopField) ? A_LoopField : "")
 		
-		GuiControl, % "+Background" (default_acts[gem] != pick ? "FF8000" : vars.settings.cButtons2), % vars.hwnd.leveltracker_gempickups[gem "_bar"]
+		GuiControl, % "+Background" (default_acts[gem] != pick ? (!pick ? "Red" : "Yellow") : vars.settings.cButtons2), % vars.hwnd.leveltracker_gempickups[gem "_bar"]
 		vars.ddl.gempickups[gem].current := input
 		Return
 	}
@@ -780,6 +789,9 @@ Leveltracker_GemPickups(cHWND := "")
 			}
 		}
 
+	If vars.hwnd.leveltracker_gempickups.skillset_1
+		ControlGetPos, xSkillsets, ySkillsets, wSkillsets, hSkillsets,, ahk_id %hwnd%
+
 	vars.ddl.gempickups := {}, xMax := 0
 	For gem in gems
 	{
@@ -795,9 +807,9 @@ Leveltracker_GemPickups(cHWND := "")
 		For act in acts
 			DDL.Push(!act ? Lang_Trans("m_updater_skip") : Lang_Trans("global_act") " " act)
 		act := vars.leveltracker["PoB" profile].vendors[gem], act := (!IsNumber(act) ? default_acts[gem] : act), current := (!act ? Lang_Trans("m_updater_skip") : Lang_Trans("global_act") " " act)
-		modified := (!Blank(vars.leveltracker["PoB" profile].vendors[gem]) && (default_acts[gem] != vars.leveltracker["PoB" profile].vendors[gem]) ? 1 : 0)
+		modified := (!Blank(vars.leveltracker["PoB" profile].vendors[gem]) && (default_acts[gem] != vars.leveltracker["PoB" profile].vendors[gem]) ? (vars.leveltracker["PoB" profile].vendors[gem] = 0 ? 2 : 1) : 0)
 
-		If (break := (yLast + hLast >= vars.monitor.h * 0.5) ? 1 : 0)
+		If (break := (yLast + hLast >= Max(vars.monitor.h * 0.6, (xSkillsets ? ySkillsets + hSkillsets : 0))) ? 1 : 0)
 		{
 			Gui, %GUI_name%: Add, Progress, % "Disabled Hidden HWNDhwnd_break xs xp y+0 h" margin, 0
 			If !single_set
@@ -805,7 +817,7 @@ Leveltracker_GemPickups(cHWND := "")
 		}
 
 		Gui, %GUI_name%: Add, Text, % (!vars.ddl.gempickups.Count() ? (single_set ? "Section xp yp" : "Section ys x+" margin) : (break ? "Section ys x" xMax + margin : "xs y+" margin)) " w" wDDL " Center Border BackgroundTrans HWNDhwnd gLeveltracker_GemPickups", % current
-		Gui, %GUI_name%: Add, Progress, % "Disabled xp yp wp hp Border HWNDhwnd1 Background" (modified ? "FF8000" : vars.settings.cButtons2) " c" vars.settings.cButtons, 100
+		Gui, %GUI_name%: Add, Progress, % "Disabled xp yp wp hp Border HWNDhwnd1 Background" (modified ? (modified = 2 ? "Red" : "Yellow") : vars.settings.cButtons2) " c" vars.settings.cButtons, 100
 		vars.ddl.gempickups[gem] := {"cHWND": hwnd, "color": "Black", "current": current, "fSize": fSize, "list": DDL.Clone()}
 		vars.hwnd.leveltracker_gempickups[gem "_ddl"] := hwnd, vars.hwnd.leveltracker_gempickups[gem "_bar"] := hwnd1
 		Gui, %GUI_name%: Font, % (quest_check.Count() < 3 && quest_check["a fixture of fate"] ? "underline" : "norm")
