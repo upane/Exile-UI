@@ -941,7 +941,7 @@ Maptracker_Logs2(cHWND)
 			RGB := (vars.system.click = 1 ? RGB_Picker(settings.maptracker.colors.infopanel) : settings.maptracker.dColors.infopanel)
 			If Blank(RGB)
 				Return
-			IniWrite, % """" (settings.maptracker.colors.infopanel := RGB) """", % "ini" vars.poe_version, UI, infopanel color
+			IniWrite, % """" (settings.maptracker.colors.infopanel := RGB) """", % "ini" vars.poe_version "\map tracker.ini", UI, infopanel color
 			Maptracker_Logs()
 		Case "filter_button":
 			vars.maptracker.keywords := {}
