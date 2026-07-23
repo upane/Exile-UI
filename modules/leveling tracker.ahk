@@ -811,7 +811,7 @@ Leveltracker_GemPickups(cHWND := "")
 
 		If (break := (yLast + hLast >= Max(vars.monitor.h * 0.6, (xSkillsets ? ySkillsets + hSkillsets : 0))) ? 1 : 0)
 		{
-			Gui, %GUI_name%: Add, Progress, % "Disabled Hidden HWNDhwnd_break xs xp y+0 h" margin, 0
+			Gui, %GUI_name%: Add, Progress, % "Hidden Disabled HWNDhwnd_break xs xp y+0 w2 h" margin, 0
 			If !single_set
 				GuiControl, movedraw, % hwnd_divider, % "h" yLast + hLast - divider.y
 		}
@@ -828,6 +828,7 @@ Leveltracker_GemPickups(cHWND := "")
 		vars.hwnd.leveltracker_gempickups[gem "_panel"] := hwnd, xMax := Max(xMax, xLast + wLast)
 		Gui, %GUI_name%: Font, norm
 	}
+	ControlGetPos, xLastDDL,,,,, % "ahk_id " hwnd1
 
 	Gui, %GUI_name%: Font, % "s" settings.leveltracker.fSize + 12
 	Gui, %GUI_name%: Add, Text, % "Section xs y+" margin " Border BackgroundTrans gLeveltracker_GemPickups HWNDhwnd cLime", % " " Lang_Trans("global_save") " "
@@ -836,7 +837,7 @@ Leveltracker_GemPickups(cHWND := "")
 
 	Gui, %GUI_name%: Add, Text, % "ys x+" margin " Border BackgroundTrans gLeveltracker_GemPickups HWNDhwnd cRed", % " " Lang_Trans("global_reset") " "
 	Gui, %GUI_name%: Add, Progress, % "Disabled xp yp wp hp Border HWNDhwnd1 Background" vars.settings.cButtons2 " c" vars.settings.cButtons, 100
-	Gui, %GUI_name%: Add, Progress, % "Disabled Hidden xs y+0 h" margin, 0	
+	Gui, %GUI_name%: Add, Progress, % "Hidden Disabled xs y+0 w" xMax - xLastDDL + margin + 1 " h" margin, 0	
 	vars.hwnd.leveltracker_gempickups.reset := hwnd, vars.hwnd.help_tooltips["leveltrackergems_save-reset|"] := hwnd1
 
 	Gui, %GUI_name%: Show, % "NA x10000 y10000"
