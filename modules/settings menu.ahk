@@ -4876,6 +4876,8 @@ Settings_news()
 		vars.pics.news := {"bullet": LLK_ImageCache("img\GUI\bullet_diamond.png",, settings.general.fHeight - 2)}
 	}
 
+	If settings.general.dev
+		vars.news.file := json.Load(LLK_FileRead("data\announcements.json"))
 	GUI := "settings_menu" vars.settings.GUI_toggle, x_anchor := vars.settings.x_anchor, margin := settings.general.fWidth//2, news := vars.news
 	Gui, %GUI%: Add, Text, % "Section x" x_anchor " y" vars.settings.ySelection, % Lang_Trans("m_news_recent")
 	For index, array in news.file.messages
