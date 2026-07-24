@@ -565,7 +565,7 @@ Init_general()
 	settings.features.async := !Blank(check := ini.features["enable async trade"]) ? check : 0
 	settings.updater := {"update_check": LLK_IniRead("ini\config.ini", "settings", "update auto-check", 0)}
 
-	vars.pics := {"global": {"close": LLK_ImageCache("img\GUI\close.png"), "help": LLK_ImageCache("img\GUI\help.png"), "home": LLK_ImageCache("img\GUI\home.png"), "reload": LLK_ImageCache("img\GUI\restart.png"), "revert": LLK_ImageCache("img\GUI\revert.png"), "black_trans": LLK_ImageCache("img\GUI\square_black_trans.png"), "collapse": LLK_ImageCache("img\GUI\toggle_collapse.png"), "expand": LLK_ImageCache("img\GUI\toggle_expand.png")}
+	vars.pics := {"global": {"close": LLK_ImageCache("img\GUI\close.png"), "help": LLK_ImageCache("img\GUI\help.png"), "home": LLK_ImageCache("img\GUI\home.png"), "reload": LLK_ImageCache("img\GUI\restart.png"), "revert": LLK_ImageCache("img\GUI\revert.png"), "revert_all": LLK_ImageCache("img\GUI\revert_all.png"), "black_trans": LLK_ImageCache("img\GUI\square_black_trans.png"), "collapse": LLK_ImageCache("img\GUI\toggle_collapse.png"), "expand": LLK_ImageCache("img\GUI\toggle_expand.png")}
 	, "anoints": {}, "betrayal_checks": {}, "cheatsheets_checks": {}, "iteminfo": {}, "legion": {}, "leveltracker": {}, "mapinfo": {}, "maptracker": {}, "maptracker_checks": {}, "radial": {"macros": {}, "menu": {}}, "runeshaping": {}, "screen_checks": {}, "search_strings": {}, "settings_lootfilter": {}, "settings": {}, "stashninja": {}, "statlas": {}, "zone_layouts": {}}
 
 	If FileExist("data\global\leagues" vars.poe_version ".json")
@@ -729,14 +729,14 @@ Loop()
 {
 	local
 	global vars, settings
-	static news_tick := 0
+	static news_tick := 0, tick := 0, timer_flash
 
 	If !WinExist("ahk_group poe_window")
 		vars.client.closed := 1, vars.hwnd.poe_client := ""
 
 	If WinExist("ahk_group poe_window")
 	{
-		vars.general.runcheck := A_TickCount
+		vars.general.runcheck := A_TickCount, tick := !tick
 		If !vars.hwnd.poe_client
 			If (vars.poe_version != CheckClient())
 			{
@@ -782,6 +782,25 @@ Loop()
 			If vars.actdecoder.updater.available && vars.actdecoder.tab && WinExist("ahk_id " vars.hwnd.actdecoder.main)
 				GuiControl, % "+Background" (Mod(news_tick, 2) ? "Black" : "Lime"), % vars.hwnd.actdecoder.helppanel_bar
 		}
+
+		If settings.features.leveltracker && settings.leveltracker.timer && (settings.leveltracker.timer_flash || timer_flash) && vars.hwnd.leveltracker.main && WinExist("ahk_id " vars.hwnd.leveltracker.main)
+			If ((vars.leveltracker.timer.total_time + vars.leveltracker.timer.current_split) && (vars.leveltracker.timer.current_act != 11) || RegexMatch(vars.log.areaID, "i)^(1_1_1|g1_1)$"))
+			&& (vars.leveltracker.timer.pause != 0) && settings.leveltracker.timer_flash && (vars.log.areaID != "login")
+			{
+				GuiControl, % "+c" (tick ? "Yellow" : "Gray"), % vars.hwnd.leveltracker.timer_total
+				GuiControl, % "movedraw", % vars.hwnd.leveltracker.timer_total
+				GuiControl, % "+c" (tick ? "Yellow" : "Gray"), % vars.hwnd.leveltracker.timer_act
+				GuiControl, % "movedraw", % vars.hwnd.leveltracker.timer_act
+				timer_flash := 1
+			}
+			Else If timer_flash
+			{
+				GuiControl, % "+c" (vars.leveltracker.timer.pause = 0 ? "White" : "Gray"), % vars.hwnd.leveltracker.timer_total
+				GuiControl, % "movedraw", % vars.hwnd.leveltracker.timer_total
+				GuiControl, % "+c" (vars.leveltracker.timer.pause = 0 ? "White" : "Gray"), % vars.hwnd.leveltracker.timer_act
+				GuiControl, % "movedraw", % vars.hwnd.leveltracker.timer_act
+				timer_flash := 0
+			}
 	}
 
 	If !WinExist("ahk_group poe_window") && (A_TickCount >= vars.general.runcheck + settings.general.kill.2 * 60000) && settings.general.kill.1
@@ -904,16 +923,17 @@ Loop_main()
 
 	If vars.hwnd.leveltracker_gempickups.main && WinExist("ahk_id " vars.hwnd.leveltracker_gempickups.main)
 	{
-		If vars.leveltracker_gempickups.hover && !InStr(LLK_HasVal(vars.hwnd.leveltracker_gempickups, vars.general.cMouse), "_panel")
+		hover := LLK_HasVal(vars.hwnd.leveltracker_gempickups, vars.general.cMouse)
+		If vars.leveltracker_gempickups.hover && !RegExMatch(hover, "i)_panel|_bar")
 		{
 			For index, val in vars.leveltracker.skillsets
 				GuiControl, % "+Background" vars.settings.cButtons2, % vars.hwnd.leveltracker_gempickups["skillset_" index "_bar"]
 			vars.leveltracker_gempickups.hover := ""
 		}
-		Else If vars.general.cMouse && InStr((hover := LLK_HasVal(vars.hwnd.leveltracker_gempickups, vars.general.cMouse)), "_panel") && (hover != vars.leveltracker_gempickups.hover) 
+		Else If vars.general.cMouse && RegExMatch(hover, "i)_panel|_bar") && (hover != vars.leveltracker_gempickups.hover) 
 		{
 			For index, val in vars.leveltracker.skillsets
-				GuiControl, % "+Background" (val[StrReplace(hover, "_panel")] ? "Yellow" : vars.settings.cButtons2), % vars.hwnd.leveltracker_gempickups["skillset_" index "_bar"]
+				GuiControl, % "+Background" (val[StrReplace(StrReplace(hover, "_bar"), "_panel")] ? "Yellow" : vars.settings.cButtons2), % vars.hwnd.leveltracker_gempickups["skillset_" index "_bar"]
 			vars.leveltracker_gempickups.hover := hover
 		}
 	}

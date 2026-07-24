@@ -212,6 +212,12 @@ Actdecoder_ZoneLayouts(mode := 0, click := 0, cHWND := "")
 			KeyWait, LButton
 			vars.actdecoder.zone_layouts[vars.log.areaID] := {}
 		}
+		Else If (check = "reset_all_bar")
+		{
+			KeyWait, LButton
+			For key, val in vars.actdecoder.zone_layouts
+				vars.actdecoder.zone_layouts[key] := {}
+		}
 		Else If (check = "drag")
 		{
 			If (click = 1)
@@ -322,15 +328,22 @@ Actdecoder_ZoneLayouts(mode := 0, click := 0, cHWND := "")
 		, % "HBitmap:*" vars.pics.zone_layouts[(alignment = "vertical" ? "horizontal" : "vertical")]
 	vars.hwnd.actdecoder.alignment := vars.hwnd.help_tooltips["actdecoder_alignment"] := hwnd
 
-	For key, val in vars.actdecoder.zone_layouts[vars.log.areaID]
-		If IsObject(val) && (val.1 || val.Count() > 1) || !IsObject(val) && !Blank(val)
-			reset_check := 1
+	For key, val in vars.actdecoder.zone_layouts
+		For key1, val in vars.actdecoder.zone_layouts[key]
+			If IsObject(val) && (val.1 || val.Count() > 1) || !IsObject(val) && !Blank(val)
+				reset_check := (key = vars.log.areaID ? 1 : reset_check), reset_all_check := 1
 
 	If reset_check
 	{
 		Gui, %GUI_name%: Add, Pic, % (alignment = "vertical" ? "ys" : "xs") " Border HWNDhwnd BackgroundTrans h" settings.general.fHeight " w-1" (vars.actdecoder.tab ? "" : " Hidden"), % "HBitmap:*" vars.pics.global.revert
 		Gui, %GUI_name%: Add, Progress, % "Disabled xp yp wp hp HWNDhwnd1 BackgroundBlack" (vars.actdecoder.tab ? "" : " Hidden"), 0
 		vars.hwnd.actdecoder.reset := hwnd, vars.hwnd.actdecoder.reset_bar := vars.hwnd.help_tooltips["actdecoder_reset"] := hwnd1
+	}
+	If reset_all_check
+	{
+		Gui, %GUI_name%: Add, Pic, % (alignment = "vertical" ? "ys" : "xs") " Border HWNDhwnd BackgroundTrans h" settings.general.fHeight " w-1" (vars.actdecoder.tab ? "" : " Hidden"), % "HBitmap:*" vars.pics.global.revert_all
+		Gui, %GUI_name%: Add, Progress, % "Disabled xp yp wp hp HWNDhwnd1 BackgroundBlack" (vars.actdecoder.tab ? "" : " Hidden"), 0
+		vars.hwnd.actdecoder.reset_all := hwnd, vars.hwnd.actdecoder.reset_all_bar := vars.hwnd.help_tooltips["actdecoder_reset all"] := hwnd1
 	}
 
 	subzone := vars.actdecoder.zone_layouts[vars.log.areaID].subzone, pic_count := ypic_count := pic_count0 := 0, vars.actdecoder.loaded := [], deep := selection := 0

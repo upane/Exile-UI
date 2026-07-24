@@ -1,5 +1,16 @@
 [
   [
+	["1.64.0", 16400, 1],
+	"july 24, 2026",
+	"curse of the allflame update (important)(/highlight)",
+	"fixes\n–> certain builds broke the gem pickups\n–> elemental prolif quests were incorrect\n–> map-event notifications didn't work",
+	"act-tracker:\n–> general guide tweaks\n–> updated quest-reward info (important for faster attacks/casting)\n–> updated a1 ship graveyard routing for the allflame + fairgraves quest changes\n–> timer now flashes while paused (can be disabled)",
+	"betrayal-info: updated rewards to 3.29",
+	"enchant finder: updated anoints to 3.29",
+	"item-info: partial support for 3.29 bases",
+	"map-events:\n–> removed nameless seer + reflecting mist\n–> re-added infamous mercs"
+  ],
+  [
 	["1.63.10", 16310, 1],
 	"july 21, 2026",
 	"this is not the (full) 3.29 update(/highlight)",
@@ -139,7 +150,7 @@
 	["1.62.0", 16200],
 	"march 6, 2026",
 	"act-tracker:\n–> added support for new trees and reliquarian\n–> new gems are supported, but we didn't get full quest/vendor info",
-	"betrayal-info:\n–> updated rewards to 3.28",
+	"betrayal-info: updated rewards to 3.28",
 	"map-tracker:\n–> removed ritual reminder when opening portals (there's a new in-game notification)",
 	"glhf"
   ]

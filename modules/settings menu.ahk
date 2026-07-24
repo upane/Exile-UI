@@ -2080,20 +2080,6 @@ Settings_hotkeys()
 		vars.hwnd.help_tooltips["settings_hotkeys ingame-keybinds"] := hwnd0
 	}
 
-	If !vars.client.stream && !vars.poe_version
-	{
-		Gui, %GUI%: Add, Checkbox, % "xs Section HWNDhwnd 0x400 gSettings_hotkeys2 Checked"settings.hotkeys.rebound_alt, % Lang_Trans("m_hotkeys_descriptions")
-		vars.hwnd.settings.rebound_alt := hwnd
-		If settings.hotkeys.rebound_alt
-		{
-			Gui, %GUI%: Add, Text, % "xs Section xp+" settings.general.fWidth * 1.5 " h" settings.general.fHeight, % Lang_Trans("m_hotkeys_descriptions", 2)
-			Gui, %GUI%: font, % "s"settings.general.fSize - 4
-			Gui, %GUI%: Add, Text, % "ys x+" settings.general.fWidth/2 " w" wEdits " hp BackgroundTrans Border"
-			Gui, %GUI%: Add, Edit, % "xp yp wp hp Border gSettings_hotkeys2 HWNDhwnd cBlack", % settings.hotkeys.item_descriptions
-			vars.hwnd.settings.item_descriptions := vars.hwnd.help_tooltips["settings_hotkeys formatting|"] := hwnd
-			Gui, %GUI%: font, % "s"settings.general.fSize
-		}
-	}
 	If !vars.client.stream
 	{
 		Gui, %GUI%: Add, Checkbox, % "xs Section x" x_anchor " HWNDhwnd 0x400 gSettings_hotkeys2 Checked" settings.hotkeys.rebound_c . (settings.hotkeys.rebound_c ? " cAqua" : ""), % Lang_Trans("m_hotkeys_ckey")
@@ -2196,8 +2182,6 @@ Settings_hotkeys2(cHWND)
 	If (check = 0)
 		check := A_GuiControl
 
-	settings.hotkeys.item_descriptions := LLK_ControlGet(vars.hwnd.settings.item_descriptions)
-
 	settings.hotkeys.omnikey := LLK_ControlGet(vars.hwnd.settings.omnikey)
 	settings.hotkeys.omnikey2 := LLK_ControlGet(vars.hwnd.settings.omnikey2)
 	settings.hotkeys.tab := LLK_ControlGet(vars.hwnd.settings.tab), settings.hotkeys.tabblock := vars.settings.tabblock_provisional
@@ -2206,9 +2190,6 @@ Settings_hotkeys2(cHWND)
 
 	Switch check
 	{
-		Case "rebound_alt":
-			settings.hotkeys.rebound_alt := LLK_ControlGet(cHWND)
-			Settings_menu("hotkeys", 1)
 		Case "rebound_c":
 			settings.hotkeys.rebound_c := LLK_ControlGet(cHWND)
 			Settings_menu("hotkeys", 1)
@@ -2225,19 +2206,13 @@ Settings_hotkeys2(cHWND)
 			GuiControl, % "+c" (vars.settings[check "_provisional"] ? "Lime" : "Gray"), % cHWND
 			GuiControl, % "movedraw", % cHWND
 		Case "apply":
-			If LLK_ControlGet(vars.hwnd.settings.rebound_alt) && !LLK_ControlGet(vars.hwnd.settings.item_descriptions)
-			{
-				WinGetPos, xControl, yControl, wControl, hControl, % "ahk_id " vars.hwnd.settings.item_descriptions
-				LLK_ToolTip(Lang_Trans("m_hotkeys_error", 3), 3, xControl + wControl, yControl,, "red")
-				Return
-			}
 			If LLK_ControlGet(vars.hwnd.settings.rebound_c) && !LLK_ControlGet(vars.hwnd.settings.omnikey2)
 			{
 				WinGetPos, xControl, yControl, wControl, hControl, % "ahk_id " vars.hwnd.settings.omnikey2
 				LLK_ToolTip(Lang_Trans("m_hotkeys_error", 4), 3, xControl + wControl, yControl,, "red")
 				Return
 			}
-			For index, val in ["item_descriptions", "omnikey", "omnikey2", "tab", "emergencykey", "movekey", "menuwidget"]
+			For index, val in ["omnikey", "omnikey2", "tab", "emergencykey", "movekey", "menuwidget"]
 			{
 				If !vars.hwnd.settings[val]
 					Continue
@@ -2258,8 +2233,6 @@ Settings_hotkeys2(cHWND)
 				If !Blank(hotkey)
 					keycheck[(LLK_ControlGet(vars.hwnd.settings[val "_ctrl"]) ? "^" : "") . (LLK_ControlGet(vars.hwnd.settings[val "_alt"]) ? "!" : "") . hotkey] := 1
 			}
-			IniWrite, % """" LLK_ControlGet(vars.hwnd.settings.rebound_alt) """", % "ini" vars.poe_version "\hotkeys.ini", settings, advanced item-info rebound
-			IniWrite, % """" LLK_ControlGet(vars.hwnd.settings.item_descriptions) """", % "ini" vars.poe_version "\hotkeys.ini", hotkeys, item-descriptions key
 			IniWrite, % """" LLK_ControlGet(vars.hwnd.settings.rebound_c) """", % "ini" vars.poe_version "\hotkeys.ini", settings, c-key rebound
 
 			IniWrite, % """" LLK_ControlGet(vars.hwnd.settings.omnikey) """", % "ini" vars.poe_version "\hotkeys.ini", hotkeys, omni-hotkey
@@ -2787,6 +2760,13 @@ Settings_leveltracker()
 		Gui, %GUI%: Add, Text, % "xs Section Border BackgroundTrans gSettings_leveltracker2 HWNDhwnd" (settings.leveltracker.timer ? " cLime" : " cGray"), % " " Lang_Trans("m_lvltracker_timer") " "
 		Gui, %GUI%: Add, Progress, % "Disabled xp yp wp hp Border HWNDhwnd1 Background" vars.settings.cButtons2 " c" vars.settings.cButtons, 100
 		vars.hwnd.settings.timer := hwnd, vars.hwnd.help_tooltips["settings_leveltracker timer"] := hwnd1
+
+		If settings.leveltracker.timer
+		{
+			Gui, %GUI%: Add, Text, % "ys x+-1 Border BackgroundTrans gSettings_leveltracker2 HWNDhwnd" (settings.leveltracker.timer_flash ? " cLime" : " cGray"), % " " Lang_Trans("global_flash") " "
+			Gui, %GUI%: Add, Progress, % "Disabled xp yp wp hp Border HWNDhwnd1 Background" vars.settings.cButtons2 " c" vars.settings.cButtons, 100
+			vars.hwnd.settings.timer_flash := hwnd, vars.hwnd.help_tooltips["settings_leveltracker timer flash"] := hwnd1
+		}
 	}
 	Gui, %GUI%: Add, Text, % "ys Border BackgroundTrans gSettings_leveltracker2 HWNDhwnd" (settings.leveltracker.fade ? " cLime": " cGray"), % " " Lang_Trans("m_lvltracker_fadeout") " "
 	Gui, %GUI%: Add, Progress, % "Disabled xp yp wp hp Border HWNDhwnd1 Background" vars.settings.cButtons2 " c" vars.settings.cButtons, 100
@@ -2820,7 +2800,7 @@ Settings_leveltracker()
 		vars.hwnd.settings.geartracker := hwnd, vars.hwnd.help_tooltips["settings_leveltracker geartracker"] := hwnd1
 	}
 
-	line_break := (!vars.poe_version && settings.leveltracker.fade || vars.poe_version && !settings.leveltracker.fade)
+	line_break := (!vars.poe_version && settings.leveltracker.fade && settings.leveltracker.hotkeys || vars.poe_version && !settings.leveltracker.fade)
 	Gui, %GUI%: Add, Text, % "Section " (line_break ? "xs" : "ys") " Border BackgroundTrans Center gSettings_leveltracker2 HWNDhwnd" (settings.leveltracker.hotkeys ? " cLime w" settings.general.fWidth * 16 - 3  : " cGray"), % " " Lang_Trans("m_lvltracker_pagehotkeys") " "
 	Gui, %GUI%: Add, Progress, % "Disabled xp yp wp hp Border HWNDhwnd1 Background" vars.settings.cButtons2 " c" vars.settings.cButtons, 100
 	vars.hwnd.settings.hotkeys_enable := hwnd, vars.hwnd.help_tooltips["settings_leveltracker hotkeys enable"] := hwnd1
@@ -2836,7 +2816,7 @@ Settings_leveltracker()
 		Gui, %GUI%: Add, Text, % "yp x+-1 wp hp Center 0x200 BackgroundTrans Border", % ">"
 		Gui, %GUI%: Font, % "s" settings.general.fSize - 4
 		Gui, %GUI%: Add, Text, % "yp x+-1 w" width " hp Border BackgroundTrans"
-		Gui, %GUI%: Add, Edit, % "xp yp wp hp Border cBlack HWNDhwnd2 Limit gSettings_leveltracker2", % settings.leveltracker.hotkey_2
+		Gui, %GUI%: Add, Edit, % "xp yp wp hp Border cBlack HWNDhwnd2 gSettings_leveltracker2", % settings.leveltracker.hotkey_2
 		Gui, %GUI%: Font, % "s" settings.general.fSize
 		vars.hwnd.settings.hotkey_1 := vars.hwnd.help_tooltips["settings_leveltracker hotkeys"] := hwnd1, vars.hwnd.settings.hotkey_2 := vars.hwnd.help_tooltips["settings_leveltracker hotkeys|"] := hwnd2
 	}
@@ -3066,6 +3046,13 @@ Settings_leveltracker2(cHWND := "")
 			Leveltracker_Progress(1)
 		vars.leveltracker.timer.pause := -1
 		GuiControl, % "+c" (settings.leveltracker.timer ? "Lime" : "Gray"), % cHWND
+		GuiControl, % "movedraw", % cHWND
+		Settings_menu("leveling tracker")
+	}
+	Else If (check = "timer_flash")
+	{
+		IniWrite, % (settings.leveltracker.timer_flash := !settings.leveltracker.timer_flash), % "ini" vars.poe_version "\leveling tracker.ini", settings, enable timer flashing
+		GuiControl, % "+c" (settings.leveltracker.timer_flash ? "Lime" : "Gray"), % cHWND
 		GuiControl, % "movedraw", % cHWND
 	}
 	Else If (check = "fade")
@@ -4364,17 +4351,19 @@ Settings_maptracker()
 		added := 0
 		Gui, %GUI%: Add, Text, % "xs y+-2 w" wMaps - 2 " h2 Border"
 		Gui, %GUI%: Add, Text, % "xs y+0 w2 h" vars.settings.line1 + 1 " Border HWNDhwnd_brace"
-		For mechanic, type in vars.maptracker.mechanics
-		{
-			If type
-				Continue
-			added += 1, color := (settings.maptracker[mechanic] ? " cLime" : " cGray")
-			Gui, %GUI%: Add, Text, % (added = 1 ? "Section xs x+" vars.settings.xMargin " y+-1" : "ys") " Border BackgroundTrans gSettings_maptracker2 HWNDhwnd" color, % " " Lang_Trans("mechanic_" mechanic) " "
-			Gui, %GUI%: Add, Progress, % "Disabled xp yp wp hp Border HWNDhwnd1 Background" vars.settings.cButtons2 " c" vars.settings.cButtons, 100
-			vars.hwnd.settings["mechanic_"mechanic] := hwnd, vars.hwnd.help_tooltips["settings_maptracker dialoguemechanic"handle] := hwnd1, handle .= "|"
-		}
 
-		If !vars.poe_version
+		If (general_mechanics := LLK_HasVal(vars.maptracker.mechanics, 0))
+			For mechanic, type in vars.maptracker.mechanics
+			{
+				If type
+					Continue
+				added += 1, color := (settings.maptracker[mechanic] ? " cLime" : " cGray")
+				Gui, %GUI%: Add, Text, % (added = 1 ? "Section xs x+" vars.settings.xMargin " y+-1" : "ys") " Border BackgroundTrans gSettings_maptracker2 HWNDhwnd" color, % " " Lang_Trans("mechanic_" mechanic) " "
+				Gui, %GUI%: Add, Progress, % "Disabled xp yp wp hp Border HWNDhwnd1 Background" vars.settings.cButtons2 " c" vars.settings.cButtons, 100
+				vars.hwnd.settings["mechanic_"mechanic] := hwnd, vars.hwnd.help_tooltips["settings_maptracker dialoguemechanic"handle] := hwnd1, handle .= "|"
+			}
+
+		If general_mechanics && !vars.poe_version
 			Gui, %GUI%: Add, Text, % "xs x" x_anchor " w" settings.general.fWidth * 20 " h2 Border"
 		Gui, %GUI%: Add, Text, % "Section" (!added ? " xs x+" vars.settings.xMargin " y+-1" : " xs") " Border HWNDhwnd", % " " Lang_Trans("m_maptracker_dialogue") " "
 		vars.hwnd.help_tooltips["settings_maptracker dialogue tracking"] := hwnd, added := 0, ingame_dialogs := vars.maptracker.dialog := InStr(LLK_FileRead(vars.system.config), "output_all_dialogue_to_chat=true") ? 1 : 0
@@ -4887,6 +4876,8 @@ Settings_news()
 		vars.pics.news := {"bullet": LLK_ImageCache("img\GUI\bullet_diamond.png",, settings.general.fHeight - 2)}
 	}
 
+	If settings.general.dev
+		vars.news.file := json.Load(LLK_FileRead("data\announcements.json"))
 	GUI := "settings_menu" vars.settings.GUI_toggle, x_anchor := vars.settings.x_anchor, margin := settings.general.fWidth//2, news := vars.news
 	Gui, %GUI%: Add, Text, % "Section x" x_anchor " y" vars.settings.ySelection, % Lang_Trans("m_news_recent")
 	For index, array in news.file.messages

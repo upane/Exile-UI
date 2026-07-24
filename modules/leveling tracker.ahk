@@ -97,6 +97,7 @@
 		FileCreateDir, % "img\GUI\skill-tree" profile "\PoE 2\"
 
 	settings.leveltracker.timer := vars.client.stream ? 0 : !Blank(check := ini.settings["enable timer"]) ? check : 0
+	settings.leveltracker.timer_flash := vars.client.stream ? 0 : !Blank(check := ini.settings["enable timer flashing"]) ? check : 1
 	settings.leveltracker.fade := !Blank(check := ini.settings["enable fading"]) ? check : 0
 	settings.leveltracker.fadetime := !Blank(check := ini.settings["fade-time"]) ? check : 5000
 	settings.leveltracker.fade_hover := !Blank(check := ini.settings["show on hover"]) ? check : 1
@@ -613,7 +614,10 @@ Leveltracker_GemPickups(cHWND := "")
 	check := LLK_HasVal(vars.hwnd.leveltracker_gempickups, cHWND), control := SubStr(check, InStr(check, "_") + 1)
 	profile := settings.leveltracker.profile
 	If !InStr(check, "winbar")
+	{
 		KeyWait, LButton
+		KeyWait, RButton
+	}
 
 	If (check = "xbutton")
 	{
@@ -644,12 +648,18 @@ Leveltracker_GemPickups(cHWND := "")
 	}
 	Else If InStr(check, "skillset_")
 	{
-		skillsets_provisional[control] := !skillsets_provisional[control]
-		GuiControl, % "+c" (skillsets_provisional[control] ? "Lime" : "Gray"), % cHWND
-		GuiControl, % "movedraw", % cHWND
+		If (vars.system.click = 2) && !skillsets_provisional[control]
+			Return
+		Else If (vars.system.click = 1)
+		{
+			skillsets_provisional[control] := !skillsets_provisional[control]
+			GuiControl, % "+c" (skillsets_provisional[control] ? "Lime" : "Gray"), % cHWND
+			GuiControl, % "movedraw", % cHWND
+		}
+		
 		For gem in vars.leveltracker.skillsets[control]
 		{
-			If skillsets_provisional[control]
+			If (vars.system.click = 1) && skillsets_provisional[control]
 			{
 				GuiControl, Text, % vars.hwnd.leveltracker_gempickups[gem "_ddl"], % Lang_Trans("global_act") " " default_acts[gem]
 				GuiControl, movedraw, % vars.hwnd.leveltracker_gempickups[gem "_ddl"]
@@ -662,9 +672,9 @@ Leveltracker_GemPickups(cHWND := "")
 				Else If vars.leveltracker.skillsets[index][gem] && skillsets_provisional[index]
 					Continue 2
 
-			GuiControl, Text, % vars.hwnd.leveltracker_gempickups[gem "_ddl"], % Lang_Trans("m_updater_skip")
-			GuiControl, movedraw, % vars.hwnd.leveltracker_gempickups[gem "_ddl"], % Lang_Trans("m_updater_skip")
-			GuiControl, % "+BackgroundFF8000", % vars.hwnd.leveltracker_gempickups[gem "_bar"]
+			GuiControl, Text, % vars.hwnd.leveltracker_gempickups[gem "_ddl"], % (vars.system.click = 1 ? Lang_Trans("m_updater_skip") : Lang_Trans("global_act") " 6")
+			GuiControl, movedraw, % vars.hwnd.leveltracker_gempickups[gem "_ddl"]
+			GuiControl, % "+Background" (vars.system.click = 1 ? "Red" : "Yellow"), % vars.hwnd.leveltracker_gempickups[gem "_bar"]
 		}
 		Return
 	}
@@ -677,7 +687,7 @@ Leveltracker_GemPickups(cHWND := "")
 		Loop, Parse, input
 			pick .= (IsNumber(A_LoopField) ? A_LoopField : "")
 		
-		GuiControl, % "+Background" (default_acts[gem] != pick ? "FF8000" : vars.settings.cButtons2), % vars.hwnd.leveltracker_gempickups[gem "_bar"]
+		GuiControl, % "+Background" (default_acts[gem] != pick ? (!pick ? "Red" : "Yellow") : vars.settings.cButtons2), % vars.hwnd.leveltracker_gempickups[gem "_bar"]
 		vars.ddl.gempickups[gem].current := input
 		Return
 	}
@@ -779,7 +789,10 @@ Leveltracker_GemPickups(cHWND := "")
 			}
 		}
 
-	vars.ddl.gempickups := {}
+	If vars.hwnd.leveltracker_gempickups.skillset_1
+		ControlGetPos, xSkillsets, ySkillsets, wSkillsets, hSkillsets,, ahk_id %hwnd%
+
+	vars.ddl.gempickups := {}, xMax := 0
 	For gem in gems
 	{
 		If !db.leveltracker.gems[gem]
@@ -794,27 +807,28 @@ Leveltracker_GemPickups(cHWND := "")
 		For act in acts
 			DDL.Push(!act ? Lang_Trans("m_updater_skip") : Lang_Trans("global_act") " " act)
 		act := vars.leveltracker["PoB" profile].vendors[gem], act := (!IsNumber(act) ? default_acts[gem] : act), current := (!act ? Lang_Trans("m_updater_skip") : Lang_Trans("global_act") " " act)
-		modified := (!Blank(vars.leveltracker["PoB" profile].vendors[gem]) && (default_acts[gem] != vars.leveltracker["PoB" profile].vendors[gem]) ? 1 : 0)
+		modified := (!Blank(vars.leveltracker["PoB" profile].vendors[gem]) && (default_acts[gem] != vars.leveltracker["PoB" profile].vendors[gem]) ? (vars.leveltracker["PoB" profile].vendors[gem] = 0 ? 2 : 1) : 0)
 
-		If (break := (yLast + hLast >= vars.monitor.h * 0.5) ? 1 : 0)
+		If (break := (yLast + hLast >= Max(vars.monitor.h * 0.6, (xSkillsets ? ySkillsets + hSkillsets : 0))) ? 1 : 0)
 		{
-			Gui, %GUI_name%: Add, Progress, % "Disabled Hidden HWNDhwnd_break xs xp y+0 h" margin, 0
+			Gui, %GUI_name%: Add, Progress, % "Hidden Disabled HWNDhwnd_break xs xp y+0 w2 h" margin, 0
 			If !single_set
 				GuiControl, movedraw, % hwnd_divider, % "h" yLast + hLast - divider.y
 		}
 
-		Gui, %GUI_name%: Add, Text, % (A_Index = 1 ? (single_set ? "Section xp yp" : "Section ys x+" margin) : (break ? "Section ys x+" margin : "xs y+" margin)) " w" wDDL " Center Border BackgroundTrans HWNDhwnd gLeveltracker_GemPickups", % current
-		Gui, %GUI_name%: Add, Progress, % "Disabled xp yp wp hp Border HWNDhwnd1 Background" (modified ? "FF8000" : vars.settings.cButtons2) " c" vars.settings.cButtons, 100
+		Gui, %GUI_name%: Add, Text, % (!vars.ddl.gempickups.Count() ? (single_set ? "Section xp yp" : "Section ys x+" margin) : (break ? "Section ys x" xMax + margin : "xs y+" margin)) " w" wDDL " Center Border BackgroundTrans HWNDhwnd gLeveltracker_GemPickups", % current
+		Gui, %GUI_name%: Add, Progress, % "Disabled xp yp wp hp Border HWNDhwnd1 Background" (modified ? (modified = 2 ? "Red" : "Yellow") : vars.settings.cButtons2) " c" vars.settings.cButtons, 100
 		vars.ddl.gempickups[gem] := {"cHWND": hwnd, "color": "Black", "current": current, "fSize": fSize, "list": DDL.Clone()}
 		vars.hwnd.leveltracker_gempickups[gem "_ddl"] := hwnd, vars.hwnd.leveltracker_gempickups[gem "_bar"] := hwnd1
 		Gui, %GUI_name%: Font, % (quest_check.Count() < 3 && quest_check["a fixture of fate"] ? "underline" : "norm")
 
 		color := ((attribute := db.leveltracker.gems[gem].attribute) ? colors[attribute] : "White")
 		Gui, %GUI_name%: Add, Text, % "ys x+" margin/2 " yp hp 0x200 HWNDhwnd c" color, % gem_name
-		vars.hwnd.leveltracker_gempickups[gem "_panel"] := hwnd
 		ControlGetPos, xLast, yLast, wLast, hLast,, % "ahk_id " hwnd
+		vars.hwnd.leveltracker_gempickups[gem "_panel"] := hwnd, xMax := Max(xMax, xLast + wLast)
 		Gui, %GUI_name%: Font, norm
 	}
+	ControlGetPos, xLastDDL,,,,, % "ahk_id " hwnd1
 
 	Gui, %GUI_name%: Font, % "s" settings.leveltracker.fSize + 12
 	Gui, %GUI_name%: Add, Text, % "Section xs y+" margin " Border BackgroundTrans gLeveltracker_GemPickups HWNDhwnd cLime", % " " Lang_Trans("global_save") " "
@@ -823,7 +837,7 @@ Leveltracker_GemPickups(cHWND := "")
 
 	Gui, %GUI_name%: Add, Text, % "ys x+" margin " Border BackgroundTrans gLeveltracker_GemPickups HWNDhwnd cRed", % " " Lang_Trans("global_reset") " "
 	Gui, %GUI_name%: Add, Progress, % "Disabled xp yp wp hp Border HWNDhwnd1 Background" vars.settings.cButtons2 " c" vars.settings.cButtons, 100
-	Gui, %GUI_name%: Add, Progress, % "Disabled Hidden xs y+0 h" margin, 0	
+	Gui, %GUI_name%: Add, Progress, % "Hidden Disabled xs y+0 w" xMax - xLastDDL + margin + 1 " h" margin, 0	
 	vars.hwnd.leveltracker_gempickups.reset := hwnd, vars.hwnd.help_tooltips["leveltrackergems_save-reset|"] := hwnd1
 
 	Gui, %GUI_name%: Show, % "NA x10000 y10000"
@@ -2072,7 +2086,7 @@ Leveltracker_PageDraw(name_main, name_back, preview, ByRef width, ByRef height, 
 			If buy_prompt && !hardcoded_buy
 			{
 				Gui, %name_main%: Add, Pic, % "Section xs", % "HBitmap:*" vars.pics.leveltracker.bullet_diamond
-				Gui, %name_main%: Add, Text, % "ys x+0 cFuchsia", % Lang_Trans("lvltracker_" (LLK_HasVal(guide.group1, "buy item", 1) ? "item" : "gem") "buy") . " " Lang_Trans("lvltracker_gembuy", 2)
+				Gui, %name_main%: Add, Text, % "ys x+0 cCC99FF", % Lang_Trans("lvltracker_" (LLK_HasVal(guide.group1, "buy item", 1) ? "item" : "gem") "buy") . " " Lang_Trans("lvltracker_gembuy", 2)
 				buy_prompt := 0
 			}
 
@@ -2512,7 +2526,7 @@ Leveltracker_PobImport(b64, profile)
 	If !classes
 		If vars.poe_version
 			classes := {"mercenary": ["tactician", "witchhunter", "gemling legionnaire"], "monk": ["invoker", "acolyte of chayula", "martial artist"], "ranger": ["deadeye", "pathfinder"], "sorceress": ["stormweaver", "chronomancer", "disciple of varashta"], "warrior": ["titan", "warbringer", "smith of kitava"], "witch": ["infernalist", "blood mage", "lich", "abyssal lich"], "huntress": ["amazon", "ritualist", "spirit walker"], "druid": ["oracle", "shaman"]}
-		Else classes := {"scion": ["ascendant", "reliquarian"], "marauder": ["juggernaut", "berserker", "chieftain"], "ranger": ["warden", "deadeye", "pathfinder"], "witch": ["occultist", "elementalist", "necromancer"]
+		Else classes := {"scion": ["ascendant", "reliquarian", "luminary"], "marauder": ["juggernaut", "berserker", "chieftain"], "ranger": ["warden", "deadeye", "pathfinder"], "witch": ["occultist", "elementalist", "necromancer"]
 		, "duelist": ["slayer", "gladiator", "champion"], "templar": ["inquisitor", "hierophant", "guardian"], "shadow": ["assassin", "trickster", "saboteur"]}
 
 	Base64Dec((pobString := RTrim(b64, "=")), compressed), buffer := 1024 * 10000
@@ -3613,7 +3627,7 @@ Leveltracker_Timer(mode := "")
 				FormatTime, date,, ShortDate
 				FormatTime, time,, Time
 				timer.name := date ", " time
-				IniWrite, % """"timer.name """", % "ini" vars.poe_version "\leveling tracker.ini", % "current run" settings.leveltracker.profile, name
+				IniWrite, % """" timer.name """", % "ini" vars.poe_version "\leveling tracker.ini", % "current run" settings.leveltracker.profile, name
 				new_run := 1
 			}
 			LLK_ToolTip(new_run ? Lang_Trans("lvltracker_timermessage", 1) : (timer.pause != 0) ? Lang_Trans("lvltracker_timermessage", 2) : Lang_Trans("lvltracker_timermessage", 3),, vars.leveltracker.coords.x1 + vars.leveltracker.coords.w / 2, yTooltip,, "lime",,,, 1)
@@ -3641,6 +3655,13 @@ Leveltracker_Timer(mode := "")
 		If vars.log.act && (timer.current_act + 1 = vars.log.act) ;player enters the next act: save previous act's time, add it to total time, then reset it
 		{
 			IniWrite, % timer.current_split, % "ini" vars.poe_version "\leveling tracker.ini", % "current run" settings.leveltracker.profile, % "act "timer.current_act
+			If !InStr(timer.name, ",") && (timer.current_act = 1)
+			{
+				FormatTime, date,, ShortDate
+				FormatTime, time,, Time
+				IniWrite, % """" (timer.name := date ", " time) """", % "ini" vars.poe_version "\leveling tracker.ini", % "current run" settings.leveltracker.profile, name
+				timer.late_start := 1
+			}
 			If InStr(timer.name, ",")
 				Leveltracker_TimerCSV()
 			timer.total_time += timer.current_split, timer.current_act += 1, timer.current_act := (vars.poe_version && timer.current_act = 8) ? 11 : timer.current_act
@@ -3667,15 +3688,16 @@ Leveltracker_TimerCSV()
 	global vars, settings
 	static csv
 
+	timer := vars.leveltracker.timer
 	If !FileExist("exports\campaign runs" (vars.poe_version ? " (PoE 2)" : "") ".csv")
 		FileAppend, % """date, time"",act 1,act 2,act 3,act 4,act 5,act 6,act 7" (!vars.poe_version ? ",act 8,act 9,act 10" : ""), % "exports\campaign runs" (vars.poe_version ? " (PoE 2)" : "") ".csv"
 
 	If !csv
 		FileRead, csv, % "exports\campaign runs" (vars.poe_version ? " (PoE 2)" : "") ".csv"
-	If InStr(csv, vars.leveltracker.timer.name)
-		FileAppend, % (append := ","""FormatSeconds(vars.leveltracker.timer.current_split) ".00"""), % "exports\campaign runs" (vars.poe_version ? " (PoE 2)" : "") ".csv"
-	Else FileAppend, % (append := "`n"""vars.leveltracker.timer.name ""","""FormatSeconds(vars.leveltracker.timer.current_split) ".00"""), % "exports\campaign runs" (vars.poe_version ? " (PoE 2)" : "") ".csv"
-	csv .= append
+	If InStr(csv, timer.name)
+		FileAppend, % (append := ",""" FormatSeconds(timer.current_split) ".00"""), % "exports\campaign runs" (vars.poe_version ? " (PoE 2)" : "") ".csv"
+	Else FileAppend, % (append := "`n""" timer.name """,""" FormatSeconds(timer.current_split) ".00" (timer.late_start ? "*" : "") """"), % "exports\campaign runs" (vars.poe_version ? " (PoE 2)" : "") ".csv"
+	csv .= append, vars.leveltracker.timer.late_start := 0
 }
 
 Leveltracker_Toggle(mode, toggle := 1)
