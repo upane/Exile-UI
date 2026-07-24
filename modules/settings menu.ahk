@@ -4351,17 +4351,19 @@ Settings_maptracker()
 		added := 0
 		Gui, %GUI%: Add, Text, % "xs y+-2 w" wMaps - 2 " h2 Border"
 		Gui, %GUI%: Add, Text, % "xs y+0 w2 h" vars.settings.line1 + 1 " Border HWNDhwnd_brace"
-		For mechanic, type in vars.maptracker.mechanics
-		{
-			If type
-				Continue
-			added += 1, color := (settings.maptracker[mechanic] ? " cLime" : " cGray")
-			Gui, %GUI%: Add, Text, % (added = 1 ? "Section xs x+" vars.settings.xMargin " y+-1" : "ys") " Border BackgroundTrans gSettings_maptracker2 HWNDhwnd" color, % " " Lang_Trans("mechanic_" mechanic) " "
-			Gui, %GUI%: Add, Progress, % "Disabled xp yp wp hp Border HWNDhwnd1 Background" vars.settings.cButtons2 " c" vars.settings.cButtons, 100
-			vars.hwnd.settings["mechanic_"mechanic] := hwnd, vars.hwnd.help_tooltips["settings_maptracker dialoguemechanic"handle] := hwnd1, handle .= "|"
-		}
 
-		If !vars.poe_version
+		If (general_mechanics := LLK_HasVal(vars.maptracker.mechanics, 0))
+			For mechanic, type in vars.maptracker.mechanics
+			{
+				If type
+					Continue
+				added += 1, color := (settings.maptracker[mechanic] ? " cLime" : " cGray")
+				Gui, %GUI%: Add, Text, % (added = 1 ? "Section xs x+" vars.settings.xMargin " y+-1" : "ys") " Border BackgroundTrans gSettings_maptracker2 HWNDhwnd" color, % " " Lang_Trans("mechanic_" mechanic) " "
+				Gui, %GUI%: Add, Progress, % "Disabled xp yp wp hp Border HWNDhwnd1 Background" vars.settings.cButtons2 " c" vars.settings.cButtons, 100
+				vars.hwnd.settings["mechanic_"mechanic] := hwnd, vars.hwnd.help_tooltips["settings_maptracker dialoguemechanic"handle] := hwnd1, handle .= "|"
+			}
+
+		If general_mechanics && !vars.poe_version
 			Gui, %GUI%: Add, Text, % "xs x" x_anchor " w" settings.general.fWidth * 20 " h2 Border"
 		Gui, %GUI%: Add, Text, % "Section" (!added ? " xs x+" vars.settings.xMargin " y+-1" : " xs") " Border HWNDhwnd", % " " Lang_Trans("m_maptracker_dialogue") " "
 		vars.hwnd.help_tooltips["settings_maptracker dialogue tracking"] := hwnd, added := 0, ingame_dialogs := vars.maptracker.dialog := InStr(LLK_FileRead(vars.system.config), "output_all_dialogue_to_chat=true") ? 1 : 0
