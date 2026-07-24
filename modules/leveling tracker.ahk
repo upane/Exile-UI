@@ -2526,7 +2526,7 @@ Leveltracker_PobImport(b64, profile)
 	If !classes
 		If vars.poe_version
 			classes := {"mercenary": ["tactician", "witchhunter", "gemling legionnaire"], "monk": ["invoker", "acolyte of chayula", "martial artist"], "ranger": ["deadeye", "pathfinder"], "sorceress": ["stormweaver", "chronomancer", "disciple of varashta"], "warrior": ["titan", "warbringer", "smith of kitava"], "witch": ["infernalist", "blood mage", "lich", "abyssal lich"], "huntress": ["amazon", "ritualist", "spirit walker"], "druid": ["oracle", "shaman"]}
-		Else classes := {"scion": ["ascendant", "reliquarian"], "marauder": ["juggernaut", "berserker", "chieftain"], "ranger": ["warden", "deadeye", "pathfinder"], "witch": ["occultist", "elementalist", "necromancer"]
+		Else classes := {"scion": ["ascendant", "reliquarian", "luminary"], "marauder": ["juggernaut", "berserker", "chieftain"], "ranger": ["warden", "deadeye", "pathfinder"], "witch": ["occultist", "elementalist", "necromancer"]
 		, "duelist": ["slayer", "gladiator", "champion"], "templar": ["inquisitor", "hierophant", "guardian"], "shadow": ["assassin", "trickster", "saboteur"]}
 
 	Base64Dec((pobString := RTrim(b64, "=")), compressed), buffer := 1024 * 10000
