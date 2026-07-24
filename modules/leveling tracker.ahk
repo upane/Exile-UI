@@ -2086,7 +2086,7 @@ Leveltracker_PageDraw(name_main, name_back, preview, ByRef width, ByRef height, 
 			If buy_prompt && !hardcoded_buy
 			{
 				Gui, %name_main%: Add, Pic, % "Section xs", % "HBitmap:*" vars.pics.leveltracker.bullet_diamond
-				Gui, %name_main%: Add, Text, % "ys x+0 cFuchsia", % Lang_Trans("lvltracker_" (LLK_HasVal(guide.group1, "buy item", 1) ? "item" : "gem") "buy") . " " Lang_Trans("lvltracker_gembuy", 2)
+				Gui, %name_main%: Add, Text, % "ys x+0 cCC99FF", % Lang_Trans("lvltracker_" (LLK_HasVal(guide.group1, "buy item", 1) ? "item" : "gem") "buy") . " " Lang_Trans("lvltracker_gembuy", 2)
 				buy_prompt := 0
 			}
 

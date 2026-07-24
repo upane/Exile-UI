@@ -107,7 +107,7 @@
         "yes"
       ],
       "lines": [
-        "(color:ff00ff)picked_safe? enter (img:portal) + (img:arena) depths",
+        "(color:ff00ff)safe? enter (img:portal) + (img:arena) depths",
         "(hint)__ kill dweller (essence)  || (color:cc99ff)relog",
         "(img:quest) tarkleigh: (quest:book) ;; dweller",
         "(img:quest) nessa: <the_caged_brute1>",
@@ -126,9 +126,9 @@
       "(color:cc99ff)relog: areaid1_1_town ;; lioneye's watch"
     ],
     [
-      "twinkrun: (img:quest) nessa: <the_caged_brute1>",
       "twinkrun: (img:quest) tarkleigh: (quest:book) ;; dweller",
       "(img:quest) tarkleigh: <the_caged_brute2>",
+      "twinkrun: (img:quest) nessa: <the_caged_brute1>",
       "leaguestart: optional: spare quicksilver? (color:cc99ff)vendor:",
       "(hint)__ qs-flask + aug + (ms) boots",
       "(img:waypoint) to areaid1_1_8 ;; prisoner's gate"
