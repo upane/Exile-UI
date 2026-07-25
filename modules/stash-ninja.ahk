@@ -411,7 +411,7 @@ Stash_PriceFetch(tab)
 		If vars.poe_version
 			types := {"abyss": ["Fragments", "Abyss", "Ritual"], "breach": ["Catalysts", "Fragments"], "currency": ["Currency"], "delirium": ["Delirium", "Fragments", "Ritual"], "essences": ["Essences"], "expedition": ["Expedition", "Verisium"], "fragments": ["Fragments", "Breach", "Ritual"], "idols": ["Idols"]
 			, "ritual": ["Ritual"], "runes": ["Runes"], "soulcores": ["SoulCores"], "verisium": ["Verisium"], "uncutgems": ["UncutGems"]}
-		Else types :=  {"fragments": ["Fragment"], "scarabs": ["Scarab"], "currency": ["Currency", "Astrolabe"], "divcards": ["DivinationCard"]
+		Else types :=  {"fragments": ["Fragment"], "scarabs": ["Scarab"], "currency": ["Currency", "Astrolabe", "EnshroudingCrystal"], "divcards": ["DivinationCard"]
 			, "delve": ["Fossil", "Resonator"], "essences": ["Essence"], "blight": ["Oil"], "delirium": ["DeliriumOrb"], "betrayal": ["AllflameEmber"]}
 
 	If (tab = "flush") ; when changing leagues, flush prices first to avoid old prices carrying over

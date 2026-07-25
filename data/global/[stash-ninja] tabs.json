@@ -16,14 +16,8 @@
       "tab_betrayal"
     ],
     [
-      "409",
-      "359",
-      "syndicate medallion",
-      "syndicate-medallion"
-    ],
-    [
       "272",
-      "538",
+      "505",
       "allflame ember of resplendence",
       "allflame-ember-of-resplendence"
     ],
@@ -47,7 +41,7 @@
     ],
     [
       "272",
-      "646",
+      "613",
       "allflame ember of the gilded",
       "allflame-ember-of-the-gilded"
     ],
@@ -642,7 +636,7 @@
       "153",
       "0",
       "deceptive astrolabe",
-      "enshrouded-astrolabe"
+      "deceptive-astrolabe"
     ],
     [
       "236",
@@ -818,6 +812,18 @@
       "blessing-general"
     ],
     [
+      "152",
+      "414",
+      "crystallised rancour",
+      "sandswept-lifeforce"
+    ],
+    [
+      "236",
+      "0",
+      "volatile vaal orb",
+      "tainted-divine-orb"
+    ],
+    [
       "338",
       "414",
       "tainted orb of fusing",
@@ -834,6 +840,36 @@
       "0",
       "tainted chromatic orb",
       "tainted-chromatic-orb"
+    ],
+    [
+      "152",
+      "502",
+      "karui enshrouding crystal",
+      "karui-enshrouding-crystal"
+    ],
+    [
+      "236",
+      "0",
+      "vaal enshrouding crystal",
+      "vaal-enshrouding-crystal"
+    ],
+    [
+      "152",
+      "580",
+      "imperial enshrouding crystal",
+      "imperial-enshrouding-crystal"
+    ],
+    [
+      "236",
+      "0",
+      "templar enshrouding crystal",
+      "templar-enshrouding-crystal"
+    ],
+    [
+      "195",
+      "660",
+      "maraketh enshrouding crystal",
+      "maraketh-enshrouding-crystal"
     ]
   ],
   "delirium": [
@@ -1945,34 +1981,10 @@
       "an-audience-with-the-king"
     ],
     [
-      "252",
-      "0",
-      "unrelenting timeless eternal emblem",
-      "uber-timeless-eternal-emblem"
-    ],
-    [
-      "0",
-      "0",
-      "unrelenting timeless karui emblem",
-      "uber-timeless-karui-emblem"
-    ],
-    [
-      "0",
-      "0",
-      "unrelenting timeless vaal emblem",
-      "uber-timeless-vaal-emblem"
-    ],
-    [
-      "496",
-      "0",
-      "unrelenting timeless templar emblem",
-      "uber-timeless-templar-emblem"
-    ],
-    [
-      "0",
-      "0",
-      "unrelenting timeless maraketh emblem",
-      "uber-timeless-maraketh-emblem"
+      "415",
+      "589",
+      "syndicate medallion",
+      "syndicate-medallion"
     ],
     [
       "674",
@@ -2208,6 +2220,24 @@
       "influencing-scarab-of-conversion"
     ],
     [
+      "678",
+      "0",
+      "titanic scarab",
+      "titanic-scarab"
+    ],
+    [
+      "0",
+      "0",
+      "of treasures",
+      "titanic-scarab-of-treasures"
+    ],
+    [
+      "0",
+      "0",
+      "of legend",
+      "titanic-scarab-of-legend"
+    ],
+    [
       "78",
       "316",
       "divination scarab of the cloister",
@@ -2228,22 +2258,27 @@
     [
       "402",
       "0",
-      "titanic scarab",
-      "titanic-scarab"
+      "trarthan scarab",
+      "trarthan-scarab"
     ],
     [
       "0",
       "0",
-      "of treasures",
-      "titanic-scarab-of-treasures"
+      "trarthan scarab of infamy",
+      "trarthan-scarab-of-infamy"
     ],
     [
       "0",
       "0",
-      "of legend",
-      "titanic-scarab-of-legend"
+      "trarthan scarab of renown",
+      "trarthan-scarab-of-renown"
     ],
-    
+    [
+      "0",
+      "0",
+      "trarthan scarab of surprising alliances",
+      "trarthan-scarab-of-surprising-alliances"
+    ],
     [
       "78",
       "378",
@@ -2278,7 +2313,7 @@
       "0",
       "0",
       "of crystals",
-      "abyss-scarab-of-edifice"
+      "abyss-scarab-of-crystals"
     ],
     [
       "0",
@@ -2290,7 +2325,7 @@
       "0",
       "0",
       "of the consort",
-      "abyss-scarab-of-profound-depth"
+      "abyss-scarab-of-the-consort"
     ],
     [
       "78",
