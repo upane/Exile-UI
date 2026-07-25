@@ -2394,7 +2394,7 @@ Iteminfo_GearParse(slot) ;parse the info of an equipped item and save it for ite
 	}
 
 	Clipboard := ""
-	SendInput, % (settings.general.dev ? "!" : "") "^{c}"
+	SendInput, % "^{c}"
 	ClipWait, 0.1
 
 	If !Clipboard
@@ -2858,7 +2858,7 @@ Iteminfo_Trigger(mode := 0) ;handles shift-clicks on items and currency for the 
 			Return
 		last := A_TickCount
 		Sleep 350
-		SendInput, % (settings.general.dev ? "!" : "") "^{c}"
+		SendInput, % "^{c}"
 		ClipWait, 0.1
 
 		If Clipboard

@@ -27,7 +27,7 @@
 		Return
 	}
 
-	SendInput, % (settings.general.dev ? "!" : "") "^{c}"
+	SendInput, % "^{c}"
 	ClipWait, 0.1
 
 	If Clipboard

@@ -629,7 +629,7 @@ Sanctum_RelicsClick()
 		Return
 
 	Clipboard := ""
-	SendInput, % (settings.general.dev ? "!" : "") "^{c}"
+	SendInput, % "^{c}"
 	ClipWait, 0.1
 
 	For key, val in items
