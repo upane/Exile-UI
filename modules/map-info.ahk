@@ -264,13 +264,13 @@ Mapinfo_GUI(mode := 1)
 		WinGetPos, x, y,,, % "ahk_id "hwnd_old
 	Else
 	{
-		position := settings.mapinfo.position
+		position := settings.mapinfo.position, offset := vars.client.h//50
 		Gui, %GUI_name%: Show, % "NA x10000 y10000"
 		WinGetPos,,, w, h, % "ahk_id "vars.hwnd.mapinfo.main
 		MouseGetPos, xPos, yPos
 		If (mode = 2)
 			x := vars.client.x + vars.client.w - w, y := vars.client.y + vars.client.h/2 - h/2
-		Else x := xPos + (InStr("12", position) ? -w/2 : (position = 3 ? -w : 0)), y := yPos + (position = 1 ? -h : (InStr("34", position)) ? -vars.client.h/20 : 0)
+		Else x := xPos + (InStr("12", position) ? -w/2 : (position = 3 ? -w - offset : offset)), y := yPos + (position = 1 ? -h - offset : (InStr("34", position)) ? -offset : (position = 2 ? 2*offset : 0))
 		Gui_CheckBounds(x, y, w, h)
 	}
 	Gui, %GUI_name%: Show, % (mode ? "NA " : "") "x"x " y"y
