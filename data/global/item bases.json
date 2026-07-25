@@ -1237,6 +1237,13 @@
         "default"
       ]
     },
+    "Pearlescent Amulet": {
+      "_tags": [
+        "amulet",
+        "default",
+        "not_for_sale"
+      ]
+    },
     "Ruby Amulet": {
       "_tags": [
         "amulet",
@@ -7608,6 +7615,19 @@
       "phys": "61.0",
       "speed": "1.3"
     },
+    "Ghostflame Blade": {
+      "_tags": [
+        "default",
+        "not_for_sale",
+        "one_hand_weapon",
+        "onehand",
+        "sword",
+        "weapon"
+      ],
+      "crit": "6.5",
+      "phys": "51.5",
+      "speed": "1.55"
+    },
     "Gladius": {
       "_tags": [
         "default",
@@ -10140,6 +10160,13 @@
     }
   },
   "Talismans": {
+    "Ape Talisman": {
+      "_tags": [
+        "amulet",
+        "default",
+        "talisman"
+      ]
+    },
     "Ashscale Talisman": {
       "_tags": [
         "amulet",
@@ -10196,6 +10223,20 @@
         "talisman"
       ]
     },
+    "Black Widow Talisman": {
+      "_tags": [
+        "amulet",
+        "default",
+        "talisman"
+      ]
+    },
+    "Blood Viper Talisman": {
+      "_tags": [
+        "amulet",
+        "default",
+        "talisman"
+      ]
+    },
     "Bonespire Talisman": {
       "_tags": [
         "amulet",
@@ -10204,6 +10245,27 @@
       ]
     },
     "Breakrib Talisman": {
+      "_tags": [
+        "amulet",
+        "default",
+        "talisman"
+      ]
+    },
+    "Carrion Queen Talisman": {
+      "_tags": [
+        "amulet",
+        "default",
+        "talisman"
+      ]
+    },
+    "Chieftain Talisman": {
+      "_tags": [
+        "amulet",
+        "default",
+        "talisman"
+      ]
+    },
+    "Chimeral Talisman": {
       "_tags": [
         "amulet",
         "default",
@@ -10224,6 +10286,27 @@
         "talisman"
       ]
     },
+    "Cobra Talisman": {
+      "_tags": [
+        "amulet",
+        "default",
+        "talisman"
+      ]
+    },
+    "Craicic Talisman": {
+      "_tags": [
+        "amulet",
+        "default",
+        "talisman"
+      ]
+    },
+    "Croaker Talisman": {
+      "_tags": [
+        "amulet",
+        "default",
+        "talisman"
+      ]
+    },
     "Deadhand Talisman": {
       "_tags": [
         "amulet",
@@ -10238,7 +10321,70 @@
         "talisman"
       ]
     },
+    "Devourer Talisman": {
+      "_tags": [
+        "amulet",
+        "default",
+        "talisman"
+      ]
+    },
     "Fangjaw Talisman": {
+      "_tags": [
+        "amulet",
+        "default",
+        "talisman"
+      ]
+    },
+    "Farric Talisman": {
+      "_tags": [
+        "amulet",
+        "default",
+        "talisman"
+      ]
+    },
+    "Fenumal Talisman": {
+      "_tags": [
+        "amulet",
+        "default",
+        "talisman"
+      ]
+    },
+    "Flame Hellion Talisman": {
+      "_tags": [
+        "amulet",
+        "default",
+        "talisman"
+      ]
+    },
+    "Frost Hellion Talisman": {
+      "_tags": [
+        "amulet",
+        "default",
+        "talisman"
+      ]
+    },
+    "Gargantuan Talisman": {
+      "_tags": [
+        "amulet",
+        "default",
+        "talisman"
+      ]
+    },
+    "Goatman Talisman": {
+      "_tags": [
+        "amulet",
+        "default",
+        "talisman"
+      ]
+    },
+    "Goliath Talisman": {
+      "_tags": [
+        "amulet",
+        "default",
+        "talisman"
+      ]
+    },
+    "Great Maw Talisman": {
       "_tags": [
         "amulet",
         "default",
@@ -10248,7 +10394,8 @@
     "Greatwolf Talisman": {
       "_tags": [
         "amulet",
-        "default"
+        "default",
+        "talisman"
       ]
     },
     "Hexclaw Talisman": {
@@ -10265,6 +10412,13 @@
         "talisman"
       ]
     },
+    "Hybrid Arachnid Talisman": {
+      "_tags": [
+        "amulet",
+        "default",
+        "talisman"
+      ]
+    },
     "Lone Antler Talisman": {
       "_tags": [
         "amulet",
@@ -10273,6 +10427,20 @@
       ]
     },
     "Longtooth Talisman": {
+      "_tags": [
+        "amulet",
+        "default",
+        "talisman"
+      ]
+    },
+    "Lynx Talisman": {
+      "_tags": [
+        "amulet",
+        "default",
+        "talisman"
+      ]
+    },
+    "Magma Hound Talisman": {
       "_tags": [
         "amulet",
         "default",
@@ -10314,7 +10482,49 @@
         "talisman"
       ]
     },
+    "Octopus Talisman": {
+      "_tags": [
+        "amulet",
+        "default",
+        "talisman"
+      ]
+    },
+    "Pitbull Talisman": {
+      "_tags": [
+        "amulet",
+        "default",
+        "talisman"
+      ]
+    },
+    "Plagued Arachnid Talisman": {
+      "_tags": [
+        "amulet",
+        "default",
+        "talisman"
+      ]
+    },
     "Primal Skull Talisman": {
+      "_tags": [
+        "amulet",
+        "default",
+        "talisman"
+      ]
+    },
+    "Retch Talisman": {
+      "_tags": [
+        "amulet",
+        "default",
+        "talisman"
+      ]
+    },
+    "Rhex Talisman": {
+      "_tags": [
+        "amulet",
+        "default",
+        "talisman"
+      ]
+    },
+    "Rhoa Talisman": {
       "_tags": [
         "amulet",
         "default",
@@ -10335,6 +10545,55 @@
         "talisman"
       ]
     },
+    "Sand Spitter Talisman": {
+      "_tags": [
+        "amulet",
+        "default",
+        "talisman"
+      ]
+    },
+    "Saqawine Talisman": {
+      "_tags": [
+        "amulet",
+        "default",
+        "talisman"
+      ]
+    },
+    "Savage Crab Talisman": {
+      "_tags": [
+        "amulet",
+        "default",
+        "talisman"
+      ]
+    },
+    "Scorpion Talisman": {
+      "_tags": [
+        "amulet",
+        "default",
+        "talisman"
+      ]
+    },
+    "Scrabbler Talisman": {
+      "_tags": [
+        "amulet",
+        "default",
+        "talisman"
+      ]
+    },
+    "Shield Crab Talisman": {
+      "_tags": [
+        "amulet",
+        "default",
+        "talisman"
+      ]
+    },
+    "Spider Crab Talisman": {
+      "_tags": [
+        "amulet",
+        "default",
+        "talisman"
+      ]
+    },
     "Spinefuse Talisman": {
       "_tags": [
         "amulet",
@@ -10343,6 +10602,20 @@
       ]
     },
     "Splitnewt Talisman": {
+      "_tags": [
+        "amulet",
+        "default",
+        "talisman"
+      ]
+    },
+    "Squid Talisman": {
+      "_tags": [
+        "amulet",
+        "default",
+        "talisman"
+      ]
+    },
+    "Taurus Talisman": {
       "_tags": [
         "amulet",
         "default",
@@ -10363,6 +10636,13 @@
         "talisman"
       ]
     },
+    "Tiger Talisman": {
+      "_tags": [
+        "amulet",
+        "default",
+        "talisman"
+      ]
+    },
     "Undying Flesh Talisman": {
       "_tags": [
         "amulet",
@@ -10370,7 +10650,35 @@
         "talisman"
       ]
     },
+    "Ursa Talisman": {
+      "_tags": [
+        "amulet",
+        "default",
+        "talisman"
+      ]
+    },
+    "Vulture Talisman": {
+      "_tags": [
+        "amulet",
+        "default",
+        "talisman"
+      ]
+    },
+    "Watcher Talisman": {
+      "_tags": [
+        "amulet",
+        "default",
+        "talisman"
+      ]
+    },
     "Wereclaw Talisman": {
+      "_tags": [
+        "amulet",
+        "default",
+        "talisman"
+      ]
+    },
+    "Wolf Alpha Talisman": {
       "_tags": [
         "amulet",
         "default",
