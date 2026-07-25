@@ -43,7 +43,7 @@
 	}
 	settings.maptracker.xCoord := !Blank(check := ini.settings["x-coordinate"]) ? check : ""
 	settings.maptracker.yCoord := !Blank(check := ini.settings["y-coordinate"]) ? check : ""
-	settings.maptracker.dColors := {"date_unselected": "404040", "date_selected": "505080", "infopanel": "000066", "league 1": "330000", "league 2": "001933", "league 3": "003300", "league 4": "330066", "league 5": "009999", "league 6": "99004C", "league 7": "666600", "league 8": "CC6600"}
+	settings.maptracker.dColors := {"date_unselected": "404040", "date_selected": "505080", "infopanel": "000066", "league 1": "330000", "league 2": "001933", "league 3": "003300", "league 4": "330066", "league 5": "009999", "league 6": "99004C", "league 7": "666600", "league 8": "CC6600", "league 9": "990099"}
 	settings.maptracker.colors := {}
 	If !IsObject(vars.maptracker)
 	{
@@ -52,7 +52,7 @@
 		Else vars.maptracker := {"keywords": [], "mechanics": {"delirium": 1, "expedition": 2, "ritual": 2}}
 		If vars.poe_version
 			vars.maptracker.leagues := [["ea standard", 20241206, 20250403], ["ea dawn", 20250404, 20250828], ["ea abyss", 20250829, 20251211], ["ea vaal", 20251212, 20260525], ["ea aldur", 20260529, 20261231]]
-		Else vars.maptracker.leagues := [["crucible", 20230407, 20230815], ["ancestor", 20230818, 20231205], ["affliction", 20231208, 20240326], ["necropolis", 20240329, 20240723], ["settlers", 20240726, 20250609], ["mercenaries", 20250613, 20251027], ["keepers", 20251031, 20260302], ["mirage", 20260306, 20261212]]
+		Else vars.maptracker.leagues := [["crucible", 20230407, 20230815], ["ancestor", 20230818, 20231205], ["affliction", 20231208, 20240326], ["necropolis", 20240329, 20240723], ["settlers", 20240726, 20250609], ["mercenaries", 20250613, 20251027], ["keepers", 20251031, 20260302], ["mirage", 20260306, 20260720], ["allflame", 20260724, 20261212]]
 	}
 
 	If settings.general.dev && !settings.maptracker.dColors.HasKey("league " vars.maptracker.leagues.MaxIndex())
@@ -210,7 +210,7 @@ Maptracker_DateSelect()
 	{
 		run_count := 0
 		For run in runs
-			If LLK_IsBetween(StrReplace(SubStr(run, 1, 10), "/"), array.2, array.3)
+			If LLK_IsBetween(StrReplace(SubStr(run, 1, 10), "/"), array.2, array.3) || settings.general.dev
 				run_count += 1
 		If !run_count
 			Continue
@@ -232,7 +232,7 @@ Maptracker_DateSelect()
 			{
 				run_count_league := 0
 				For run in runs
-					If LLK_IsBetween(StrReplace(SubStr(run, 1, 10), "/"), array.2, array.3)
+					If LLK_IsBetween(StrReplace(SubStr(run, 1, 10), "/"), array.2, array.3) || settings.general.dev
 						run_count_league += 1
 				If !run_count_league
 					Continue
