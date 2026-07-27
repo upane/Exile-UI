@@ -41,7 +41,7 @@ While !WinExist("ahk_class POEWindowClass") && !WinExist("ahk_exe GeForceNOW.exe
 
 ;band-aid fix for situations in which the client was launched after the script, and the script detected an unsupported resolution because the PoE-client window was being resized during window-detection
 If win_not_exist && (WinExist("ahk_class POEWindowClass") || WinExist("ahk_exe GeForceNOW.exe"))
-	Sleep, 4000
+	Sleep, 5000
 LLK_Log("found game-client")
 vars.poe_version := CheckClient(), LLK_Log("--- tool launched" (vars.poe_version ? " (PoE 2)" : "") " ---")
 
@@ -750,7 +750,7 @@ Loop()
 		If vars.client.closed
 		{
 			WinWaitActive, ahk_group poe_window
-			Sleep, 4000
+			Sleep, 5000
 			Init_client(), Init_Lang(), Init_screenchecks()
 		}
 		vars.client.closed := 0
@@ -1118,7 +1118,7 @@ Resolution_check()
 		{
 			If !WinExist("ahk_id " vars.hwnd.settings.main)
 			{
-				MsgBox,, Exile UI, The script will now shut down.
+				MsgBox,, Exile UI, The tool will now close.
 				ExitApp
 			}
 			Sleep, 100
