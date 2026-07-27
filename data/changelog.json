@@ -1,5 +1,14 @@
 [
   [
+	["1.64.1", 16401],
+	"july 27, 2026",
+	"act-tracker:\n–> re-added 5-link optionals in a5 + a6",
+	"item-info:\n–> updated item bases and mods to 3.29",
+	"map-info:\n–> updated reflect mods",
+	"map-tracker:\n–> added missing allflame date/filter",
+	"stash-ninja:\n–> updated to 3.29"
+  ],
+  [
 	["1.64.0", 16400, 1],
 	"july 24, 2026",
 	"curse of the allflame update (important)(/highlight)",
