@@ -1033,3 +1033,8 @@ ID	=	318
 type	=	expedition
 text	=	olroth (boss)
 ID	=	319
+
+[# increased Dead Man's Sulphur found in this Area]
+type	=	area
+text	=	sulphur: +%
+ID	=	400

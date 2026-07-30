@@ -292,23 +292,10 @@ Omni_Context(mode := 0)
 			If (A_TickCount >= vars.omnikey.start + 200)
 				Return "relics"
 
-	If !vars.poe_version && !settings.features.stash && (item.name = "Orb of Horizons")
-		While GetKeyState(vars.omnikey.hotkey, "P") || !Blank(vars.omnikey.hotkey2) && GetKeyState(vars.omnikey.hotkey2, "P")
-			If (A_TickCount >= vars.omnikey.start + 200)
-				Return "horizons"
-	If (!vars.poe_version && !LLK_PatternMatch(item.name "`n" item.itembase, "", ["Doryani", "Maple"]) && LLK_PatternMatch(item.name "`n" item.itembase, "", ["Map", "Invitation", "Blueprint:", "Contract:", "Expedition Logbook"])
+	If (!vars.poe_version && !LLK_PatternMatch(item.name "`n" item.itembase, "", ["Doryani", "Maple"]) && LLK_PatternMatch(item.name "`n" item.itembase, "", ["Map", "Chart", "Invitation", "Blueprint:", "Contract:", "Expedition Logbook"])
 	|| vars.poe_version && LLK_PatternMatch(item.name "`n" item.itembase, "", [Lang_Trans("items_waystone")]))
 	&& (item.rarity != Lang_Trans("items_unique"))
 	{
-		While !vars.poe_version && (settings.mapinfo.activation = "toggle" || GetKeyState("Alt", "P")) && (GetKeyState(vars.omnikey.hotkey, "P") || !Blank(vars.omnikey.hotkey2) && GetKeyState(vars.omnikey.hotkey2, "P")) && LLK_PatternMatch(item.name "`n" item.itembase, "", ["Map"])
-			If (A_TickCount >= vars.omnikey.start + 200)
-			{
-				If LLK_PatternMatch(vars.omnikey.clipboard, "", ["Maze of the Minotaur", "Forge of the Phoenix", "Lair of the Hydra", "Pit of the Chimera"])
-					Return "horizons_shaper"
-				Else If item.tier
-					Return "horizons_map"
-				Else Return
-			}
 		If InStr(clip, Lang_Trans("items_mapreward"))
 			Return "context_menu"
 
