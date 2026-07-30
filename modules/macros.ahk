@@ -36,7 +36,7 @@
 
 	If !IsObject(vars.macros)
 		vars.macros := {}
-	For index, val in (vars.macros.fasttravels := (!vars.poe_version ? ["kingsmarch", "monastery", "menagerie", "heist", "sanctum", "delve", "guild"] : ["guild"]))
+	For index, val in (vars.macros.fasttravels := (!vars.poe_version ? ["boat", "kingsmarch", "monastery", "menagerie", "heist", "sanctum", "delve", "guild"] : ["guild"]))
 		settings.macros[val] := !Blank(check := ini.settings["enable " val]) ? check : 1
 }
 

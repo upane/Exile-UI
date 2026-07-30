@@ -761,6 +761,9 @@
     "macros enable": [
       "click this button to toggle the command on/off"
     ],
+    "macros boat": [
+      "the sovereign"
+    ],
     "macros kingsmarch": [
       "kingsmarch"
     ],
