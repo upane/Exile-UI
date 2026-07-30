@@ -1200,13 +1200,15 @@ Maptracker_LogsLoad()
 			val := (key = "tier" && SubStr(val, 1, 1) = "0") ? SubStr(val, 2) : val
 			If (key = "mapinfo") && (SubStr(val, 2, 1) = "m")
 				val := StrReplace(val, "m", "x",, 1)
-			If (key = "map") && !InStr(val, "savannah")
-				For original, replacement in {"savanna": "savannah", "gothic city": "grimhaven", "abyss": "marrow", "the phaaryl megalith": "the ezomyte megaliths", "vaal factory": "the assembly", "vaal foundry": "molten vault"
-				, "ornatechambers": "ornate chambers"}
-					val := StrReplace(val, original, replacement)
-			If (key = "map") && InStr(val, " citadel") && !InStr(val, "the ")
-				For k, v in {"copper citadel": "the copper citadel", "iron citadel": "the iron citadel", "stone citadel": "the stone citadel"}
-					val := StrReplace(val, k, v)
+			If vars.poe_version
+			{
+				If (key = "map") && !InStr(val, "savannah")
+					For original, replacement in {"savanna": "savannah", "gothic city": "grimhaven", "abyss": "marrow", "the phaaryl megalith": "the ezomyte megaliths", "vaal factory": "the assembly", "vaal foundry": "molten vault", "ornatechambers": "ornate chambers"}
+						val := StrReplace(val, original, replacement)
+				If (key = "map") && InStr(val, " citadel") && !InStr(val, "the ")
+					For k, v in {"copper citadel": "the copper citadel", "iron citadel": "the iron citadel", "stone citadel": "the stone citadel"}
+						val := StrReplace(val, k, v)
+			}
 			If (key = "map") && RegExMatch(val, "i)[a-zA-Z]\:[a-zA-Z]")
 				val := StrReplace(val, ":", ": ")
 
@@ -1761,7 +1763,7 @@ Maptracker_Reminder()
 	}
 
 	If mechanics
-		LLK_ToolTip(Lang_Trans("maptracker_check"), 3, vars.monitor.x + vars.client.xc, vars.monitor.y + vars.client.yc,, "aqua", settings.general.fSize + 4,,, 1)
+		LLK_ToolTip(Lang_Trans("maptracker_check"), 3, vars.monitor.x + vars.client.xc, vars.monitor.y,, "aqua", settings.general.fSize + 4,,, 1)
 	KeyWait, % settings.maptracker.portal_hotkey_single
 }
 
@@ -1861,7 +1863,7 @@ Maptracker_Timer()
 
 	If !mapname_replace
 	{
-		mapname_replace := {"azmerileagueboss": "the king in the mists", "mavenboss": Lang_Trans("maps_maven"), "mavenhub": Lang_Trans("maps_maven_invitation"), "MapWorldsPrimordialBoss1": Lang_Trans("maps_hunger"), "MapWorldsPrimordialBoss2": Lang_Trans("maps_blackstar"), "MapWorldsPrimordialBoss3": Lang_Trans("maps_exarch"), "MapWorldsPrimordialBoss4": Lang_Trans("maps_eater"), "MapWorldsShapersRealm": Lang_Trans("maps_shaper"), "MapWorldsElderArena": Lang_Trans("maps_elder"), "MapWorldsElderArenaUber": Lang_Trans("maps_elder", 2), "harvestleagueboss": Lang_Trans("maps_oshabi"), "mapatziri1": Lang_Trans("maps_atziri"), "mapatziri2": Lang_Trans("maps_atziri", 2), "atlasexilesboss5": Lang_Trans("maps_sirus"), "synthesis_mapboss": Lang_Trans("maps_cortex"), "faridunleagueboss": Lang_Trans("maps_saresh")}
+		mapname_replace := {"azmerileagueboss": "the king in the mists", "mavenboss": Lang_Trans("maps_maven"), "mavenhub": Lang_Trans("maps_maven_invitation"), "MapWorldsPrimordialBoss1": Lang_Trans("maps_hunger"), "MapWorldsPrimordialBoss2": Lang_Trans("maps_blackstar"), "MapWorldsPrimordialBoss3": Lang_Trans("maps_exarch"), "MapWorldsPrimordialBoss4": Lang_Trans("maps_eater"), "MapWorldsShapersRealm": Lang_Trans("maps_shaper"), "MapWorldsElderArena": Lang_Trans("maps_elder"), "MapWorldsElderArenaUber": Lang_Trans("maps_elder", 2), "harvestleagueboss": Lang_Trans("maps_oshabi"), "mapatziri1": Lang_Trans("maps_atziri"), "mapatziri2": Lang_Trans("maps_atziri", 2), "atlasexilesboss5": Lang_Trans("maps_sirus"), "synthesis_mapboss": Lang_Trans("maps_cortex"), "faridunleagueboss": Lang_Trans("maps_saresh"), "abyssleagueboss3": Lang_Trans("maps_zorath")}
 		mapname_add := {"heist": Lang_Trans("maps_heist"), "expedition": Lang_Trans("maps_logbook"), "affliction": Lang_Trans("maps_delirium")}
 	}
 
@@ -1938,7 +1940,7 @@ Maptracker_Timer()
 		If Maptracker_Check(1)
 			For key, val in side_areas
 			{
-				If !Blank(LLK_HasVal(vars.maptracker.map.content, key)) || !InStr(vars.log.areaID, val)
+				If (!vars.poe_version && vars.log.areaID = "abyssleagueboss3") || !Blank(LLK_HasVal(vars.maptracker.map.content, key)) || !InStr(vars.log.areaID, val)
 					Continue
 				vars.maptracker.map.content.Push(key)
 			}
