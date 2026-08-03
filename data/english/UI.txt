@@ -294,6 +294,8 @@
 		global_load			=	"load"
 		global_troubleshoot		=	"trouble-shooting"
 		global_flash			=	"flash"			;## as in flashing text (alternating color, brightness, etc.)
+		global_omnikey			=	"omni-key"
+		global_omnikey			=	"omni"
 
 		mechanic_bestiary		=	"bestiary"
 		mechanic_betrayal		=	"betrayal"

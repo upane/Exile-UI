@@ -21,6 +21,16 @@
 		WinWaitActive, % "ahk_id " vars.hwnd.poe_client
 	}
 
+	If settings.maptracker.kills_omnikey && (vars.maptracker.refresh_kills = 2) && Maptracker_Towncheck() && WinExist("ahk_id "vars.hwnd.maptracker.main) && !vars.maptracker.pause
+	{
+		Clipboard := "/kills"
+		SendInput, {ENTER}
+		Sleep, 100
+		SendInput, ^{a}^{v}{ENTER}
+		Omni_Release()
+		Return
+	}
+
 	If WinExist("ahk_id " vars.hwnd.maptrackernotes_edit.main)
 	{
 		Maptracker_NoteAdd(), Omni_Release()

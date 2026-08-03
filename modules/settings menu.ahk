@@ -4322,9 +4322,16 @@ Settings_maptracker()
 	vars.hwnd.settings.league := hwnd, vars.hwnd.help_tooltips["settings_maptracker league"] := hwnd1
 
 	Gui, %GUI%: Add, Text, % "Section xs w" wMaps - 2 " h" settings.general.fHeight " Right 0x200", % Lang_Trans("global_maps") . Lang_Trans("global_colon") " "
-	Gui, %GUI%: Add, Text, % "ys x+0 Border BackgroundTrans gSettings_maptracker2 HWNDhwnd" (settings.maptracker.kills ? " cLime" : " cGray"), % " " Lang_Trans("m_maptracker_kills") " "
+	Gui, %GUI%: Add, Text, % "Section ys x+0 Border BackgroundTrans gSettings_maptracker2 HWNDhwnd" (settings.maptracker.kills ? " cLime" : " cGray"), % " " Lang_Trans("m_maptracker_kills") " "
 	Gui, %GUI%: Add, Progress, % "Disabled xp yp wp hp Border HWNDhwnd1 Background" vars.settings.cButtons2 " c" vars.settings.cButtons, 100
 	vars.hwnd.settings.kills := hwnd, vars.hwnd.help_tooltips["settings_maptracker kill-tracker"] := hwnd1
+
+	If settings.maptracker.kills
+	{
+		Gui, %GUI%: Add, Text, % "ys x+-1 Border BackgroundTrans gSettings_maptracker2 HWNDhwnd" (settings.maptracker.kills_omnikey ? " cLime" : " cGray"), % " " Lang_Trans("global_omnikey", 2) " "
+		Gui, %GUI%: Add, Progress, % "Disabled xp yp wp hp Border HWNDhwnd1 Background" vars.settings.cButtons2 " c" vars.settings.cButtons, 100
+		vars.hwnd.settings.kills_omnikey := hwnd, vars.hwnd.help_tooltips["settings_maptracker kill-tracker omni-key"] := hwnd1
+	}
 	
 	Gui, %GUI%: Add, Text, % "ys Border BackgroundTrans gSettings_maptracker2 HWNDhwnd" (!settings.features.mapinfo ? " cFF8000" : (settings.maptracker.mapinfo ? " cLime" : " cGray")), % " " Lang_Trans("ms_map-info") " "
 	Gui, %GUI%: Add, Progress, % "Disabled xp yp wp hp Border HWNDhwnd1 Background" vars.settings.cButtons2 " c" vars.settings.cButtons, 100
@@ -4336,13 +4343,13 @@ Settings_maptracker()
 
 	If !vars.poe_version
 	{
-		Gui, %GUI%: Add, Text, % "ys Border BackgroundTrans gSettings_maptracker2 HWNDhwnd" (settings.maptracker.loot ? " cLime" : " cGray"), % " " Lang_Trans("m_maptracker_loot") " "
+		Gui, %GUI%: Add, Text, % (settings.maptracker.kills ? "xs" : "ys") " Border BackgroundTrans gSettings_maptracker2 HWNDhwnd" (settings.maptracker.loot ? " cLime" : " cGray"), % " " Lang_Trans("m_maptracker_loot") " "
 		Gui, %GUI%: Add, Progress, % "Disabled xp yp wp hp Border HWNDhwnd1 Background" vars.settings.cButtons2 " c" vars.settings.cButtons, 100
 		vars.hwnd.settings.loot := hwnd, vars.hwnd.help_tooltips["settings_maptracker loot-tracker"] := hwnd1
 	}
 
 	;Gui, %GUI%: Add, Text, % "Section xs w" wMaps - 2 " h" settings.general.fHeight " Right BackgroundTrans 0x200"
-	Gui, %GUI%: Add, Text, % "Section xs y+" settings.general.fWidth " Border BackgroundTrans gSettings_maptracker2 HWNDhwnd" (settings.maptracker.mechanics ? " cLime" : " cGray"), % " " Lang_Trans("m_maptracker_mapcontent") " "
+	Gui, %GUI%: Add, Text, % "Section xs x" x_anchor " y+" settings.general.fWidth " Border BackgroundTrans gSettings_maptracker2 HWNDhwnd" (settings.maptracker.mechanics ? " cLime" : " cGray"), % " " Lang_Trans("m_maptracker_mapcontent") " "
 	Gui, %GUI%: Add, Progress, % "Disabled xp yp wp hp Border HWNDhwnd1 Background" vars.settings.cButtons2 " c" vars.settings.cButtons, 100
 	vars.hwnd.settings.mechanics := hwnd, vars.hwnd.help_tooltips["settings_maptracker mechanics"] := hwnd1
 
@@ -4446,6 +4453,11 @@ Settings_maptracker2(cHWND)
 			vars.maptracker.refresh_kills := ""
 			IniWrite, % (settings.maptracker.kills := !settings.maptracker.kills), % "ini" vars.poe_version "\map tracker.ini", settings, enable kill tracker
 			GuiControl, % "+c" (settings.maptracker.kills ? "Lime" : "Gray"), % cHWND
+			GuiControl, % "movedraw", % cHWND
+			Settings_menu()
+		Case "kills_omnikey":
+			IniWrite, % (settings.maptracker.kills_omnikey := !settings.maptracker.kills_omnikey), % "ini" vars.poe_version "\map tracker.ini", settings, omni-key refreshes kills
+			GuiControl, % "+c" (settings.maptracker.kills_omnikey ? "Lime" : "Gray"), % cHWND
 			GuiControl, % "movedraw", % cHWND
 		Case "mapinfo":
 			If !settings.features.mapinfo

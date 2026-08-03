@@ -15,6 +15,7 @@
 	settings.maptracker.loot := !Blank(check := ini.settings["enable loot tracker"]) ? check : 0
 	settings.maptracker.hide := !Blank(check := ini.settings["hide panel when paused"]) ? check : 0
 	settings.maptracker.kills := !Blank(check := ini.settings["enable kill tracker"]) ? check : 0
+	settings.maptracker.kills_omnikey := !Blank(check := ini.settings["omni-key refreshes kills"]) ? check : 0
 	settings.maptracker.mapinfo := !Blank(check := ini.settings["log mods from map-info panel"]) ? check : 0
 	settings.maptracker.notes := !Blank(check := ini.settings["enable notes"]) ? check : 0
 	settings.maptracker.fSize := !Blank(check := ini.settings["font-size"]) ? check : settings.general.fSize

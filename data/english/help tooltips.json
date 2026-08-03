@@ -853,6 +853,10 @@
       "when you leave a map, the tracker panel will flash and you'll have to click the timer to refresh kills",
       "you only have to refresh if you know you won't go back in, so ignore it otherwise"
     ],
+    "maptracker kill-tracker omni-key": [
+      "optionally, you can refresh the kill-count by pressing the omni-key while the panel is flashing",
+      "(/highlight)the kill-count will have priority, i.e. the first omni-key press after leaving a map cannot activate any other feature"
+    ],
     "maptracker mapinfo": [
       "map-mods from the <map-info> feature will be logged. (separate feature, has to be enabled and actively used)",
       [
