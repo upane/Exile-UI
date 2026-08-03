@@ -578,9 +578,8 @@ Maptracker_GUI(mode := 0)
 
 	For index, content in vars.maptracker.map.content
 	{
-		append := (vars.poe_version && content = "abyssal depths" ? " 2" : "")
 		If !vars.pics.maptracker["content_" content]
-			vars.pics.maptracker["content_" content] := LLK_ImageCache("img\GUI\mapping tracker\" content . append ".png")
+			vars.pics.maptracker["content_" content] := LLK_ImageCache("img\GUI\mapping tracker\" content ".png")
 		Gui, %GUI_name%: Add, Pic, % "ys" (!spacing ? " x+0" : "") " hp w-1 BackgroundTrans", % "HBitmap:*" vars.pics.maptracker["content_" content]
 		spacing := 1
 	}
@@ -883,7 +882,7 @@ Maptracker_Logs(mode := "")
 						Loop, Parse, % content[header], `;, %A_Space%
 						{
 							If !vars.pics.maptracker["content_" A_LoopField]
-								vars.pics.maptracker["content_" A_LoopField] := LLK_ImageCache("img\GUI\mapping tracker\" A_LoopField (A_LoopField = "abyssal depths" ? vars.poe_version : "") ".png")
+								vars.pics.maptracker["content_" A_LoopField] := LLK_ImageCache("img\GUI\mapping tracker\" A_LoopField ".png")
 							Gui, %GUI_name%: Add, Pic, % (A_Index = 1 ? "xp+"settings.maptracker.fWidth2/4 + 1 " yp+" 1 + settings.maptracker.fHeight2 * 0.1 " h" settings.maptracker.fHeight2 * 1.3 : "x+"settings.maptracker.fWidth2/4 " yp hp") " w-1 HWNDicon gMaptracker_LogsFilter BackgroundTrans", % "HBitmap:*" vars.pics.maptracker["content_" A_LoopField]
 							vars.hwnd.maptracker_logs["content_" A_LoopField . icon_handle] := icon, icon_handle .= "|"
 						}
