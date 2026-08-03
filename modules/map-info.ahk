@@ -386,6 +386,8 @@ Mapinfo_Parse(mode := 1, poe_version := "")
 					If InStr(A_LoopField, Lang_Trans("items_" mechanic), 1)
 						content.Push(mechanic)
 		}
+		Else If InStr(A_LoopField, Lang_Trans("items_originator"))
+			content.Push("originator")
 		Else If InStr(A_LoopField, " (enchant)")
 		{
 			If (SubStr(A_LoopField, 1, 1) = "(")

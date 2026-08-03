@@ -860,7 +860,7 @@
     "maptracker mapinfo": [
       "map-mods from the <map-info> feature will be logged. (separate feature, has to be enabled and actively used)",
       [
-        "this also includes information such as:\nelder guardians, conquerors, type of maven invitation, blight(-ravaged), contract/blueprint"
+        "this also includes information such as:\nelder guardians, conquerors, originator, type of maven invitation, blight(-ravaged), contract/blueprint"
       ]
     ],
     "maptracker notes": [
