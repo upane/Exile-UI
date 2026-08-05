@@ -527,7 +527,7 @@ Gui_RadialMenu(selection := "", longpress := 0)
 		{
 			If !vars.pics.radial[active].square_black
 				vars.pics.radial[active].square_black := LLK_ImageCache("img\GUI\square_black.png", height)
-			Gui, %GUI%: Add, Text, % style " w" height + 2 " h" height + 2 " Center 0x200 BackgroundTrans Border HWNDhwnd0", % settings.macros["label_" val]
+			Gui, %GUI%: Add, Text, % style " w" height + 2 " h" height + 2 " Center 0x200 BackgroundTrans HWNDhwnd0", % settings.macros["label_" val]
 			Gui, %GUI%: Add, Pic, % "xp yp Border HWNDhwnd", % "HBitmap:*" vars.pics.radial[active].square_black
 		}
 		Else
@@ -578,7 +578,7 @@ Gui_RadialMenu(selection := "", longpress := 0)
 		Loop, % (count := positions.5.1 - positions.4.1)
 		{
 			outer := A_Index
-			If (A_Index < count * 0.75)
+			If (A_Index < count * 0.75) || Mod(A_Index, 3)
 				Continue
 			Loop, % 9
 				If (A_Index != 5) && vars.hwnd.radial.indexed[A_Index]
