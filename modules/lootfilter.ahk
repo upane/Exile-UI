@@ -2215,51 +2215,53 @@ Lootfilter_Modify(object, global := 0)
 			vars.lootfilter.active_filter.final.InsertAt(iChunk + 1, {"lines": object.modifications.Clone(), "type": object.type, "tier": object.tier}), dump_tier := 1
 			Break
 			;######################################################
-			Case (object.action = "newtier") && !new_tier && (vChunk.type = object.type) && (vars.lootfilter.active_filter.final[iChunk + 1].type != object.type) && (vars.lootfilter.active_filter.final[iChunk + 2].type != object.type):
-			lookback := 0, lines := []
-			While !IsObject(vars.lootfilter.active_filter.final[iChunk - lookback]) || RegExMatch(vars.lootfilter.active_filter.final[iChunk - lookback].lines.1, "i)^.{0,2}#|tier->rest")
-				lookback += 1
-
-			If !global || IsObject(object.source)
-			{
-				lines0 := LLK_CloneObject(object.source.lines)
-				For index, oLine in lines0
-				{
-					If (index = 1)
-						lines.Push("Hide # $type->" StrReplace(object.type, " > ", "->") " $tier->" StrReplace(object.tier, " > ", "->"))
-					If !IsObject(oLine)
-						lines.Push(oLine)
-					Else For key, val in oLine
-						If !RegExMatch(key, "i)^.{0,2}(play|minimap)")
-							key := (InStr(key, "`t") ? "" : "`t") key, lines.Push({(key): val})
-				}
-			}
-			Else lines.Push("Hide # $type->" StrReplace(object.type, " > ", "->") " $tier->" StrReplace(object.tier, " > ", "->"))
-
-			If !LLK_HasKey(lines, "border", 1,,, 1)
-				lines.InsertAt(lines.MaxIndex(), {"`tSetBorderColor": "255 0 0 255"})
-
-			For index, oLine in lines
-				For key, val in oLine
-					If InStr(key, "border")
-						lines[index][key] := "255 0 0 255"
-					Else If InStr(key, "background")
-						lines[index][key] := "0 0 0 255"
-					Else If InStr(key, "textcolor")
-						lines[index][key] := "190 178 135 255"
-					Else If InStr(key, "fontsize")
-						lines[index][key] := settings.lootfilter.size_medium
-					Else If InStr(key, "basetype")
-						lines[index][key] := """" object.modifications.newtier """"
-
-			If !LLK_HasKey(lines, "basetype", 1,,, 1)
-				iTarget := LLK_HasKey(lines, "class", 1,,, 1), lines.InsertAt((iTarget ? iTarget : 1) + 1, {"`tBaseType ==": """" object.modifications.newtier """"})
-			If !LLK_HasKey(lines, "disabledropsound", 1,,, 1)
-				lines.InsertAt(lines.MaxIndex(), {"`tDisableDropSound": "True"})
-			vars.lootfilter.active_filter.final.InsertAt(iChunk - lookback + 1, {"type": object.type, "tier": object.tier, "lines": lines, "global": global}), new_tier := 1
-			vars.lootfilter.active_filter.structure[object.type].Push({"tier": object.tier, "basetypes": """" object.modifications.newtier """"})
-			;######################################################
 			Case InStr(object.action, "tier") && (vChunk.type && vChunk.type = object.type):
+			If !new_tier && (object.action = "newtier") && (vars.lootfilter.active_filter.final[iChunk + 1].type != object.type) && (vars.lootfilter.active_filter.final[iChunk + 2].type != object.type)
+			{
+				lookback := 0, lines := []
+				While !IsObject(vars.lootfilter.active_filter.final[iChunk - lookback]) || RegExMatch(vars.lootfilter.active_filter.final[iChunk - lookback].lines.1, "i)^.{0,2}#|tier->rest")
+					lookback += 1
+
+				If !global || IsObject(object.source)
+				{
+					lines0 := LLK_CloneObject(object.source.lines)
+					For index, oLine in lines0
+					{
+						If (index = 1)
+							lines.Push("Hide # $type->" StrReplace(object.type, " > ", "->") " $tier->" StrReplace(object.tier, " > ", "->"))
+						If !IsObject(oLine)
+							lines.Push(oLine)
+						Else For key, val in oLine
+							If !RegExMatch(key, "i)^.{0,2}(play|minimap)")
+								key := (InStr(key, "`t") ? "" : "`t") key, lines.Push({(key): val})
+					}
+				}
+				Else lines.Push("Hide # $type->" StrReplace(object.type, " > ", "->") " $tier->" StrReplace(object.tier, " > ", "->"))
+
+				If !LLK_HasKey(lines, "border", 1,,, 1)
+					lines.InsertAt(lines.MaxIndex(), {"`tSetBorderColor": "255 0 0 255"})
+
+				For index, oLine in lines
+					For key, val in oLine
+						If InStr(key, "border")
+							lines[index][key] := "255 0 0 255"
+						Else If InStr(key, "background")
+							lines[index][key] := "0 0 0 255"
+						Else If InStr(key, "textcolor")
+							lines[index][key] := "190 178 135 255"
+						Else If InStr(key, "fontsize")
+							lines[index][key] := settings.lootfilter.size_medium
+						Else If InStr(key, "basetype")
+							lines[index][key] := """" object.modifications.newtier """"
+
+				If !LLK_HasKey(lines, "basetype", 1,,, 1)
+					iTarget := LLK_HasKey(lines, "class", 1,,, 1), lines.InsertAt((iTarget ? iTarget : 1) + 1, {"`tBaseType ==": """" object.modifications.newtier """"})
+				If !LLK_HasKey(lines, "disabledropsound", 1,,, 1)
+					lines.InsertAt(lines.MaxIndex(), {"`tDisableDropSound": "True"})
+				vars.lootfilter.active_filter.final.InsertAt(iChunk - lookback + 1, {"type": object.type, "tier": object.tier, "lines": lines, "global": global}), new_tier := 1
+				vars.lootfilter.active_filter.structure[object.type].Push({"tier": object.tier, "basetypes": """" object.modifications.newtier """"})
+			}
+			
 			If !InStr(object.type, "exui_economy") && (vChunk.tier != object.tier) && (global || IsObject(object.source) && (vChunk.tier = object.source.tier || Lootfilter_ChunkCompare(vChunk.lines, object.source.lines)))
 			&& LLK_HasVal(vChunk.lines, """" object.modifications[object.action] """", 1,,, 1)
 				For iLine, vLine in vChunk.lines
@@ -2311,7 +2313,7 @@ Lootfilter_Modify(object, global := 0)
 		If !removed
 			warning .= "`n- item wasn't removed from any existing tier (not found, or was already in the target tier)"
 		If (object.action = "movetier") && !added
-			warning .= "`n- item wasn't added to """ object.tier """ (tier doesn't exist, or already has the item)"
+			warning .= "`n- item wasn't added to """ object.tier """ (tier/base doesn't exist, or tier already has the item)"
 	}
 	Return warning
 }

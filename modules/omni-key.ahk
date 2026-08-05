@@ -25,7 +25,7 @@
 	{
 		Clipboard := "/kills"
 		SendInput, {ENTER}
-		Sleep, 100
+		Sleep, 50
 		SendInput, ^{a}^{v}{ENTER}
 		Omni_Release()
 		Return
