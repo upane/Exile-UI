@@ -558,7 +558,14 @@ Log_Parse(content, ByRef areaID, ByRef areaname, ByRef areaseed, ByRef arealevel
 
 		If settings.qol.mapevents
 			For index0, type in settings.mapevents.event_list
-				If settings.mapevents[type]
+				If (type = "hideout") && settings.mapevents.hideout && InStr(loopfield, "] Spawning discoverable Hideout")
+				{
+					map_ID := (areaID ? areaID : vars.log.areaID), map_seed := (areaseed ? areaseed : vars.log.areaseed)
+					If (map_ID != vars.mapevents.hideout.ID || map_seed != vars.mapevents.hideout.seed)
+						MapEvent_Hideout(map_ID, map_seed)
+					Break
+				}
+				Else If settings.mapevents[type]
 					For index1, line in vars.lang["log_" type]
 						If InStr(loopfield, line, 1) && (type != "infamous" || type = "infamous" && MapEvent_InfamousMerc(loopfield "."))
 						{

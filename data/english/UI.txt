@@ -115,6 +115,9 @@
 		global_opacity			=	"opacity:"
 		global_zoom			=	"zoom:"
 		global_tier			=	"tier"
+		global_tiers			=	"t1"
+		global_tiers			=	"t2"
+		global_tiers			=	"t3"
 		global_ilvl			=	"ilvl"
 		global_name			=	"name:"
 		global_type			=	"type:"
@@ -325,6 +328,7 @@
 		mechanic_mist			=	"reflecting mist"
 		mechanic_infamous		=	"infamous merc"
 		mechanic_graftblood		=	"high graftblood"
+		mechanic_hideout		=	"hideout"			;## refers to random hideout spawns in PoE1 maps
 
 
 

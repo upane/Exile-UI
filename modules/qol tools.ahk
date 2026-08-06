@@ -22,6 +22,8 @@
 	settings.alarm.yPos := !Blank(check := ini.alarm["y-coordinate"]) ? check : vars.client.y - vars.monitor.y
 	settings.alarm.orientation := !Blank(check := ini.alarm.orientation) ? check : "horizontal"
 	vars.alarm := {"timers": {}, "defaults": {}, "single_use": {}}
+	vars.mapevents := {}
+
 	For timer, timestamp in ini["alarm - timers"]
 	{
 		array := ""
@@ -43,15 +45,17 @@
 		Lab("init")
 
 	settings.mapevents := {"fSize": !Blank(check := ini.mapevents["font-size"]) ? check : settings.general.fSize * 2}
-	settings.mapevents.event_list := ["graftblood", "infamous"]
+	settings.mapevents.event_list := ["graftblood", "infamous", "hideout"]
 	LLK_FontDimensions(settings.mapevents.fSize, font_height, font_width), settings.mapevents.fHeight := font_height, settings.mapevents.fWidth := font_width
 	settings.mapevents.color := !Blank(check := ini.mapevents["font-color"]) ? check : "FF0000"
 	settings.mapevents.color1 := !Blank(check := ini.mapevents["background color"]) ? check : "FFFFFF"
 	settings.mapevents.duration := !Blank(check := ini.mapevents.duration) ? check : 5
 	settings.mapevents.position := !Blank(check := ini.mapevents.position) ? check : 1
 	For index, val in settings.mapevents.event_list
-		settings.mapevents[val] := !Blank(check := ini.mapevents["enable " val]) ? check : 1
+		settings.mapevents[val] := !Blank(check := ini.mapevents["enable " val]) ? check : (val = "hideout" ? 0 : 1)
 		, settings.mapevents["color_" val] := !Blank(check := ini.mapevents["text-color " val]) ? check : "FF0000", settings.mapevents["color1_" val] := !Blank(check := ini.mapevents["background-color " val]) ? check : "FFFFFF"
+	Loop 3
+		settings.mapevents["hideout_t" A_Index] := !Blank(check := ini.mapevents["hideout T" A_Index]) ? check : 1
 
 	settings.notepad := {"fSize": !Blank(check := ini.notepad["font-size"]) ? check : settings.general.fSize}
 	LLK_FontDimensions(settings.notepad.fSize, font_height, font_width), settings.notepad.fHeight := font_height, settings.notepad.fWidth := font_width
@@ -681,12 +685,23 @@ Lab(mode := "", override := 0)
 	LLK_Overlay(hwnd_old, "destroy"), LLK_Overlay(hwnd_old2, "destroy")
 }
 
-MapEvent(type)
+MapEvent(type := "")
 {
 	local
 	global vars, settings
 
+	If !type
+	{
+		type := "hideout", tier := vars.mapevents.hideout.tier
+		If (vars.log.areaID != vars.mapevents.hideout.ID || vars.log.areaseed != vars.mapevents.hideout.seed)
+		{
+			vars.mapevents.hideout := {}
+			Return
+		}
+	}
 	position := settings.mapevents.position, text := (position > 2) ? StrReplace(Lang_Trans("mechanic_" type), " ", "`n") : Lang_Trans("mechanic_" type)
+	If (type = "hideout")
+		text .= " (" Lang_Trans("global_tiers", tier) ")"
 	LLK_ToolTip(text, settings.mapevents.duration, 10000, 10000, "mapevents_" type, settings.mapevents["color_" type], settings.mapevents.fSize, (position = 4 ? "Right" : ""),,, settings.mapevents["color1_" type])
 	WinGetPos,,, Width, Height, % "ahk_id" vars.hwnd["tooltip_mapevents_" type]
 	Switch position
@@ -701,6 +716,20 @@ MapEvent(type)
 		xPos := vars.client.x + vars.client.w - Width, yPos := vars.monitor.y + vars.client.yc - Height/2
 	}
 	Gui, % "tooltipmapevents_" type ": Show", % "NA x" xPos " y" yPos
+}
+
+MapEvent_Hideout(ID, seed)
+{
+	local
+	global vars, settings
+	static hideouts := {"mapworldsterrace": 1, "mapworldshauntedmansion": 1, "mapworldsmoontemple": 1, "mapworldstorturechamber": 1, "mapworldsdig": 1, "mapworldscrimsontemple": 1, "mapworldssunkencity": 1
+	, "mapworldssummit": 2, "mapworldstower": 2, "mapworldsiceberg": 2, "mapworldsorchard": 2
+	, "mapworldsarcade": 3, "mapworldspromenade": 3, "mapworldsatoll": 3, "mapworldsmoontempleunique": 3, "mapworldsacademy": 3, "mapworldsivorytemple": 3, "mapworldsgraveyard": 3}
+
+	If !((tier := hideouts[ID]) && settings.mapevents["hideout_t" tier])
+		Return
+	vars.mapevents.hideout := {"ID": ID, "seed": seed, "tier": tier}
+	SetTimer, MapEvent, -10000
 }
 
 MapEvent_InfamousMerc(clientTXT_line)

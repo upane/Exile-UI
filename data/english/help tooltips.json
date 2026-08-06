@@ -940,11 +940,15 @@
     ],
     "map-events enable": [
       "displays notifications whenever certain events happen",
-      "examples: infamous mercenaries, graftblood (almost) full"
+      "examples: infamous mercenaries, claimable hideouts, graftblood (almost) full"
     ],
     "map-events enable event": [
       "click to enable/disable this event",
       "right-click to activate a test notification"
+    ],
+    "map-events hideout tiers": [
+      "you can filter hideouts by rarity:\nextremely rare | very rare | rare",
+      "(/highlight)hideout notifications are shown 10 seconds after entering the map to prevent abuse"
     ],
     "map-events position": [
       "the notification will be docked to one of the client's edges"

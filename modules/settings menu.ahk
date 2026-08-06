@@ -5144,7 +5144,7 @@ Settings_qol()
 {
 	local
 	global vars, settings
-	static fSize, wFont, wDuration, wList, wPosition
+	static fSize, wFont, wDuration, wList, wPosition, wHideout, wTiers
 
 	GUI := "settings_menu" vars.settings.GUI_toggle, x_anchor := vars.settings.x_anchor, yMax := 0
 
@@ -5156,8 +5156,13 @@ Settings_qol()
 		LLK_PanelDimensions([Lang_Trans("global_duration") . Lang_Trans("global_colon")], fSize, wDuration, hDuration)
 		dimensions := []
 		For index, val in settings.mapevents.event_list
-			dimensions.Push(Lang_Trans("mechanic_" val))
+			If (val != "hideout")
+				dimensions.Push(Lang_Trans("mechanic_" val))
+		
 		LLK_PanelDimensions(dimensions, fSize, wList, hList)
+		LLK_PanelDimensions([Lang_Trans("mechanic_hideout")], fSize, wHideout, hHideout)
+		LLK_PanelDimensions([Lang_Trans("global_tiers", 1), Lang_Trans("global_tiers", 2), Lang_Trans("global_tiers", 3)], fSize, wTiers, hTiers)
+		wList := Max(wList, wHideout + 3 * wTiers - 3)
 	}
 	wPanel := (settings.qol.mapevents ? Max(wFont, wPosition) : wFont)
 	If (wDuration > wPanel + settings.general.fWidth * 7 - 2)
@@ -5249,9 +5254,18 @@ Settings_qol()
 			handle := "|", cLast := LLK_ControlGetPos(hwnd), yMax := cLast.y + cLast.h
 			For key, val in mechanics
 			{
-				Gui, %GUI%: Add, Text, % "Section " (A_Index = 1 ? "ys" : "xs") " w" wList " HWNDhwnd Border BackgroundTrans gSettings_qol2 c" (settings.mapevents[val] ? "Lime" : "Gray"), % " " key
+				Gui, %GUI%: Add, Text, % "Section " (A_Index = 1 ? "ys" : "xs") " w" (val = "hideout" ? wHideout : wList) " HWNDhwnd Border BackgroundTrans gSettings_qol2 c" (settings.mapevents[val] ? "Lime" : "Gray"), % " " key
 				Gui, %GUI%: Add, Progress, % "Disabled xp yp wp hp Border HWNDhwnd1 Background" vars.settings.cButtons2 " c" vars.settings.cButtons, 100
 				vars.hwnd.settings["mapevents_enable_" val] := hwnd, vars.hwnd.help_tooltips["settings_map-events enable event" handle] := hwnd1
+
+				If (val = "hideout")
+					Loop 3
+					{
+						color := (settings.mapevents.hideout && settings.mapevents["hideout_t" A_Index] ? "Lime" : "Gray")
+						Gui, %GUI%: Add, Text, % "ys x+-1 w" wTiers " BackgroundTrans Center Border HWNDhwnd gSettings_qol2 c" color, % Lang_Trans("global_tiers", A_Index)
+						Gui, %GUI%: Add, Progress, % "xp yp wp hp Border Disabled Background" vars.settings.cButtons2 " c" vars.settings.cButtons " HWNDhwnd1", 100
+						vars.hwnd.settings["hideouttier_" A_Index] := hwnd, vars.hwnd.help_tooltips["settings_map-events hideout tiers" handle_tiers] := hwnd1, handle_tiers .= "|"
+					}
 
 				Gui, %GUI%: Add, Text, % "ys x+-1 BackgroundTrans Border HWNDhwnd gSettings_qol2", % "  "
 				Gui, %GUI%: Add, Progress, % "xp yp wp hp Border Disabled BackgroundBlack HWNDhwnd1 c" settings.mapevents["color_" val], 100
@@ -5343,6 +5357,29 @@ Settings_qol2(cHWND)
 		IniWrite, % (settings.mapevents[control] := !settings.mapevents[control]), % "ini" vars.poe_version "\qol tools.ini", % "mapevents", % "enable " control
 		GuiControl, % "+c" (settings.mapevents[control] ? "Lime" : "Gray"), % cHWND
 		GuiControl, % "movedraw", % cHWND
+		If (control != "hideout")
+			Return
+		If settings.mapevents.hideout && !(settings.mapevents.hideout_t1 + settings.mapevents.hideout_t2 + settings.mapevents.hideout_t3)
+			IniWrite, % (settings.mapevents.hideout_t1 := 1), % "ini" vars.poe_version "\qol tools.ini", % "mapevents", % "hideout T1"
+		Loop 3
+		{
+			GuiControl, % "+c" (settings.mapevents.hideout && settings.mapevents["hideout_t" A_Index] ? "Lime" : "Gray"), % vars.hwnd.settings["hideouttier_" A_Index]
+			GuiControl, % "movedraw", % vars.hwnd.settings["hideouttier_" A_Index]
+		}
+	}
+	Else If InStr(check, "hideouttier_")
+	{
+		If !settings.mapevents.hideout
+			Return
+		IniWrite, % (settings.mapevents["hideout_t" control] := !settings.mapevents["hideout_t" control]), % "ini" vars.poe_version "\qol tools.ini", % "mapevents", % "hideout T" control
+		GuiControl, % "+c" (settings.mapevents["hideout_t" control] ? "Lime" : "Gray"), % cHWND
+		GuiControl, % "movedraw", % cHWND
+		If !(settings.mapevents.hideout_t1 + settings.mapevents.hideout_t2 + settings.mapevents.hideout_t3)
+		{
+			IniWrite, % (settings.mapevents.hideout := 0), % "ini" vars.poe_version "\qol tools.ini", % "mapevents", % "enable hideout"
+			GuiControl, % "+cGray", % vars.hwnd.settings["mapevents_enable_hideout"]
+			GuiControl, % "movedraw", % vars.hwnd.settings["mapevents_enable_hideout"]
+		}
 	}
 	Else If InStr(check, "color_mapevents")
 	{
@@ -5406,6 +5443,7 @@ Settings_qol2(cHWND)
 	{
 		IniWrite, % (settings.mapevents.duration := LLK_ControlGet(cHWND)), % "ini" vars.poe_version "\qol tools.ini", % control, duration
 		GuiControl, Text, % vars.hwnd.settings.duration_mapevents_label, % settings.mapevents.duration
+		ControlFocus,, % "ahk_id " vars.hwnd.settings.duration_mapevents_label
 	}
 	Else If InStr(check, "position_")
 	{
