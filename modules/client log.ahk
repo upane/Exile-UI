@@ -70,7 +70,11 @@
 
 	vars.log.level := !vars.log.level ? 0 : vars.log.level
 	If !mode
+	{
 		vars.log.access_time := A_TickCount - start
+		If vars.log.latest_location
+			vars.log.file.Close(), vars.log.file := FileOpen(vars.log.latest_location, "a", "UTF-8")
+	}
 }
 
 Log_Backup()
@@ -302,7 +306,7 @@ Log_Loop(mode := 0)
 			LLK_Overlay(vars.hwnd.alarm.main, "destroy")
 	}
 
-	If vars.log.file_location ;for the unlikely event where the user manually deletes the client.txt while the tool is still running
+	If !vars.log.file_wait && vars.log.file_location ;for the unlikely event where the user manually deletes the client.txt while the tool is still running
 		If IsObject(vars.log.file) && !FileExist(vars.log.file_location)
 			vars.log.file.Close(), vars.log.file := ""
 		Else If !IsObject(vars.log.file) && FileExist(vars.log.file_location)
@@ -315,7 +319,7 @@ Log_Loop(mode := 0)
 		SetTimer, News, -100
 	}
 
-	If !WinActive("ahk_group poe_ahk_window") || !vars.log.file_location || !WinExist("ahk_group poe_window") || !FileExist(vars.log.file_location)
+	If vars.log.file_wait || !WinActive("ahk_group poe_ahk_window") || !vars.log.file_location || !WinExist("ahk_group poe_window") || !FileExist(vars.log.file_location)
 	{
 		If WinExist("ahk_id " vars.hwnd.maptracker.main)
 			LLK_Overlay(vars.hwnd.maptracker.main, "destroy")

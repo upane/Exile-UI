@@ -732,7 +732,11 @@ Loop()
 	static news_tick := 0, tick := 0, timer_flash
 
 	If !WinExist("ahk_group poe_window")
+	{
 		vars.client.closed := 1, vars.hwnd.poe_client := ""
+		If vars.log.latest_location
+			vars.log.file_wait := 1, vars.log.file.Close()
+	}
 
 	If WinExist("ahk_group poe_window")
 	{
@@ -752,6 +756,8 @@ Loop()
 			WinWaitActive, ahk_group poe_window
 			Sleep, 5000
 			Init_client(), Init_Lang(), Init_screenchecks()
+			If vars.log.latest_location
+				vars.log.file := FileOpen(vars.log.latest_location, "a", "UTF-8"), vars.log.file_wait := 0
 		}
 		vars.client.closed := 0
 
@@ -1205,12 +1211,12 @@ Startup()
 	If FileExist(poe_log_file)
 	{
 		vars.log.file_location := poe_log_file, LLK_Log("found game's log-file")
-		Loop, Files, % logs_folder "logs\latestclient.txt"
+		If FileExist(logs_folder "logs\LatestClient.txt")
 		{
-			Loop, Parse, % LLK_FileRead(A_LoopFilePath), `n, % " `r"
+			vars.log.latest_location := logs_folder "logs\LatestClient.txt", LLK_Log("found game's alternative log-file")
+			Loop, Parse, % LLK_FileRead(vars.log.latest_location), `n, % " `r"
 				If (check := InStr(A_LoopField, "settings directory:"))
 					parse := SubStr(A_LoopField, check + 19), vars.system.config_prelim := Trim(parse, " `t`n`r.")
-			Break
 		}
 	}
 	Else vars.log.file_location := 0, LLK_Log("couldn't find game's log-file")
