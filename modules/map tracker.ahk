@@ -1763,7 +1763,7 @@ Maptracker_Reminder()
 	}
 
 	If mechanics
-		LLK_ToolTip(Lang_Trans("maptracker_check"), 3, vars.monitor.x + vars.client.xc, vars.monitor.y,, "aqua", settings.general.fSize + 4,,, 1)
+		LLK_ToolTip(Lang_Trans("maptracker_check"), 3, vars.monitor.x + vars.client.xc, vars.monitor.y,, "aqua", settings.general.fSize + 12,,, 1)
 	KeyWait, % settings.maptracker.portal_hotkey_single
 }
 
