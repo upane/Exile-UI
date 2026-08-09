@@ -549,7 +549,7 @@ Omni_ContextMenuPick(cHWND)
 		Run, https://siveran.github.io/calc.html
 		If settings.features.browser
 		{
-			WinWaitActive, ahk_group snipping_tools,, 2
+			WinWaitActive, ahk_group snipping_tools,, 1
 			ToolTip_Mouse("chromatics", 1)
 		}
 	}

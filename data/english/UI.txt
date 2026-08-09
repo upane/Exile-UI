@@ -720,7 +720,7 @@
 		omnikey_copyfail		=	"clipboard-copy failed"
 		omnikey_escape			=	"(esc to exit)"
 		omnikey_scroll			=	"scrolling..."						;## as in scroll-wheel
-		omnikey_chromes		=	"click into the <total sockets>;field and press space"	;## refers to "total sockets" on the chromatic-calc website
+		omnikey_chromes		=	"paste the item data;into the first field"
 		omnikey_clustersearch	=	"press ctrl-f to highlight;the selected jewel type"
 		omnikey_labimport		=	"select lab difficulty"
 		omnikey_labimport		=	"right-click layout image"

@@ -533,11 +533,11 @@ LLK_StrSplit(string, type := "array", quotes := 1)
 	Return object
 }
 
-LLK_TimeElapsed(timestamp, unit := "minutes")
+LLK_TimeElapsed(timestamp, unit := "minutes", UTC := 1)
 {
 	local
 
-	now := A_NowUTC
+	now := (UTC ? A_NowUTC : A_Now)
 	EnvSub, now, % timestamp, % unit
 	Return now
 }

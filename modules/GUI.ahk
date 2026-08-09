@@ -1167,12 +1167,11 @@ ToolTip_Mouse(mode := "", timeout := 0)
 	{
 		Case "chromatics":
 			text := Lang_Trans("omnikey_chromes") . "`n" . Lang_Trans("omnikey_escape")
-			If GetKeyState("Space", "P") ;GetKeyState("Ctrl", "P") && GetKeyState("v", "P")
+			If GetKeyState("V", "P")
 			{
 				SetTimer, ToolTip_Mouse, Delete
-				KeyWait, Space
+				KeyWait, V
 				Sleep, 100
-				SendInput, % "^{a}{BS}" vars.omnikey.item.sockets "{TAB}" vars.omnikey.item.str "{TAB}" vars.omnikey.item.dex "{TAB}" vars.omnikey.item.int "{TAB}{TAB}"
 				vars.tooltip_mouse := ""
 			}
 		Case "cluster":
