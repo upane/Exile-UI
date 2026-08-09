@@ -74,7 +74,7 @@ Gui_CreateGraph(width, height, graph, color)
 	Return hbmBitmap
 }
 
-Gui_DropDownList(object, coord_array, align := "", altsubmit := 0)
+Gui_DropDownList(object, coord_array, align := "", altsubmit := 0, prev_align := "")
 {
 	local
 	global vars, settings, json
@@ -126,7 +126,7 @@ Gui_DropDownList(object, coord_array, align := "", altsubmit := 0)
 	}
 	If !Blank(input) && (object.cHWND)
 	{
-		GuiControl, Text, % object.cHWND, % (!align ? " " : "") . input . (align = "right" ? " " : "")
+		GuiControl, Text, % object.cHWND, % (!prev_align ? " " : "") . input . (prev_align = "right" ? " " : "")
 		GuiControl, movedraw, % object.cHWND
 	}
 	If altsubmit

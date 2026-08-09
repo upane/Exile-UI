@@ -699,10 +699,14 @@ MapEvent(type := "")
 			Return
 		}
 	}
-	position := settings.mapevents.position, text := (position > 2) ? StrReplace(Lang_Trans("mechanic_" type), " ", "`n") : Lang_Trans("mechanic_" type)
+	text := Lang_Trans("mechanic_" type), color := settings.mapevents["color_" type], background := settings.mapevents["color1_" type]
+	If (type = "lootfilter")
+		text := Lang_Trans("lootfilter_notification"), color := "Red", background := "White"
+	position := settings.mapevents.position, text := (position > 2) ? StrReplace(text, " ", "`n") : text
+
 	If (type = "hideout")
 		text .= " (" Lang_Trans("global_tiers", tier) ")"
-	LLK_ToolTip(text, settings.mapevents.duration, 10000, 10000, "mapevents_" type, settings.mapevents["color_" type], settings.mapevents.fSize, (position = 4 ? "Right" : ""),,, settings.mapevents["color1_" type])
+	LLK_ToolTip(text, settings.mapevents.duration, 10000, 10000, "mapevents_" type, color, settings.mapevents.fSize, (position = 4 ? "Right" : ""),,, background)
 	WinGetPos,,, Width, Height, % "ahk_id" vars.hwnd["tooltip_mapevents_" type]
 	Switch position
 	{

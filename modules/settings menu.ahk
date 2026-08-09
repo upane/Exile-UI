@@ -3402,7 +3402,7 @@ Settings_lootfilter()
 {
 	local
 	global vars, settings
-	static fSize, wALT, wSize
+	static fSize, wALT, wSize, wNotification
 
 	GUI := "settings_menu" vars.settings.GUI_toggle, x_anchor := vars.settings.x_anchor
 
@@ -3425,12 +3425,12 @@ Settings_lootfilter()
 		fSize := settings.general.fSize
 		LLK_PanelDimensions([Lang_Trans("global_ctrl"), Lang_Trans("global_alt")], fSize, wALT, hALT)
 		LLK_PanelDimensions([Lang_Trans("global_size") . Lang_Trans("global_colon"), Lang_Trans("global_opacity"), Lang_Trans("global_volume") . Lang_Trans("global_colon"), Lang_Trans("global_sound", 2) . Lang_Trans("global_colon"), Lang_Trans("global_test"), Lang_Trans("global_restore")], fSize, wSize, hSize)
+		LLK_PanelDimensions([Lang_Trans("global_notification")], fSize, wNotification, hNotification)
 	}
 
 	Gui, %GUI%: Font, bold underline
 	Gui, %GUI%: Add, Text, % "xs Section y+" vars.settings.spacing, % Lang_Trans("global_general")
 	Gui, %GUI%: Font, norm
-	
 
 	Gui, %GUI%: Add, Text, % "xs Section Border HWNDhwnd", % " " Lang_Trans("m_cheat_modifier") " "
 	For index, val in ["alt", "ctrl"]
@@ -3441,6 +3441,18 @@ Settings_lootfilter()
 	vars.hwnd.help_tooltips["settings_lootfilter modifier keys"] := hwnd
 	vars.hwnd.settings.modifierkey_alt := hwnd1, vars.hwnd.help_tooltips["settings_lootfilter modifier keys|"] := hwnd_bar1
 	vars.hwnd.settings.modifierkey_ctrl := hwnd2, vars.hwnd.help_tooltips["settings_lootfilter modifier keys||"] := hwnd_bar2
+
+	width := Max(settings.general.fWidth * 13 - 1, wNotification)
+	Gui, %GUI%: Add, Text, % "Section xs w" ((enabled := settings.lootfilter.notify) ? width : wNotification) " Center Border BackgroundTrans gSettings_lootfilter2 HWNDhwnd c" (enabled ? "Lime" : "Gray"), % Lang_Trans("global_notification")
+	Gui, %GUI%: Add, Progress, % "Disabled xp yp wp hp Border HWNDhwnd1 Background" vars.settings.cButtons2 " c" vars.settings.cButtons, 100
+	vars.hwnd.settings.notify := hwnd, vars.hwnd.help_tooltips["settings_lootfilter notification"] := hwnd1
+
+	If settings.lootfilter.notify
+	{
+		Gui, %GUI%: Add, Slider, % "xp y+-1 hp w" width - settings.general.fWidth * 3 + 1  " Center Border NoTicks ToolTip Range4-48 gSettings_lootfilter2 HWNDhwnd", % settings.lootfilter.notify
+		Gui, %GUI%: Add, Text, % "yp x+-1 w" settings.general.fWidth * 3 " Center Border HWNDhwnd1", % settings.lootfilter.notify
+		vars.hwnd.settings.notify_hours := hwnd, vars.hwnd.settings.notify_hours_label := hwnd1
+	}
 
 	Gui, %GUI%: Font, bold underline
 	Gui, %GUI%: Add, Text, % "xs Section y+" vars.settings.spacing, % Lang_Trans("global_ui")
@@ -3512,17 +3524,13 @@ Settings_lootfilter()
 		For key, val in settings.lootfilter.sound_tags
 			If (outer = 1) && !IsNumber(key) || (outer = 2) && IsNumber(key)
 				DDL.Push(key)
-		
-	Loop, Parse, ddl, % "|"
-		If (A_LoopField = vars.lootfilter_tester.sound)
-			choice := A_Index
 
 	Gui, %GUI%: Add, Text, % "Section xs Right Border w" wSize, % Lang_Trans("global_sound", 2) . Lang_Trans("global_colon") " "
-	Gui, %GUI%: Font, % "s" settings.general.fSize - 2
-	LLK_PanelDimensions(DDL, fSize - 2, wDDL, hDDL)
+	Gui, %GUI%: Font, % "s" settings.general.fSize
+	LLK_PanelDimensions(DDL, fSize, wDDL, hDDL)
 
-	Gui, %GUI%: Add, Text, % "ys x+-1 w" wDDL " hp Border BackgroundTrans gSettings_lootfilter2 HWNDhwnd cLime", % " " vars.lootfilter_tester.sound
-	vars.ddl.sound_pick := {"cHWND": hwnd, "current": vars.lootfilter_tester.sound, "fSize": fSize - 2, "list": DDL.Clone(), "color": vars.settings.cButtons}
+	Gui, %GUI%: Add, Text, % "ys x+-1 w" wDDL " hp Center Border BackgroundTrans gSettings_lootfilter2 HWNDhwnd cLime", % vars.lootfilter_tester.sound
+	vars.ddl.sound_pick := {"cHWND": hwnd, "current": vars.lootfilter_tester.sound, "fSize": fSize, "list": DDL.Clone(), "color": vars.settings.cButtons}
 	Gui, %GUI%: Add, Progress, % "Disabled xp yp wp hp Border HWNDhwnd1 Background" vars.settings.cButtons2 " c" vars.settings.cButtons, 100
 	cDDL := LLK_ControlGetPos(hwnd)
 
@@ -3554,7 +3562,7 @@ Settings_lootfilter2(cHWND := "")
 	If (check = "sound_pick")
 	{
 		WinGetPos, xControl, yControl, wControl, hControl, % "ahk_id " cHWND
-		If Blank(input := Gui_DropDownList(vars.ddl[check], [xControl, yControl, wControl, hControl]))
+		If Blank(input := Gui_DropDownList(vars.ddl[check], [xControl, yControl, wControl, hControl],,, "Center"))
 			Return
 		vars.ddl.sound_pick.current := vars.lootfilter_tester.sound := input, vars.lootfilter_tester.sound_index := settings.lootfilter.sound_tags[input], check := "tester_test", control := "test"
 		GuiControl,, % vars.hwnd.settings.sound_tag, % (IsNumber(input) ? "" : input)
@@ -3566,6 +3574,17 @@ Settings_lootfilter2(cHWND := "")
 		If !settings.features.lootfilter && WinExist("ahk_id " vars.hwnd.lootfilter.main)
 			Lootfilter_Editor("close")
 		Settings_menu("filterspoon")
+		;######################################################
+		Case (check = "notify"):
+		IniWrite, % (settings.lootfilter.notify := (settings.lootfilter.notify ? 0 : 4)), % "ini" vars.poe_version "\lootfilter.ini", settings, sync notification
+		Settings_menu("filterspoon")
+		;######################################################
+		Case (check = "notify_hours"):
+		input := LLK_ControlGet(cHWND)
+		IniWrite, % (settings.lootfilter.notify := input), % "ini" vars.poe_version "\lootfilter.ini", settings, sync notification
+		GuiControl, Text, % vars.hwnd.settings.notify_hours_label, % input
+		GuiControl, movedraw, % vars.hwnd.settings.notify_hours_label
+		ControlFocus,, % "ahk_id " vars.hwnd.settings.enable
 		;######################################################
 		Case InStr(check, "modifierkey_"):
 		IniWrite, % (settings.lootfilter.modifier_key := control), % "ini" vars.poe_version "\lootfilter.ini", settings, modifier key

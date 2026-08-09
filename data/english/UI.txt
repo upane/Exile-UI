@@ -299,6 +299,7 @@
 		global_flash			=	"flash"			;## as in flashing text (alternating color, brightness, etc.)
 		global_omnikey			=	"omni-key"
 		global_omnikey			=	"omni"
+		global_notification		=	"notification"
 
 		mechanic_bestiary		=	"bestiary"
 		mechanic_betrayal		=	"betrayal"
@@ -611,6 +612,8 @@
 		lootfilter_minspiritlevel	=	"min spirit"								;## min level for spirit gems
 		lootfilter_minsupportlevel	=	"min supp."								;## min level for support gems
 		lootfilter_socketables		=	"socketables"
+
+		lootfilter_notification		=	"sync lootfilter"							;## configurable reminder notification after X hours
 
 
 

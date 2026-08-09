@@ -734,6 +734,10 @@
       "when the editor is already open, the modifier-key is not required",
       "alternatively, you can open the editor via the menu-widget"
     ],
+    "lootfilter notification": [
+      "if you are using an online filter that is periodically updated, you can set up notification pop-ups as a reminder to regularly re-sync your modified filter",
+      "these pop-ups will be displayed whenever you enter a hideout and the last sync was more than x hours ago"
+    ],
     "macros animations": [
       "toggles menu-widget animations"
     ],

@@ -18,12 +18,23 @@
 	LLK_FontDimensions(settings.lootfilter.fSize, font_height, font_width), settings.lootfilter.fHeight := font_height, settings.lootfilter.fWidth := font_width
 	LLK_FontDimensions(settings.lootfilter.fSize - 2, font_height, font_width), settings.lootfilter.fHeight2 := font_height, settings.lootfilter.fWidth2 := font_width
 
-	settings.lootfilter.active_filter := !Blank(check := ini.settings["active filter"]) ? check : ""
+	If (settings.lootfilter.active_filter := !Blank(check := ini.settings["active filter"]) ? check : "")
+		settings.lootfilter.active_filter_file := (!Blank(check := ini.settings["active filter filename"]) ? check : "")
+
+	If settings.lootfilter.active_filter && settings.lootfilter.active_filter_file
+	{
+		ini2 := IniBatchRead(vars.system.config_folder "\" (vars.poe_version ? "poe2_" : "") "production_Config.ini",, "blank")
+		settings.lootfilter.ingame_filter := ini2.ui.item_filter
+		FileGetTime, filestamp, % vars.system.config_folder "\OnlineFilters\" settings.lootfilter.active_filter_file
+		settings.lootfilter.last_sync := !Blank(check := ini.settings["last sync"]) ? check : 0, settings.lootfilter.last_sync := (filestamp ? Max(filestamp, settings.lootfilter.last_sync) : 0)
+	}
+
 	settings.lootfilter.profile := !Blank(check := ini.settings.profile) ? check : 1
 	settings.lootfilter.color_background_default := "324F6C", settings.lootfilter.color_accent_default := "282840"
 	settings.lootfilter.color_background := !Blank(check := ini.UI["background color"]) ? check : settings.lootfilter.color_background_default
 	settings.lootfilter.color_accent := !Blank(check := ini.UI["accent color"]) ? check : settings.lootfilter.color_accent_default
 	settings.lootfilter.modifier_key := !Blank(check := ini.settings["modifier key"]) ? check : "alt"
+	settings.lootfilter.notify := !Blank(check := ini.settings["sync notification"]) ? check : 0
 
 	settings.lootfilter.defaults := defaults := {"opacity": {"minimum": 100, "medium": 150, "maximum": 255}, "size": {"minimum": 25, "medium": 35, "maximum": 45}, "volume": {"minimum": 100, "medium": 200, "maximum": 300}}
 	settings.lootfilter.opacity_minimum := !Blank(check := ini.UI["minimum opacity"]) ? check : defaults.opacity.minimum
@@ -524,6 +535,7 @@ Lootfilter_Editor(cHWND := "")
 			If settings.lootfilter.active_filter
 				vars.lootfilter.update_applied := 1
 			IniWrite, % """" (settings.lootfilter.active_filter := input) """", % "ini" vars.poe_version "\lootfilter.ini", settings, active filter
+			IniWrite, % """" (settings.lootfilter.active_filter_file := vars.lootfilter.filters_list[input].1) """", % "ini" vars.poe_version "\lootfilter.ini", settings, active filter filename
 			Lootfilter_Load("init_" input)
 		}
 		Else If (vars.system.click = 2)
@@ -569,6 +581,11 @@ Lootfilter_Editor(cHWND := "")
 		SendInput, {ENTER}
 		Sleep 100
 		SendInput, ^{a}^{v}{ENTER}
+		If vars.lootfilter.update_applied
+		{
+			vars.lootfilter.last_notification := 0
+			IniWrite, % (settings.lootfilter.last_sync := A_Now), % "ini" vars.poe_version "\lootfilter.ini", settings, last sync
+		}
 		vars.lootfilter.update_applied := 0
 		;######################################################
 		Case (check = "update_check"):
@@ -1821,11 +1838,14 @@ Lootfilter_Match(array, dev_check := 0)
 							Return
 						stacksize := 1
 					Case (key = "hasexplicitmod"):
-						explicit := 0, count := 0, count_condition := (IsNumber(SubStr(operator, 0)) ? SubStr(operator, 0) : 0)
+						count := 0, count_condition := (IsNumber(SubStr(operator, 0)) ? SubStr(operator, 0) : 1)
 						For iExplicit, vExplicit in LLK_StrSplit(value,, 0)
-							count += (InStr(search.clipboard, vExplicit) ? 1 : 0)
-						If (InStr(operator, ">=") && (count < count_condition) || !operator && !count || (!operator && count != count_condition)) && !dev_check
+							count += (RegexMatch(search.clipboard, "i)\{.*" vExplicit ".*\}") ? 1 : 0)
+						If (InStr(operator, ">=") && (count < count_condition) || !operator && !count || ((!operator || operator = "=") && count != count_condition)) && !dev_check
+						{
+							explicit := 0
 							Return
+						}
 						explicit := 1
 					Case (key = "enchantmentpassivenum"):
 						passivenum := 0, passivenum_item := SubStr(search.clipboard, (check := RegexMatch(search.clipboard, "i)\nadds.\d{1,2}.passive.skills")) + 1), passivenum_item2 := ""

@@ -525,7 +525,15 @@ Init_general()
 				FileDelete, % A_LoopFileLongPath
 	}
 
-	IniWrite, 15805, ini\config.ini, versions, ini
+	If (ini_version < 16402)
+	{
+		If FileExist("ini\lootfilter.ini")
+			IniDelete, ini\lootfilter.ini, settings, active filter
+		If FileExist("ini 2\lootfilter.ini")
+			IniDelete, ini 2\lootfilter.ini, settings, active filter
+	}
+
+	IniWrite, 16402, ini\config.ini, versions, ini
 	settings.general.character := ini.settings["active character"]
 	settings.general.build := !Blank(settings.general.character) ? ini.settings["active build"] : ""
 	settings.general.dev := !Blank(check := ini.settings["dev"]) ? check : 0

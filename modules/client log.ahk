@@ -367,6 +367,22 @@ Log_Loop(mode := 0)
 		If (auto_track = 1)
 			level0 := 0
 
+		If settings.features.lootfilter && settings.lootfilter.notify && (settings.lootfilter.ingame_filter = "filterspoon.filter") && settings.lootfilter.last_sync
+		&& (LLK_TimeElapsed(settings.lootfilter.last_sync,, 0) >= settings.lootfilter.notify * 60) && RegExMatch(areaID, "i)^hideout")
+		{
+			If !vars.lootfilter.last_notification
+			{
+				vars.lootfilter.last_notification := A_TickCount
+				game_ini := IniBatchRead(vars.system.config_folder "\" (vars.poe_version ? "poe2_" : "") "production_Config.ini",, "blank")
+				If (game_ini.ui.item_filter != "filterspoon.filter")
+				{
+					settings.lootfilter.ingame_filter := game_ini.ui.item_filter
+					Return
+				}
+			}
+			MapEvent("lootfilter")
+		}
+
 		If (settings.features.leveltracker * settings.leveltracker.geartracker) && IsNumber(level) && (level0 != level)
 			Geartracker_GUI(WinExist("ahk_id " vars.hwnd.geartracker.main) ? "" : "refresh")
 
