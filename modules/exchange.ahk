@@ -150,7 +150,11 @@ AsyncTrade(cHWND := "", hotkey := "")
 			Else
 			{
 				GuiControl, +cRed, % vars.hwnd.async[check "_bar"]
-				target := listings[control], regex := (target.rarity = "magic" ? """" StrReplace(target.name, target.itembase, ".*") """" : """" target.name """"), regex := StrReplace(StrReplace(regex, ".* ", ".*"), " .*", ".*")
+				target := listings[control]
+				If (target.itembase = Lang_Trans("items_merc_warrant"))
+					regex := """" LLK_StringReplace(target.name, [[" (", """ """], [")", """"]])
+				Else regex := (target.rarity = "magic" ? """" StrReplace(target.name, target.itembase, ".*") """" : """" target.name """"), regex := StrReplace(StrReplace(regex, ".* ", ".*"), " .*", ".*")
+
 				regex := regex " """ target.prices[target.prices.MaxIndex()].2 " " target.prices[target.prices.MaxIndex()].3 """"
 				For string, replace in {"perfect-": "p.*-", "greater-": "g.*-", "(": ".", ")": "."}
 					regex := StrReplace(regex, string, replace)

@@ -602,6 +602,12 @@ Omni_ItemInfo()
 			If LLK_PatternMatch(loopfield, "", vars.lang["items_" A_LoopField])
 				item[A_LoopField] := StrReplace(StrReplace(SubStr(loopfield, InStr(loopfield, ":") + 2), " (augmented)"), " (unmet)")
 
+		If (item.itembase = Lang_Trans("items_merc_warrant"))
+			If InStr(A_LoopField, Lang_Trans("items_merc_build"))
+				item.name .= " (" SubStr(A_LoopField, InStr(A_LoopField, ":") + 2) ")"
+			Else If InStr(A_LoopField, Lang_Trans("items_merc_level"))
+				item.ilvl := SubStr(A_LoopField, InStr(A_LoopField, ":") + 2)
+
 		If InStr(A_LoopField, Lang_Trans("items_ilevel"))
 			item.ilvl := SubStr(A_LoopField, InStr(A_LoopField, ":") + 2)
 

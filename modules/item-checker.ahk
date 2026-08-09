@@ -184,7 +184,7 @@ Iteminfo(refresh := 0) ; refresh: 1 to refresh it normally, 2 for clipboard pars
 					item.itembase_copy := A_LoopField
 				Continue
 			}
-			If InStr(A_LoopField, "---")
+			If InStr(A_LoopField, "---") && (item.name != Lang_Trans("items_merc_warrant")) || (item.name = Lang_Trans("items_merc_warrant")) && (A_Index = 6)
 				Break
 			If InStr(A_LoopField, Lang_Trans("items_class"), 1)
 				item.class_copy := item.class := StrReplace(A_LoopField, Lang_Trans("items_class") " ") ;StrReplace(StrReplace(A_LoopField, "item class: "), " ", "_")
@@ -194,6 +194,8 @@ Iteminfo(refresh := 0) ; refresh: 1 to refresh it normally, 2 for clipboard pars
 				item.name := StrReplace(StrReplace(StrReplace(A_LoopField, "exceptional "), "superior "), "synthesised ") ;remove 'superior' and 'synthesised' from the name
 			If (A_Index = 4) || !item.class && (A_Index = 3)
 				item.itembase := StrReplace(A_LoopField, "synthesised ") ;remove 'synthesised' from the base-type
+			If (A_Index = 5) && (item.name = Lang_Trans("items_merc_warrant"))
+				item.name := A_LoopField, item.itembase := Lang_Trans("items_merc_warrant")
 		}
 	}
 
