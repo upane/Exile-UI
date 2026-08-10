@@ -1,5 +1,16 @@
 [
   [
+	["1.64.2", 16402],
+	"august 10, 2026",
+	"chat macros:\n–> added fast-travel to the sovereign",
+	"filterspoon:\n–> fixed some edge cases\n–> added an optional sync reminder notification",
+	"item-info:\n–> updated unique drop-tiers",
+	"map-info:\n–> fixed inconsistencies with highlighting map, scarab, currency drop-multipliers\n–> can now be used for charts",
+	"map-tracker:\n–> added an option to refresh kills via the omni-key\n–> tracking map-info data now also logs originator influence",
+	"map-events:\n–> added notifications for claimable hideouts in maps\n–> these have a delay of 10 seconds to prevent abuse",
+	"vaal street:\n–> added support for tracking mercenary warrants"
+  ],
+  [
 	["1.64.1", 16401],
 	"july 27, 2026",
 	"act-tracker:\n–> re-added 5-link optionals in a5 + a6",
