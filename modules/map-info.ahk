@@ -46,7 +46,7 @@
 	settings.mapinfo.activation := !Blank(check := ini.settings.activation) ? check : "toggle"
 	settings.mapinfo.position := !Blank(check := ini.settings.position) ? check : 1
 	settings.mapinfo.roll_highlight := !Blank(check := ini.settings["highlight map rolls"]) ? check : 0, settings.mapinfo.roll_requirements := {}
-	settings.mapinfo.roll_colors := [!Blank(check := ini.UI["map rolls text color"]) ? check : "FFFF00", !Blank(check1 := ini.UI["map rolls back color"]) ? check1 : "000000"]
+	settings.mapinfo.roll_colors := [!Blank(check := ini.UI["map rolls text color"]) ? check : "000000", !Blank(check1 := ini.UI["map rolls back color"]) ? check1 : "FFFF00"]
 	For index, val in ["quantity", "rarity", "pack size", "maps", "scarabs", "currency", "waystones"]
 		settings.mapinfo.roll_requirements[val] := !Blank(check := ini.UI[val " requirement"]) ? check : ""
 }
@@ -70,12 +70,9 @@ Mapinfo_GUI(mode := 1)
 	If vars.poe_version
 		summary1 := map.waystones Lang_Trans("maps_stats", 8) " | " map.revives " " Lang_Trans("mapinfo_rip")
 
-	If StrLen(map.maps . map.scarabs . map.currency)
-	{
+	If !vars.poe_version
 		Loop, Parse, % "maps,scarabs,currency", `,
-			If !Blank(map[A_LoopField])
-				add := " | " map[A_LoopField] . Lang_Trans("maps_stats", 4 + A_Index), summary .= add, summary1 .= StrReplace(add, !summary1 ? " | " : "")
-	}
+			add := " | " (!Blank(map[A_LoopField]) ? map[A_LoopField] . Lang_Trans("maps_stats", 4 + A_Index) : 0), summary .= add, summary1 .= StrReplace(add, Blank(summary1) ? " | " : "")
 
 	dimensions := [], summary_array := StrSplit(summary, "|", A_Space), summary_array0 := StrSplit(summary0, "|", A_Space), summary_array1 := StrSplit(summary1, "|", A_Space)
 	LLK_PanelDimensions(summary_array, settings.mapinfo.fSize, wSummary, hSummary), LLK_PanelDimensions(summary_array1, settings.mapinfo.fSize, wSummary2, hSummary2)
@@ -101,7 +98,8 @@ Mapinfo_GUI(mode := 1)
 	LLK_PanelDimensions(dimensions, settings.mapinfo.fSize, wPanels, hPanels), added := 0, yControl := hControl := 0, count := {}, wPic := settings.mapinfo.fHeight*2 - 1
 	wSummary0 := (vars.poe_version ? wSummary + settings.mapinfo.fWidth *3 : wSummary * summary_array0.Count())
 	divisor := (wPanels + wPic - 1 > wSummary * summary_array0.Count()) ? 4 : summary_array0.Count()
-	wPanels := wGUI := Max(wPanels + wPic - 1, wSummary * summary_array0.Count(), wSummary2 * summary_array1.Count()), wSpectrum := wSummary * summary_array0.Count() - 2, wSpectrum1 := wSpectrum // mod_count
+	msc_count := LLK_HasVal(summary_array1, 0,,, 1).Count(), msc_count := (msc_count ? msc_count : 0)
+	wPanels := wGUI := Max(wPanels + wPic - 1, wSummary * summary_array0.Count(), wSummary2 * (summary_array1.Count() - msc_count)), wSpectrum := wSummary * summary_array0.Count() - 2, wSpectrum1 := wSpectrum // mod_count
 	While Mod(wGui, divisor)
 		wGui += 1, wPanels += 1
 	wPanels := wPanels - wPic + 1
@@ -199,7 +197,7 @@ Mapinfo_GUI(mode := 1)
 		}
 	}
 
-	rolls := ["mods", "quantity", "rarity", "pack size", "maps", "scarabs", "currency", "waystones"]
+	rolls := ["mods", "quantity", "rarity", "pack size", "maps", "scarabs", "currency", "waystones"], panels := 0
 	If (map.mods + map.quantity > 0)
 	{
 		;Gui, %GUI_name%: Add, Text, % "xs BackgroundTrans x1 y" yControl + hControl " Section HWNDhwnd Center w" width + settings.mapinfo.fHeight*2 - 3, % summary
@@ -213,14 +211,17 @@ Mapinfo_GUI(mode := 1)
 		}
 		For index, vSum in summary_array1
 		{
-			style := (index = 1 ? "xs Section y+" (yControl + hControl ? -1 : 0) " x" wGUI//2 - ((!vars.poe_version ? wSummary * summary_array1.Count() : wSummary2 * summary_array1.Count()))//2 : "ys x+0")
+			If !vSum
+				Continue
+			panels += 1
+			style := (panels = 1 ? "xs Section y+" (yControl + hControl ? -1 : 0) " x" wGUI//2 - ((!vars.poe_version ? wSummary * (summary_array1.Count() - msc_count) : wSummary2 * summary_array1.Count()))//2 : "ys x+0")
 			roll := settings.mapinfo.roll_requirements[rolls[vars.poe_version ? 8 : index + 4]]
 			If vars.poe_version && (index = 2)
 				color := " c" settings.mapinfo.color[(map.revives < 4) ? 4 - map.revives : 1]
 			Else color := settings.mapinfo.roll_highlight && !Blank(roll) && (SubStr(vSum, 1, -1) >= roll) ? " c" settings.mapinfo.roll_colors.1 : ""
 
 			Gui, %GUI_name%: Add, Text, % style " HWNDhwnd BackgroundTrans Border Center w" (!vars.poe_version ? wSummary : wSummary2) . color, % StrReplace(vSum, "  ", " ")
-			If color && !vars.poe_version
+			If color && !(vars.poe_version && index = 2)
 				Gui, %GUI_name%: Add, Progress, % "xp yp wp hp Border BackgroundBlack c" settings.mapinfo.roll_colors.2, 100
 		}
 		added := 0, spectrum := [0, 0, 0, 0], spectrum[-1] := [0, 0, 0, 0], spectrum.0 := 0, spectrum[-1].0 := 0
@@ -557,7 +558,7 @@ Mapinfo_Parse2(mode)
 			map.quantity := SubStr(A_LoopField, InStr(A_LoopField, "+") + 1), map.quantity := (check := InStr(map.quantity, " (")) ? SubStr(map.quantity, 1, check - 1) : map.quantity, map.quantity := Trim(map.quantity, "%")
 		Else If InStr(A_LoopField, Lang_Trans("items_maprarity"))
 			map.rarity := SubStr(A_LoopField, InStr(A_LoopField, "+") + 1), map.rarity := (check := InStr(map.rarity, " (")) ? SubStr(map.rarity, 1, check - 1) : map.rarity, map.rarity := Trim(map.rarity, "%")
-		Else If InStr(A_LoopField, Lang_Trans("items_mappacksize"))
+		Else If InStr(A_LoopField, Lang_Trans("items_mappacksize", vars.poe_version))
 			map.packsize := SubStr(A_LoopField, InStr(A_LoopField, "+") + 1), map.packsize := (check := InStr(map.packsize, " (")) ? SubStr(map.packsize, 1, check - 1) : map.packsize, map.packsize := Trim(map.packsize, "%")
 		Else If InStr(A_LoopField, Lang_Trans("items_ilevel"))
 		{

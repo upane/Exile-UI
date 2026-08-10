@@ -4221,7 +4221,7 @@ Settings_mapinfo2(cHWND)
 			{
 				KeyWait, LButton
 				KeyWait, RButton
-				color := (vars.system.click = 1) ? RGB_Picker(settings.mapinfo.roll_colors[control]) : (control = 1 ? "00FF00" : "000000")
+				color := (vars.system.click = 1) ? RGB_Picker(settings.mapinfo.roll_colors[control]) : (control = 1 ? "000000" : "FFFF00")
 				If Blank(color)
 					Return
 				GuiControl, % "+c" color, % vars.hwnd.settings["rollcolor_" control "1"]
