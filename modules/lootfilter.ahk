@@ -1230,7 +1230,8 @@ Lootfilter_Editor(cHWND := "")
 
 	If !result_count
 		Gui, %GUI%: Add, Text, % "Section xs y+" margin " x" margin " BackgroundTrans Center HWNDhwnd w" wMax - margin - 1, % Lang_Trans("global_match")
-	Else If !break && typeheader_handle && (tier_view || item_view && !InStr(vars.lootfilter.last_type, "exui_economy") && LLK_HasKey(vars.lootfilter.last_style, "basetype", 1) || !any_view && result_count = 1)
+	Else If !break && typeheader_handle
+	&& (tier_view || item_view && !InStr(vars.lootfilter.last_type, "exui_economy") && LLK_HasKey(vars.lootfilter.last_style, "basetype", 1) && InStr(vars.lootfilter.last_style.basetype, """",,, 3) || !any_view && result_count = 1)
 	{
 		Gui, %GUI%: Font, % "s" settings.lootfilter.fSize - 2
 		Gui, %GUI%: Add, Text, % "Section xs y+" margin " x" margin " Border BackgroundTrans Center HWNDhwnd w" wMax - margin - 1, % Lang_Trans("lootfilter_selections", (tier_view || !any_view && result_count = 1 ? 1 : 3))
