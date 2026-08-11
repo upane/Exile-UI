@@ -5172,7 +5172,7 @@ Settings_qol()
 		fSize := settings.general.fSize
 		LLK_PanelDimensions([Lang_Trans("global_font")], fSize, wFont, hFont)
 		LLK_PanelDimensions([Lang_Trans("global_position") . Lang_Trans("global_colon")], fSize, wPosition, hPosition)
-		LLK_PanelDimensions([Lang_Trans("global_duration") . Lang_Trans("global_colon")], fSize, wDuration, hDuration)
+		LLK_PanelDimensions([Lang_Trans("global_duration") . Lang_Trans("global_colon"), Lang_Trans("global_opacity")], fSize, wDuration, hDuration)
 		dimensions := []
 		For index, val in settings.mapevents.event_list
 			If (val != "hideout")
@@ -5184,9 +5184,10 @@ Settings_qol()
 		wList := Max(wList, wHideout + 3 * wTiers - 3)
 	}
 	wPanel := (settings.qol.mapevents ? Max(wFont, wPosition) : wFont)
-	If (wDuration > wPanel + settings.general.fWidth * 7 - 2)
-		wPanel := wDuration - (settings.general.fWidth * 7 - 2)
-	Else wDuration1 := wPanel + settings.general.fWidth * 7 - 2
+	If settings.qol.mapevents
+		If (wDuration > wPanel + settings.general.fWidth * 7 - 3)
+			wPanel := wDuration - (settings.general.fWidth * 7 - 3), wDuration1 := wDuration
+		Else wDuration1 := wPanel + settings.general.fWidth * 7 - 3
 
 	Gui, %GUI%: Add, Text, % "Section x" x_anchor " y" vars.settings.ySelection " Border BackgroundTrans HWNDhwnd gURL cAqua", % " wiki page "
 	Gui, %GUI%: Add, Progress, % "Disabled xp yp wp hp Border HWNDhwnd1 Background" vars.settings.cButtons2 " c" vars.settings.cButtons, 100
@@ -5261,10 +5262,13 @@ Settings_qol()
 			Gui, %GUI%: Add, Progress, % "Disabled xp yp wp hp Border HWNDhwnd1 Background" vars.settings.cButtons2 " c" vars.settings.cButtons, 100
 			vars.hwnd.settings.position_mapevents := hwnd, vars.hwnd.help_tooltips["settings_map-events position"] := hwnd0, vars.hwnd.help_tooltips["settings_map-events position|"] := hwnd1
 
-			Gui, %GUI%: Add, Text, % "xs w" wDuration1 " Border Center", % Lang_Trans("global_duration") . Lang_Trans("global_colon")
-			Gui, %GUI%: Add, Slider, % "xs xp y+-1 w" wDuration1 - settings.general.fWidth * 3 + 1 " hp Border HWNDhwnd ToolTip gSettings_qol2 NoTicks Center Range3-10", % settings.mapevents.duration
-			Gui, %GUI%: Add, Text, % "ys yp x+-1 w" settings.general.fWidth * 3 " hp Center Border HWNDhwnd1", % settings.mapevents.duration
-			vars.hwnd.settings.duration_mapevents := hwnd, vars.hwnd.settings.duration_mapevents_label := hwnd1
+			For index, val in ["duration", "opacity"]
+			{
+				Gui, %GUI%: Add, Text, % "xs w" wDuration1 " Border Center", % StrReplace(Lang_Trans("global_" val), Lang_Trans("global_colon")) . Lang_Trans("global_colon")
+				Gui, %GUI%: Add, Slider, % "xs xp y+-1 w" wDuration1 - settings.general.fWidth * 3 + 1 " hp Border HWNDhwnd ToolTip gSettings_qol2 NoTicks Center Range" (index = 1 ? "3-10" : "1-5"), % settings.mapevents[val]
+				Gui, %GUI%: Add, Text, % "ys yp x+-1 w" settings.general.fWidth * 3 " hp Center Border HWNDhwnd1", % settings.mapevents[val]
+				vars.hwnd.settings[val "_mapevents"] := hwnd, vars.hwnd.settings[val "_mapevents_label"] := hwnd1
+			}
 
 			mechanics := {}
 			For index, val in settings.mapevents.event_list
@@ -5294,8 +5298,8 @@ Settings_qol()
 				vars.hwnd.settings["color_mapevents1_" val] := hwnd, vars.hwnd.settings["color_mapevents1_" val "_bar"] := vars.hwnd.help_tooltips["settings_generic color double1" handle] := hwnd1, handle .= "|"
 			}
 
-			Gui, %GUI%: Add, Text, % "Section xs x" x_anchor " y" Max(LLK_ControlGetPos(vars.hwnd.settings.duration_mapevents_label).yMax, LLK_ControlGetPos(hwnd1).yMax) - 1 + vars.settings.line1 " w" settings.general.fWidth * 20 " h2 Border HWNDhwnd"
-			GuiControl, movedraw, % hwnd_brace, % "h" Max(LLK_ControlGetPos(hwnd, "y"), LLK_ControlGetPos(vars.hwnd.settings.duration_mapevents_label).yMax) - LLK_ControlGetPos(hwnd_brace, "y")
+			Gui, %GUI%: Add, Text, % "Section xs x" x_anchor " y" Max(LLK_ControlGetPos(vars.hwnd.settings.opacity_mapevents_label).yMax, LLK_ControlGetPos(hwnd1).yMax) - 1 + vars.settings.line1 " w" settings.general.fWidth * 20 " h2 Border HWNDhwnd"
+			GuiControl, movedraw, % hwnd_brace, % "h" Max(LLK_ControlGetPos(hwnd, "y"), LLK_ControlGetPos(vars.hwnd.settings.opacity_mapevents_label).yMax) - LLK_ControlGetPos(hwnd_brace, "y")
 		}
 	}
 
@@ -5458,11 +5462,12 @@ Settings_qol2(cHWND)
 		If (control = "alarm") && vars.alarm.toggle
 			Alarm()
 	}
-	Else If InStr(check, "duration_")
+	Else If RegexMatch(check, "i)(duration|opacity)_mapevents")
 	{
-		IniWrite, % (settings.mapevents.duration := LLK_ControlGet(cHWND)), % "ini" vars.poe_version "\qol tools.ini", % control, duration
-		GuiControl, Text, % vars.hwnd.settings.duration_mapevents_label, % settings.mapevents.duration
-		ControlFocus,, % "ahk_id " vars.hwnd.settings.duration_mapevents_label
+		type := (InStr(check, "duration") ? "duration" : "opacity")
+		IniWrite, % (settings.mapevents[type] := LLK_ControlGet(cHWND)), % "ini" vars.poe_version "\qol tools.ini", % control, % type
+		GuiControl, Text, % vars.hwnd.settings[type "_mapevents_label"], % settings.mapevents[type]
+		ControlFocus,, % "ahk_id " vars.hwnd.settings[type "_mapevents_label"]
 	}
 	Else If InStr(check, "position_")
 	{
