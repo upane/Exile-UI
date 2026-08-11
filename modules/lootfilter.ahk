@@ -2241,7 +2241,10 @@ Lootfilter_Modify(object, global := 0)
 			Case InStr(object.action, "tier") && (vChunk.type && vChunk.type = object.type):
 			If !new_tier && (object.action = "newtier") && (vars.lootfilter.active_filter.final[iChunk + 1].type != object.type) && (vars.lootfilter.active_filter.final[iChunk + 2].type != object.type)
 			{
-				lookback := 0, lines := []
+				iTarget := LLK_HasVal(vars.lootfilter.active_filter.structure[object.type], object.source.tier,,,, 1)
+				If Blank(iTarget) || !InStr(vars.lootfilter.active_filter.structure[object.type][iTarget].basetypes, """" object.modifications.newtier """")
+					Continue
+				lookback := 0, lines := [], tier_added := 1
 				While !IsObject(vars.lootfilter.active_filter.final[iChunk - lookback]) || RegExMatch(vars.lootfilter.active_filter.final[iChunk - lookback].lines.1, "i)^.{0,2}#|tier->rest")
 					lookback += 1
 
@@ -2333,7 +2336,9 @@ Lootfilter_Modify(object, global := 0)
 	{
 		If empty_tier
 			warning .= "`n- original tier """ empty_tier """ didn't have any basetypes left after the move (it had to be deleted)"
-		If !removed
+		If (object.action = "newtier") && !tier_added
+			warning .= "`n- new tier """ object.tier """ wasn't created (the base you tried to move is no longer in the source type)"
+		Else If !removed
 			warning .= "`n- item wasn't removed from any existing tier (not found, or was already in the target tier)"
 		If (object.action = "movetier") && !added
 			warning .= "`n- item wasn't added to """ object.tier """ (tier/base doesn't exist, or tier already has the item)"
