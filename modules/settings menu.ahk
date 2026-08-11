@@ -3482,7 +3482,10 @@ Settings_lootfilter()
 	vars.hwnd.settings.color_accent := hwnd2, vars.hwnd.settings.color_accent_bar := vars.hwnd.help_tooltips["settings_generic color|"] := hwnd3
 
 	If !settings.lootfilter.active_filter || !vars.lootfilter.filters_list.Count()
+	{
+		vars.lootfilter.settings_waiting := 1
 		Return
+	}
 
 	Gui, %GUI%: Font, bold underline
 	Gui, %GUI%: Add, Text, % "xs Section y+" vars.settings.spacing, % Lang_Trans("m_lootfilter_tester")
@@ -3507,11 +3510,13 @@ Settings_lootfilter()
 		For key, val in {"i": "minimum", "ii": "medium", "iii": "maximum"}
 		{
 			label := Lang_Trans("global_" val, 2) . Lang_Trans("global_colon") " " settings.lootfilter[type "_" val]
-			Gui, %GUI%: Add, Text, % "ys x+-1 Center Border gSettings_lootfilter2 HWNDhwnd w" settings.general.fHeight . (val = vars.lootfilter_tester[type] ? " cLime" : ""), % key
-			vars.hwnd.settings[type "preset_" val] := vars.hwnd.help_tooltips["settings_lootfilter filter-tester presets" preset_handle] := hwnd, preset_handle .= "|"
+			Gui, %GUI%: Add, Text, % "ys x+-1 Center Border BackgroundTrans gSettings_lootfilter2 HWNDhwnd w" settings.general.fHeight . (val = vars.lootfilter_tester[type] ? " cLime" : ""), % key
+			Gui, %GUI%: Add, Progress, % "Disabled xp yp wp hp Border HWNDhwnd1 Background" vars.settings.cButtons2 " c" vars.settings.cButtons, 100
+			vars.hwnd.settings[type "preset_" val] := hwnd, vars.hwnd.help_tooltips["settings_lootfilter filter-tester presets" preset_handle] := hwnd1, preset_handle .= "|"
 		}
 		Gui, %GUI%: Add, Slider, % "ys x+-1 hp Center NoTicks Range" ranges[type] " ToolTip Border gSettings_lootfilter2 HWNDhwnd w" 9 * settings.general.fHeight, % settings.lootfilter[type "_" tester[type]]
-		Gui, %GUI%: Add, Text, % "ys x+-1 hp Border 0x200 HWNDhwnd1 gSettings_lootfilter2", % " " Lang_Trans("global_reset") " "
+		Gui, %GUI%: Add, Text, % "ys x+-1 hp Border BackgroundTrans 0x200 HWNDhwnd1 gSettings_lootfilter2", % " " Lang_Trans("global_reset") " "
+		Gui, %GUI%: Add, Progress, % "Disabled xp yp wp hp Border Background" vars.settings.cButtons2 " c" vars.settings.cButtons, 100
 		vars.hwnd.settings[type "value"] := hwnd, vars.hwnd.settings["reset_" type] := hwnd1
 	}
 
@@ -3541,11 +3546,14 @@ Settings_lootfilter()
 	vars.hwnd.settings.sound_tag := vars.hwnd.help_tooltips["settings_lootfilter filter-tester sound tags"] := hwnd1, vars.hwnd.settings.sound_ok := hwnd2
 
 	Gui, %GUI%: Font, % "s" settings.general.fSize
-	Gui, %GUI%: Add, Text, % "Section xs y+" vars.settings.spacing " Center Border HWNDhwnd gSettings_lootfilter2 w" wSize, % Lang_Trans("global_test")
-	Gui, %GUI%: Add, Text, % "Section xs wp Border Center HWNDhwnd1 gSettings_lootfilter2 BackgroundTrans", % Lang_Trans("global_restore")
-	Gui, %GUI%: Add, Progress, % "Disabled xp yp wp hp Border HWNDhwnd2 BackgroundBlack cBlack", 100
-	vars.hwnd.settings.tester_test := vars.hwnd.help_tooltips["settings_lootfilter filter-tester apply"] := hwnd
-	vars.hwnd.settings.tester_restore := hwnd1, vars.hwnd.settings.tester_restore_bar := vars.hwnd.help_tooltips["settings_lootfilter filter-tester restore"] := hwnd2
+	Gui, %GUI%: Add, Text, % "Section xs y+" vars.settings.spacing " Center Border BackgroundTrans HWNDhwnd gSettings_lootfilter2 w" wSize, % Lang_Trans("global_test")
+	Gui, %GUI%: Add, Progress, % "Disabled xp yp wp hp Border HWNDhwnd1 Background" vars.settings.cButtons2 " c" vars.settings.cButtons, 100
+	Gui, %GUI%: Add, Text, % "Section xs wp Border BackgroundTrans Center HWNDhwnd2 gSettings_lootfilter2", % Lang_Trans("global_restore")
+	Gui, %GUI%: Add, Progress, % "Disabled xp yp wp hp Border HWNDhwnd3 Background" vars.settings.cButtons2 " c" vars.settings.cButtons, 100
+	vars.hwnd.settings.tester_test := hwnd, vars.hwnd.help_tooltips["settings_lootfilter filter-tester apply"] := hwnd1
+	vars.hwnd.settings.tester_restore := hwnd2, vars.hwnd.settings.tester_restore_bar := vars.hwnd.help_tooltips["settings_lootfilter filter-tester restore"] := hwnd3
+
+	vars.lootfilter.settings_waiting := 0
 }
 
 Settings_lootfilter2(cHWND := "")
@@ -3676,7 +3684,7 @@ Settings_lootfilter2(cHWND := "")
 			{
 				vars.lootfilter.tester_applied := 0
 				GuiControl, % "+cWhite", % vars.hwnd.settings.tester_restore
-				GuiControl, % "+cBlack +BackgroundBlack", % vars.hwnd.settings.tester_restore_bar
+				GuiControl, % "+c" vars.settings.cButtons " +Background" vars.settings.cButtons2, % vars.hwnd.settings.tester_restore_bar
 			}
 			Clipboard := "/itemfilter " (control = "test" || vars.lootfilter.modifications["profile" settings.lootfilter.profile].Count() > 1 ? "FilterSpoon" (control = "test" ? "_tester" : "") : settings.lootfilter.active_filter)
 			WinActivate, % "ahk_id " vars.hwnd.poe_client

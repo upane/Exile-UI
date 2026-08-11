@@ -1464,6 +1464,8 @@ Lootfilter_Editor(cHWND := "")
 
 	If (error = "paste")
 		LLK_ToolTip(Lang_Trans("global_errorpaste"), 2,,,, "Red")
+	If vars.lootfilter.settings_waiting && settings.lootfilter.active_filter && vars.lootfilter.filters_list.Count() && (vars.settings.active = "filterspoon") && WinExist("ahk_id " vars.hwnd.settings.main)
+		Settings_menu("filterspoon")
 	Return
 }
 
