@@ -920,7 +920,7 @@ Maptracker_Logs2(cHWND)
 	}
 
 	check := LLK_HasVal(vars.hwnd.maptracker_logs, cHWND), control := StrReplace(SubStr(check, InStr(check, "_") + 1), !InStr(check, "removesearch_") ? "|" : "")
-	If !RegexMatch(check, "i)map_")
+	If !RegexMatch(check, "i)map_|export")
 	{
 		KeyWait, LButton
 		KeyWait, RButton
