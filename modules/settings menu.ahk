@@ -3355,7 +3355,7 @@ Settings_leveltracker2(cHWND := "")
 	{
 		bandits := ["none", "alira", "kraityn", "oak"], profile := settings.leveltracker.profile
 		WinGetPos, xControl, yControl, wControl, hControl, % "ahk_id " cHWND
-		If Blank(input := Gui_DropDownList(vars.ddl.bandit, [xControl, yControl, wControl, hControl], "Center", 1)) || IsObject(input) && Blank(input.1 . input.2)
+		If Blank(input := Gui_DropDownList(vars.ddl.bandit, [xControl, yControl, wControl, hControl], "Center", 1, "Center")) || IsObject(input) && Blank(input.1 . input.2)
 			Return
 		IniWrite, % (settings.leveltracker["guide" profile].info.bandit := bandits[input.2]), % "ini" vars.poe_version "\leveling guide" profile ".ini", Info, bandit
 		IniWrite, 0, % "ini" vars.poe_version "\leveling guide" profile ".ini", Progress, pages
