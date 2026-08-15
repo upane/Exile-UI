@@ -1920,6 +1920,9 @@ Lootfilter_Match(array, dev_check := 0)
 						If !vaal_uniques[basename]
 							Return
 						isvaalunique := 1
+					Case (key = "vestigial"):
+						If !InStr(search.clipboard, "vestigial implicit modifier")
+							Return
 					Case (key = "alwaysshow"):
 						Return
 					Case RegexMatch(key, "i)^(set|play|minimap|disabledropsound)"):
@@ -1934,7 +1937,9 @@ Lootfilter_Match(array, dev_check := 0)
 					Case (key = "basedefencepercentile"):
 					Case (key = "droplevel"):
 					Case (key = "width"):
+						object.multimatches := 1
 					Case (key = "height"):
+						object.multimatches := 1
 					Case settings.general.dev:
 						MsgBox,, Exile UI, % "unknown filter condition:`n!" (Clipboard := LLK_StringCase(key)) "!"
 					}
@@ -2242,7 +2247,7 @@ Lootfilter_Modify(object, global := 0)
 			If !new_tier && (object.action = "newtier") && (vars.lootfilter.active_filter.final[iChunk + 1].type != object.type) && (vars.lootfilter.active_filter.final[iChunk + 2].type != object.type)
 			{
 				iTarget := LLK_HasVal(vars.lootfilter.active_filter.structure[object.type], object.source.tier,,,, 1)
-				If Blank(iTarget) || !InStr(vars.lootfilter.active_filter.structure[object.type][iTarget].basetypes, """" object.modifications.newtier """")
+				If Blank(iTarget) || !removed && !InStr(vars.lootfilter.active_filter.structure[object.type][iTarget].basetypes, """" object.modifications.newtier """")
 					Continue
 				lookback := 0, lines := [], tier_added := 1
 				While !IsObject(vars.lootfilter.active_filter.final[iChunk - lookback]) || RegExMatch(vars.lootfilter.active_filter.final[iChunk - lookback].lines.1, "i)^.{0,2}#|tier->rest")
