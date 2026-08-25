@@ -74,7 +74,7 @@ Gui_CreateGraph(width, height, graph, color)
 	Return hbmBitmap
 }
 
-Gui_DropDownList(object, coord_array, align := "", altsubmit := 0, prev_align := "")
+Gui_DropDownList(object, coord_array, align := "", altsubmit := 0, prev_align := "Center")
 {
 	local
 	global vars, settings, json
@@ -631,6 +631,33 @@ Gui_RadialMenu2(cHWND := "", hotkey := 1)
 
 	If longpress
 		LLK_Overlay(vars.hwnd.radial.main, "destroy"), vars.hwnd.radial.main := ""
+}
+
+Gui_Slider(hwnd_label, array_mincurrentmax, interval, format := "", increment := 1)
+{
+	local
+	global vars, settings
+
+	If hwnd_label && Blank(LLK_ControlGetPos(hwnd_label).x) || Blank(array_mincurrentmax.1) || Blank(array_mincurrentmax.2) || Blank(array_mincurrentmax.3) || !interval
+	{
+		LLK_ToolTip((settings.general.dev ? "invalid params" : Lang_Trans("global_error")),,,,, "Red")
+		KeyWait, LButton
+		Return
+	}
+
+	MouseGetPos, x, y
+	min := array_mincurrentmax.1, current := array_mincurrentmax.2, max := array_mincurrentmax.3
+	While GetKeyState("LButton", "P")
+	{
+		MouseGetPos, x1, y1
+		If (Abs(x1 - x) >= Abs(y1 - y))
+			val := (x1 >= x ? Min(current + increment * ((x1 - x)//interval), max) : Max(current - increment * ((x - x1)//interval), min))
+		Else val := (y1 <= y ? Min(current + increment * ((y - y1)//interval), max) : Max(current - increment * ((y1 - y)//interval), min))
+		GuiControl, Text, % hwnd_label, % format.1 . val . format.2
+		GuiControl, movedraw, % hwnd_label
+		Sleep 50
+	}
+	Return val
 }
 
 LLK_ControlGet(cHWND, GUI_name := "", subcommand := "")

@@ -21,6 +21,9 @@
     "selection donations": [
       "donations"
     ],
+    "slider general": [
+      "(/highlight)long-click, and move the cursor up/down or right/left to adjust"
+    ],
     "multi-threading multi": [
       "the tool will use two threads/processes, which improves performance and enables advanced features",
       "examples:\nclone-frames fps options"
@@ -35,7 +38,8 @@
     ],
     "kill time": [
       "the tool will close automatically if it can't find any open game clients",
-      "0: don't close automatically\nX: wait X minutes before closing"
+      "0: don't close automatically\nX: wait X minutes before closing",
+      "(/highlight)long-click, and move the cursor up/down or right/left to adjust"
     ],
     "browser features": [
       "enables additional features when accessing 3rd-party websites via the tool",
@@ -346,8 +350,8 @@
       "trade logs will show names in addition to the base type"
     ],
     "exchange async minchange": [
-      "the first repricing option will be x% lower than the current price",
-      "the other options will use 5% increments"
+      "the first repricing option will be x% lower than the current price, and the other options will use 5% increments",
+      "(/highlight)long-click, and move the cursor up/down or right/left to adjust"
     ],
     "hotkeys ingame-keybinds": [
       "to avoid conflicts between custom in-game keybinds and the tool's hotkeys:\n- tick anything that applies to you\n- provide alternative keys when asked to"
@@ -941,6 +945,10 @@
     "alarm enable": [
       "timer-widget with alarm/countdown and stopwatch functionality",
       "hidden by default: hold down the <widget-key> to access it"
+    ],
+    "map-events duration": [
+      "the notification will be on screen for x seconds",
+      "(/highlight)long-click, and move the cursor up/down or right/left to adjust"
     ],
     "map-events enable": [
       "displays notifications whenever certain events happen",
@@ -1703,8 +1711,9 @@
       "click this label to browse the corresponding section in the filter"
     ],
     "global setting flasks toggles": [
-      "0: use base filter's rules",
-      "x: hide flasks below x% quality"
+      "0: use base filter rules",
+      "x: hide flasks below x% quality",
+      "(/highlight)long-click, and move the cursor up/down or right/left to adjust"
     ],
     "global setting gems": [
       [
@@ -1717,13 +1726,14 @@
       "click this label to browse the corresponding section in the filter"
     ],
     "global setting gems toggles": [
-      "0: use base filter's rules",
+      "0: use base filter rules",
       [
         "x: hide gems below level x or x% quality",
         "x: hide gems below level x"
       ],
+      "(/highlight)long-click, and move the cursor up/down or right/left to adjust",
       [
-        "max out the sliders to hide every leveled/quality regular gem"
+        "max out the values to hide every leveled/quality regular gem"
       ]
     ],
     "global setting info": [
@@ -1735,9 +1745,10 @@
       "click this label to browse the corresponding section in the filter"
     ],
     "global setting maps toggles": [
-      "0: use base filter's rules",
+      "0: use base filter rules",
       "x: hide maps below tier x",
-      "17: hide all regular maps"
+      "17: hide all regular maps",
+      "(/highlight)long-click, and move the cursor up/down or right/left to adjust"
     ],
     "global setting sockets 2": [
       "lets you set an item-size cut-off for socketed gear (salvage bench: artificer's orb)",
@@ -1755,9 +1766,10 @@
       "click this label to browse the corresponding section in the filter"
     ],
     "global setting strands toggles": [
-      "0: use base filter's rules",
+      "0: use base filter rules",
       "x (high): items with x or more strands have extra highlighting\nx (minimum): items with x or more strands will be highlighted",
-      "max out the <minimum> slider to only highlight high-strand items, or max both to ignore strands as a highlighting aspect."
+      "(/highlight)long-click, and move the cursor up/down or right/left to adjust",
+      "max out the <minimum> slider to only highlight high-strand items, or max both to ignore strands as a highlighting aspect"
     ],
     "global setting unavailable": [
       "the selected filter has an unexpected structure: this quick-setting cannot be applied"
@@ -1826,6 +1838,9 @@
     "search history": [
       "lets you go back and forth in your search/browse history",
       "you can also scroll the mouse wheel while hovering over the editor"
+    ],
+    "slider general": [
+      "(/highlight)long-click, and move the cursor up/down or right/left to adjust"
     ],
     "sounds pick": [
       "select a sound effect for this rule",
