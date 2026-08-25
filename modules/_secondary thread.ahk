@@ -57,7 +57,6 @@ Return
 #Include modules\macros.ahk
 #Include modules\map-info.ahk
 #Include modules\map tracker.ahk
-#Include modules\ocr.ahk
 #Include modules\omni-key.ahk
 #Include modules\qol tools.ahk
 #Include modules\recombination.ahk
@@ -69,6 +68,7 @@ Return
 #Include modules\settings menu.ahk
 #Include modules\stash-ninja.ahk
 #Include modules\statlas.ahk
+#Include modules\TLDR tooltips.ahk
 
 Cloneframes_Thread2(wParam, lParam)
 {

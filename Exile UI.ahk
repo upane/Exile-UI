@@ -153,7 +153,6 @@ Return
 #Include modules\macros.ahk
 #Include modules\map-info.ahk
 #Include modules\map tracker.ahk
-#Include modules\ocr.ahk
 #Include modules\omni-key.ahk
 #Include modules\qol tools.ahk
 #Include modules\recombination.ahk
@@ -165,6 +164,7 @@ Return
 #Include modules\settings menu.ahk
 #Include modules\stash-ninja.ahk
 #Include modules\statlas.ahk
+#Include modules\TLDR tooltips.ahk
 #Include *i add-ons\loader
 
 Exit()
@@ -715,7 +715,7 @@ LLK_FileCheck() ;delete old files (or ones that have been moved elsewhere)
 		If FileExist("img\GUI\statlas\" val ".jpg")
 			FileDelete, % "img\GUI\statlas\" val ".jpg"
 
-	For index, val in ["necropolis.ahk"]
+	For index, val in ["necropolis.ahk", "ocr.ahk"]
 		If FileExist("modules\" val)
 			FileDelete, modules\%val%
 
