@@ -1,4 +1,4 @@
-﻿Init_OCR()
+﻿Init_TLDR()
 {
 	local
 	global vars, settings, db, Json
@@ -13,86 +13,56 @@
 	If !FileExist("ini" vars.poe_version "\ocr - vaal areas.ini")
 		IniWrite, % "", % "ini" vars.poe_version "\ocr - vaal areas.ini", settings
 
-	ini := IniBatchRead("ini" vars.poe_version "\ocr.ini"), settings.OCR := {"profile": 1} ;in case profiles are desired in the future
-	settings.OCR.hotkey := !Blank(check := ini.settings["hotkey"]) ? check : ""
-	settings.OCR.hotkey_single := settings.OCR.hotkey
-	If (StrLen(settings.OCR.hotkey) > 1)
-		Loop, Parse, % "+!^#"
-			settings.OCR.hotkey_single := StrReplace(settings.OCR.hotkey_single, A_LoopField)
-	If !GetKeyVK(settings.OCR.hotkey_single)
-		settings.OCR.hotkey_single := ""
-	settings.OCR.hotkey_block := !Blank(check := ini.settings["block native key-function"]) ? check : 0
-	settings.OCR.hotkey_shared := !Blank(check := ini.settings["shared hotkeys"]) ? check : 1
-	settings.OCR.z_hotkey := !Blank(check := ini.settings["toggle highlighting hotkey"]) ? check : "z"
-	settings.OCR.debug := !Blank(check := ini.settings["enable debug"]) ? check : 0
-	settings.OCR.fSize := !Blank(check := ini.settings["font-size"]) ? check : settings.general.fSize
-	LLK_FontDimensions(settings.OCR.fSize, font_height, font_width), settings.OCR.fHeight := font_height, settings.OCR.fWidth := font_width
-	settings.OCR.dColors := [["00FF00", "00000"], ["FF8000", "00000"], ["FF0000", "00000"], ["FF00FF", "00000"], ["FF0000", "FFFFFF"]], settings.OCR.dColors.0 := ["FFFFFF", "000000"]
-	settings.OCR.colors := []
-	For index, color in settings.OCR.dColors
-		If !Blank(check := ini.UI["pattern " index])
-			settings.OCR.colors[index] := StrSplit(check, ",")
-		Else settings.OCR.colors[index] := color.Clone()
+	ini := IniBatchRead("ini" vars.poe_version "\ocr.ini"), settings.TLDR := {"profile": 1} ;in case profiles are desired in the future
+	settings.TLDR.hotkey := !Blank(check := ini.settings["hotkey"]) ? check : ""
+	settings.TLDR.z_hotkey := !Blank(check := ini.settings["toggle highlighting hotkey"]) ? check : ""
 
-	settings.features.OCR := settings.features.OCR * (vars.client.h > 720 ? 1 : 0)
-	If settings.features.OCR && !Blank(settings.OCR.hotkey)
+	For key, val in {"hotkey": "hotkey", "z_hotkey": "toggle highlighting hotkey"}
 	{
-		Hotkey, IfWinActive, ahk_group poe_ahk_window
-		Hotkey, % "*" (settings.OCR.hotkey_block ? "" : "~") . Hotkeys_Convert(settings.OCR.hotkey), OCR
+		If Blank(settings.TLDR[key "_single"] := settings.TLDR[key])
+			Continue
+		If (StrLen(settings.TLDR[key]) > 1)
+			Loop, Parse, % "+!^#"
+				settings.TLDR[key "_single"] := StrReplace(settings.TLDR[key "_single"], A_LoopField)
+		If !GetKeyVK(settings.TLDR[key "_single"])
+			IniWrite, % """" (settings.TLDR[key] := "") """", % "ini" vars.poe_version "\ocr.ini", settings, % val
+	}
+
+	settings.TLDR.hotkey_block := !Blank(check := ini.settings["block native key-function"]) ? check : 0
+	settings.TLDR.hotkey_shared := !Blank(check := ini.settings["shared hotkeys"]) ? check : (!Blank(settings.TLDR.hotkey) ? 0 : 1)
+	settings.TLDR.debug := !Blank(check := ini.settings["enable debug"]) ? check : 0
+	settings.TLDR.fSize := !Blank(check := ini.settings["font-size"]) ? check : settings.general.fSize
+	LLK_FontDimensions(settings.TLDR.fSize, font_height, font_width), settings.TLDR.fHeight := font_height, settings.TLDR.fWidth := font_width
+	settings.TLDR.dColors := [["00FF00", "00000"], ["FF8000", "00000"], ["FF0000", "00000"], ["FF00FF", "00000"], ["FF0000", "FFFFFF"]], settings.TLDR.dColors.0 := ["FFFFFF", "000000"]
+	settings.TLDR.colors := []
+	For index, color in settings.TLDR.dColors
+		If !Blank(check := ini.UI["pattern " index])
+			settings.TLDR.colors[index] := StrSplit(check, ",")
+		Else settings.TLDR.colors[index] := color.Clone()
+
+	settings.features.TLDR := settings.features.TLDR * (vars.client.h > 720 ? 1 : 0), shared := settings.TLDR.hotkey_shared
+	If settings.features.TLDR && (shared && !Blank(settings.TLDR.z_hotkey) || !shared && !Blank(settings.TLDR.hotkey))
+	{
+		Hotkey, If, WinActive("ahk_id " vars.hwnd.poe_client) || WinActive("ahk_id " vars.hwnd.TLDR.main)
+		Hotkey, % "*" (!shared && settings.TLDR.hotkey_block ? "" : "~") . Hotkeys_Convert(settings.TLDR[shared ? "z_hotkey" : "hotkey"]), TLDR_Hotkey
 	}
 }
 
-OCR(mode := "GUI")
+TLDR(mode := "GUI")
 {
 	local
 	global vars, settings
 
-	If !IsObject(vars.OCR)
-		vars.OCR := {"wGUI": vars.client.h // 2.5, "hGUI": vars.client.h // 4.8}
+	If !IsObject(vars.TLDR)
+		vars.TLDR := {"wGUI": vars.client.h // 2.5, "hGUI": vars.client.h // 4.8}
 
-	If vars.OCR.in_progress
+	If vars.TLDR.in_progress
 		Return
-	vars.OCR.in_progress := 1
+	vars.TLDR.in_progress := 1
 
-	If !Blank(vars.hwnd.ocr_tooltip.main) && WinExist("ahk_id " vars.hwnd.ocr_tooltip.main)
+	If (mode = "GUI")
 	{
-		OCR_Close()
-		KeyWait, % settings.OCR.hotkey_single
-		vars.OCR.in_progress := 0
-		Return
-	}
-
-	If (mode != "compat")
-	{
-		If !WinActive("ahk_id " vars.hwnd.poe_client)
-		{
-			WinActivate, % "ahk_id " vars.hwnd.poe_client
-			WinWaitActive, % "ahk_id " vars.hwnd.poe_client
-		}
-		SendInput, % "{" settings.OCR.z_hotkey "}"
-		Sleep 100
-	}
-
-	If InStr("snip,compat", mode)
-	{
-		pBitmap := Screenchecks_ImageRecalibrate()
-		If (pBitmap <= 0)
-		{
-			vars.OCR.in_progress := 0
-			Return
-		}
-		Gdip_GetImageDimensions(pBitmap, w, h)
-		If (w >= vars.client.w || h >= vars.client.h)
-		{
-			LLK_ToolTip(Lang_Trans("m_ocr_error", 2), 2, vars.monitor.x + vars.client.xc, vars.monitor.y + vars.client.yc,, "red", settings.general.fSize * 2,,, 1)
-			Gdip_DisposeImage(pBitmap)
-			vars.OCR.in_progress := 0
-			Return
-		}
-	}
-	Else If (mode = "GUI")
-	{
-		vars.OCR.GUI := 1, square := vars.client.h / 10, square1 := vars.client.h / 20
+		vars.TLDR.GUI := 1, square := vars.client.h / 10, square1 := vars.client.h / 20
 		Gui, ocr_GUI: New, -Caption -DPIScale +LastFound +AlwaysOnTop +ToolWindow +E0x02000000 +E0x00080000 HWNDocr_GUI
 		Gui, ocr_GUI: Color, Gray
 		WinSet, TransColor, Gray 75
@@ -110,7 +80,7 @@ OCR(mode := "GUI")
 				Gui, ocr_GUI2: Color, White
 			}
 			MouseGetPos, xMouse, yMouse
-			wGUI := vars.OCR.wGUI, hGUI := vars.OCR.hGUI
+			wGUI := vars.TLDR.wGUI, hGUI := vars.TLDR.hGUI
 			xPos := (xMouse - wGUI < vars.client.x) ? vars.client.x : (xMouse + wGUI >= vars.client.x + vars.client.w) ? vars.client.x + vars.client.w - wGUI * 2 : xMouse - wGUI
 			yPos := (yMouse - hGUI < vars.client.y) ? vars.client.y : (yMouse + hGUI >= vars.client.y + vars.client.h) ? vars.client.y + vars.client.h - hGUI * 2 : yMouse - hGUI
 			xPos2 := (xMouse - square1 < vars.client.x) ? vars.client.x : (xMouse + square1 >= vars.client.x + vars.client.w) ? vars.client.x + vars.client.w - square : xMouse - square1
@@ -118,45 +88,32 @@ OCR(mode := "GUI")
 			Gui, ocr_GUI: Show, % "NA x" xPos " y" yPos " w" wGUI * 2 " h" hGUI * 2
 			Gui, ocr_GUI2: Show, % "NA x" xPos2 " y" yPos2 " w" square " h" square
 
-			If !GetKeyState(settings.OCR.hotkey_single, "P")
+			If !GetKeyState(settings.TLDR.hotkey_single, "P") && !(settings.TLDR.hotkey_shared && GetKeyState(settings.TLDR.z_hotkey_single, "P"))
 			{
 				WinGetPos, xWin, yWin,,, ahk_id %ocr_GUI%
-				vars.OCR.coords := {"xMouse": xMouse, "yMouse": yMouse, "hPanel": 0}
+				vars.TLDR.coords := {"xMouse": xMouse, "yMouse": yMouse, "hPanel": 0}
 				If Blank(xWin) || Blank(yWin)
 					Continue
 				Gui, ocr_GUI: Destroy
 				While WinExist("ahk_id " ocr_GUI)
 					Sleep 100
-				pBitmap0 := Gdip_BitmapFromHWND(vars.hwnd.poe_client, 1), pBitmap := Gdip_CloneBitmapArea(pBitmap0, xWin - vars.client.x + settings.general.oGamescreen, yWin - vars.client.y, wGUI * 2, hGUI * 2,, 1), Gdip_DisposeImage(pBitmap0)
-				vars.OCR.GUI := 0
+				xCap := xWin - vars.client.x, yCap := yWin - vars.client.y, wCap := 2*wGUI, hCap := 2*hGUI
+				vars.TLDR.GUI := 0
 				Break
 			}
 			Sleep 10
 		}
 	}
 
-	Gdip_GetImageDimensions(pBitmap, width, height)
-	pBitmap_copy := pBitmap, pBitmap := Gdip_ResizeBitmap(pBitmap_copy, width*2, height*2, 1, 7, 1), Gdip_DisposeImage(pBitmap_copy)
-	pEffect := Gdip_CreateEffect(5, 0, 35), Gdip_BitmapApplyEffect(pBitmap, pEffect), Gdip_DisposeEffect(pEffect)
+	text := OCR_Start(xCap, yCap, wCap, hCap, (settings.TLDR.debug ? "ALT" : ""),,, [[5, 0, 35, 0]])
+	If !text
+	{
+		vars.TLDR.in_progress := 0
+		Return
+	}
 	;pEffect := Gdip_CreateEffect(2, 0, 100), Gdip_BitmapApplyEffect(pBitmap, pEffect), Gdip_DisposeEffect(pEffect)
-	hBitmap := Gdip_CreateHBITMAPFromBitmap(pBitmap), pIRandomAccessStream := HBitmapToRandomAccessStream(hBitmap), Gdip_DisposeImage(pBitmap)
-	text := ocr_uwp(pIRandomAccessStream, (settings.general.lang_client = "english" ? "en" : "FirstAvailable")), ObjRelease(pIRandomAccessStream), text := LLK_StringCase(text)
 
-	vars.OCR.text_check := {}
-	If (mode = "compat")
-		Loop, Parse, text, `n, `r
-			Loop, Parse, A_LoopField, % A_Space
-				If (StrLen(A_LoopField) > 1)
-				{
-					loopfield_copy := ""
-					Loop, Parse, A_LoopField
-						If LLK_IsType(A_LoopField, "alpha")
-							loopfield_copy .= A_LoopField
-					If !vars.OCR.text_check.HasKey(loopfield_copy)
-						vars.OCR.text_check[loopfield_copy] := ""
-				}
-
-	If (mode = "compat") && (vars.OCR.text_check.Count() >= 8) || (debug := settings.OCR.debug && GetKeyState("RCTRL", "P"))
+	If (debug := GetKeyState("RCTRL", "P"))
 	{
 		Gui, compat_test: New, -Caption -DPIScale +LastFound +AlwaysOnTop +ToolWindow +Border +E0x02000000 +E0x00080000 HWNDhwnd_compat
 		Gui, compat_test: Color, Black
@@ -167,37 +124,26 @@ OCR(mode := "GUI")
 		Gui, compat_test: Add, Pic, % "Section Border w" width * (mode = "compat" ? 2 : 1) " h-1", HBitmap:*%hBitmap%
 		If debug
 		{
-			vars.OCR.debug := 1
+			vars.TLDR.debug := 1
 			Gui, compat_test: Font, % "s" settings.general.fSize - 4
 			Gui, compat_test: Add, Edit, % "ys Section cBlack", % !Blank(text) ? text : Lang_Trans("ocr_notext")
 			Gui, compat_test: Font, % "s" settings.general.fSize
 			Gui, compat_test: Add, Text, % "xs HWNDhwnd", % "client-res: " vars.client.w "x" vars.client.h " " Lang_Trans("omnikey_escape")
 			ControlFocus,, ahk_id %hwnd%
 		}
-		Else
-		{
-			Gui, compat_test: Add, Text, % "xs wp", % Lang_Trans("m_ocr_compatibility", 2)
-			Gui, compat_test: Add, Edit, % "xs wp cBlack wp HWNDhwnd0 gSettings_OCR2",
-			Gui, compat_test: Add, Text, % "xs wp HWNDhwnd1 cLime", % ""
-			If (vars.system.click = 2)
-				Gui, compat_test: Add, Text, % "ys Border", % text "`nclient-res: " vars.client.w "x" vars.client.h
-			vars.hwnd.settings.compat_edit := hwnd0, vars.hwnd.settings.compat_correct := hwnd1
-			LLK_Overlay(vars.hwnd.settings.main, "hide")
-		}
 
 		Gui, compat_test: Show, NA x10000 y10000
 		WinGetPos,,, w, h, ahk_id %hwnd_compat%
 		Gui, compat_test: Show, % "x" vars.monitor.x + vars.monitor.w / 2 - w//2 " y" vars.monitor.y + vars.monitor.h / 2 - h//2
 	}
-	DeleteObject(hBitmap)
-	vars.OCR.in_progress := 0
+	vars.TLDR.in_progress := 0
 
 	If Blank(text) && !debug
 	{
-		OCR_Error(Lang_Trans("ocr_notext"))
+		TLDR_Error(Lang_Trans("ocr_notext"))
 		Return
 	}
-	Else If (mode = "compat") && (vars.OCR.text_check.Count() < 8)
+	Else If (mode = "compat") && (vars.TLDR.text_check.Count() < 8)
 	{
 		LLK_ToolTip(Lang_Trans("m_ocr_error"), 2.5,,,, "red")
 		Return
@@ -206,30 +152,30 @@ OCR(mode := "GUI")
 		Return text
 	Else
 	{
-		vars.OCR.text := text
+		vars.TLDR.text := text
 		If InStr(text, Lang_Trans("items_mapquantity"))
-			OCR_VaalAreas()
+			TLDR_VaalAreas()
 		Else If InStr(text, ":",,, 2)
-			OCR_Altars()
-		Else OCR_Error(Lang_Trans("ocr_nousecase"))
+			TLDR_Altars()
+		Else TLDR_Error(Lang_Trans("ocr_nousecase"))
 	}
 }
 
-OCR_Altars()
+TLDR_Altars()
 {
 	local
 	global db, vars, settings
 	static toggle := 0
 
-	vars.OCR.toggle := toggle := !toggle, GUI_name := "ocr_tooltip" toggle
+	vars.TLDR.toggle := toggle := !toggle, GUI_name := "ocr_tooltip" toggle
 	Gui, %GUI_name%: New, -Caption -DPIScale +LastFound +AlwaysOnTop +ToolWindow +E0x02000000 +E0x00080000 HWNDhwnd_altars
 	Gui, %GUI_name%: Color, Purple
 	WinSet, TransColor, Purple
 	Gui, %GUI_name%: Margin, 0, 0
-	Gui, %GUI_name%: Font, % "s" settings.OCR.fSize " cWhite", % vars.system.font
-	hwnd_old := vars.hwnd.ocr_tooltip.main, vars.hwnd.ocr_tooltip := {"main": hwnd_altars, "type": "altars"}, panels := [[], []], header := 0, parsed_text := [[], []], header_check := ["boss", "minions", "player"]
+	Gui, %GUI_name%: Font, % "s" settings.TLDR.fSize " cWhite", % vars.system.font
+	hwnd_old := vars.hwnd.TLDR.main, vars.hwnd.TLDR := {"main": hwnd_altars, "type": "altars"}, panels := [[], []], header := 0, parsed_text := [[], []], header_check := ["boss", "minions", "player"]
 	header_dictionary := ["map", "boss", "gains", "eldritch", "minions", "gain", "player"], header_lookup := ["map boss gains:", "eldritch minions gain:", "player gains:"]
-	text := vars.OCR.text, square1 := vars.client.h / 20
+	text := vars.TLDR.text, square1 := vars.client.h / 20
 
 	If !IsObject(db.altars)
 		DB_Load("OCR")
@@ -268,7 +214,7 @@ OCR_Altars()
 						blank_regex := ""
 						Loop, Parse, % regex_array[index]
 						{
-							If LLK_HasRegex(header_lookup, OCR_RegexCheck(regex_array_copy, index, blank_regex . A_LoopField), 1)
+							If LLK_HasRegex(header_lookup, TLDR_RegexCheck(regex_array_copy, index, blank_regex . A_LoopField), 1)
 								blank_regex .= A_LoopField
 							Else blank_regex .= (SubStr(blank_regex, -1) = ".*") ? "" : ".*"
 						}
@@ -336,7 +282,7 @@ OCR_Altars()
 						blank_regex := ""
 						Loop, Parse, % regex_array[iRegex]
 						{
-							If LLK_HasRegex(mod_lookup, OCR_RegexCheck(regex_array_copy, iRegex, blank_regex . A_LoopField), 1)
+							If LLK_HasRegex(mod_lookup, TLDR_RegexCheck(regex_array_copy, iRegex, blank_regex . A_LoopField), 1)
 								blank_regex .= A_LoopField
 							Else blank_regex .= (SubStr(blank_regex, -1) = ".*") ? "" : ".*"
 						}
@@ -379,38 +325,38 @@ OCR_Altars()
 	}
 
 	If (panels.1.Count() < 3) || (panels.2.Count() < 3) || !LLK_HasVal(panels, ":", 1,,, 1)
-		OCR_Error(Lang_Trans("ocr_erroraltar"))
+		TLDR_Error(Lang_Trans("ocr_erroraltar"))
 	Else
 	{
-		LLK_PanelDimensions(panels.1, settings.OCR.fSize, w1, h1), LLK_PanelDimensions(panels.2, settings.OCR.fSize, w2, h2)
+		LLK_PanelDimensions(panels.1, settings.TLDR.fSize, w1, h1), LLK_PanelDimensions(panels.2, settings.TLDR.fSize, w2, h2)
 		width := Max(w1, w2), ini := IniBatchRead("ini\ocr - altars.ini")
 		For index, array in panels
 			For index1, panel_text in array
 			{
 				If (index = 2 && index1 = 1)
-					vars.OCR.coords.hPanel := yControl + hControl
+					vars.TLDR.coords.hPanel := yControl + hControl
 				If (index1 = 1)
 					key := StrReplace(panel_text, ":")
-				rank := !Blank(check := ini["profile " settings.OCR.profile " " key][panel_text]) ? check : 0
-				colors := (index1 = 1) ? ["FFFFFF", "000000"] : settings.OCR.colors[rank].Clone()
+				rank := !Blank(check := ini["profile " settings.TLDR.profile " " key][panel_text]) ? check : 0
+				colors := (index1 = 1) ? ["FFFFFF", "000000"] : settings.TLDR.colors[rank].Clone()
 				Gui, %GUI_name%: Add, Text, % (index = 2 && index1 = 1 ? "y+" vars.client.h / 10 : (index = 1 && index1 = 1) ? "" : "y+-1") " xs Section Center Border BackgroundTrans HWNDhwnd0 w" width " c" colors.1, % StrReplace(panel_text, "&", "&&")
 				Gui, %GUI_name%: Add, Progress, % "xp yp wp hp Border HWNDhwnd BackgroundBlack c" colors.2, 100
 				ControlGetPos,, yControl, wControl, hControl,, ahk_id %hwnd%
 				If (index1 != 1) && !InStr(panel_text, "?")
-					vars.hwnd.ocr_tooltip[key "_" panel_text] := hwnd, vars.hwnd.ocr_tooltip[key "_" panel_text "_text"] := hwnd0
+					vars.hwnd.TLDR[key "_" panel_text] := hwnd, vars.hwnd.TLDR[key "_" panel_text "_text"] := hwnd0
 			}
 
 		Gui, %GUI_name%: Show, NA x10000 y10000
 		WinGetPos,,, wWin, hWin, ahk_id %hwnd_altars%
-		xPos := vars.OCR.coords.xMouse - wWin / 2, yPos := vars.OCR.coords.yMouse - vars.OCR.coords.hPanel - square1
+		xPos := vars.TLDR.coords.xMouse - wWin / 2, yPos := vars.TLDR.coords.yMouse - vars.TLDR.coords.hPanel - square1
 		xPos := (xPos < vars.client.x) ? vars.client.x : (xPos + wWin >= vars.client.x + vars.client.w) ? vars.client.x + vars.client.w - wWin : xPos
 		yPos := (yPos < vars.client.y) ? vars.client.y : (yPos + hWin >= vars.client.y + vars.client.h) ? vars.client.y + vars.client.h - hWin : yPos
 		Gui, %GUI_name%: Show, % "NA x" xPos " y" yPos
-		LLK_Overlay(hwnd_altars, "show",, GUI_name), LLK_Overlay(hwnd_old, "destroy"), vars.OCR.last := "_altars"
+		LLK_Overlay(hwnd_altars, "show",, GUI_name), LLK_Overlay(hwnd_old, "destroy"), vars.TLDR.last := "_altars"
 	}
 }
 
-OCR_Close()
+TLDR_Close()
 {
 	local
 	global vars, settings
@@ -420,11 +366,12 @@ OCR_Close()
 		WinActivate, % "ahk_id " vars.hwnd.poe_client
 		WinWaitActive, % "ahk_id " vars.hwnd.poe_client
 	}
-	SendInput, % "{" settings.OCR.z_hotkey "}"
-	LLK_Overlay(vars.hwnd.ocr_tooltip.main, "destroy"), vars.hwnd.ocr_tooltip.main := ""
+	If !settings.TLDR.hotkey_shared
+		SendInput, % "{" settings.TLDR.z_hotkey "}"
+	LLK_Overlay(vars.hwnd.TLDR.main, "destroy"), vars.hwnd.TLDR.main := ""
 }
 
-OCR_Error(error)
+TLDR_Error(error)
 {
 	local
 	global vars, settings
@@ -432,20 +379,20 @@ OCR_Error(error)
 	Gui, ocr_tooltip: New, -Caption -DPIScale +LastFound +AlwaysOnTop +ToolWindow +E0x02000000 +E0x00080000 HWNDhwnd_altars
 	Gui, ocr_tooltip: Color, Black
 	Gui, ocr_tooltip: Margin, 0, 0
-	Gui, ocr_tooltip: Font, % "s" settings.OCR.fSize * 1.5 " cRed", % vars.system.font
+	Gui, ocr_tooltip: Font, % "s" settings.TLDR.fSize * 1.5 " cRed", % vars.system.font
 	Gui, ocr_tooltip: Add, Text, % "Center Border", % " " error " "
-	vars.hwnd.ocr_tooltip := {"main": hwnd_altars}
+	vars.hwnd.TLDR := {"main": hwnd_altars}
 
 	Gui, ocr_tooltip: Show, NA x10000 y10000
 	WinGetPos, xWin, yWin, wWin, hWin, % "ahk_id " hwnd_altars
-	xPos := vars.OCR.coords.xMouse - wWin / 2, yPos := vars.OCR.coords.yMouse - hWin
+	xPos := vars.TLDR.coords.xMouse - wWin / 2, yPos := vars.TLDR.coords.yMouse - hWin
 	xPos := (xPos < vars.client.x) ? vars.client.x : (xPos + wWin >= vars.client.x + vars.client.w) ? vars.client.x + vars.client.w - wWin : xPos
 	yPos := (yPos < vars.client.y) ? vars.client.y : (yPos + hWin >= vars.client.y + vars.client.h) ? vars.client.y + vars.client.h - hWin : yPos
 	Gui, ocr_tooltip: Show, % "NA x" xPos " y" yPos
 	LLK_Overlay(hwnd_altars, "show",, "ocr_tooltip")
 }
 
-OCR_FilterInput(text) ;WIP, currently not in use
+TLDR_FilterInput(text) ;WIP, currently not in use
 {
 	local
 	global vars, settings, db
@@ -492,29 +439,49 @@ OCR_FilterInput(text) ;WIP, currently not in use
 	MsgBox, % usecase
 }
 
-OCR_Highlight(hotkey)
+TLDR_Highlight(hotkey)
 {
 	local
 	global vars, settings
 
-	If !vars.general.cMouse || Blank(LLK_HasVal(vars.hwnd.ocr_tooltip, vars.general.cMouse))
+	If !vars.general.cMouse || Blank(LLK_HasVal(vars.hwnd.TLDR, vars.general.cMouse))
 		Return
 
 	hotkey0 := Hotkeys_RemoveModifiers(A_ThisHotkey)
 	hotkey := (hotkey = "space") ? 0 : hotkey
-	cHWND := vars.general.cMouse, check := LLK_HasVal(vars.hwnd.ocr_tooltip, vars.general.cMouse), category := StrReplace(SubStr(check, 1, InStr(check, "_") - 1), ":")
-	mod := (vars.hwnd.ocr_tooltip.type = "altars") ? SubStr(check, InStr(check, "_") + 1) : check, text_cHWND := vars.hwnd.ocr_tooltip[check "_text"]
-	GuiControl, % "+c" settings.OCR.colors[hotkey].2, % cHWND
+	cHWND := vars.general.cMouse, check := LLK_HasVal(vars.hwnd.TLDR, vars.general.cMouse), category := StrReplace(SubStr(check, 1, InStr(check, "_") - 1), ":")
+	mod := (vars.hwnd.TLDR.type = "altars") ? SubStr(check, InStr(check, "_") + 1) : check, text_cHWND := vars.hwnd.TLDR[check "_text"]
+	GuiControl, % "+c" settings.TLDR.colors[hotkey].2, % cHWND
 	GuiControl, movedraw, % cHWND
-	GuiControl, % "+c" settings.OCR.colors[hotkey].1, % text_cHWND
+	GuiControl, % "+c" settings.TLDR.colors[hotkey].1, % text_cHWND
 	GuiControl, movedraw, % text_cHWND
 
-	If vars.hwnd.ocr_tooltip.type
-		IniWrite, % hotkey, % "ini\ocr - " vars.hwnd.ocr_tooltip.type ".ini", % "profile " settings.OCR.profile (vars.hwnd.ocr_tooltip.type = "altars" ? " " category : ""), % mod
+	If vars.hwnd.TLDR.type
+		IniWrite, % hotkey, % "ini\ocr - " vars.hwnd.TLDR.type ".ini", % "profile " settings.TLDR.profile (vars.hwnd.TLDR.type = "altars" ? " " category : ""), % mod
 	KeyWait, % hotkey0
 }
 
-OCR_RegexCheck(array, insert_index, insert_val, newline := 0) ;takes an array with blanks derived from an ambiguous regex match, inserts a new value into a chosen blank, and returns the new regex string
+TLDR_Hotkey()
+{
+	local
+	global vars, settings
+	
+	If vars.hwnd.TLDR.main && WinExist("ahk_id " vars.hwnd.TLDR.main)
+		TLDR_Close(), close := 1
+	Else If settings.TLDR.hotkey_shared
+	{
+		KeyWait, % settings.TLDR.z_hotkey_single, T0.15
+		longpress := ErrorLevel
+	}
+	Else SendInput, % "{" settings.TLDR.z_hotkey "}"
+
+	If !close && (longpress || !settings.TLDR.hotkey_shared)
+		TLDR()
+	KeyWait, % settings.TLDR.hotkey_single
+	KeyWait, % settings.TLDR.z_hotkey_single
+}
+
+TLDR_RegexCheck(array, insert_index, insert_val, newline := 0) ;takes an array with blanks derived from an ambiguous regex match, inserts a new value into a chosen blank, and returns the new regex string
 {
 	local
 
@@ -527,21 +494,21 @@ OCR_RegexCheck(array, insert_index, insert_val, newline := 0) ;takes an array wi
 	Return regex
 }
 
-OCR_VaalAreas()
+TLDR_VaalAreas()
 {
 	local
 	global db, vars, settings
 	static toggle := 0
 
-	vars.OCR.toggle := toggle := !toggle, GUI_name := "ocr_tooltip" toggle
+	vars.TLDR.toggle := toggle := !toggle, GUI_name := "ocr_tooltip" toggle
 	Gui, %GUI_name%: New, -Caption -DPIScale +LastFound +AlwaysOnTop +ToolWindow +E0x02000000 +E0x00080000 HWNDhwnd_vaalareas
 	Gui, %GUI_name%: Color, Purple
 	WinSet, TransColor, Purple
 	Gui, %GUI_name%: Margin, 0, 0
-	Gui, %GUI_name%: Font, % "s" settings.OCR.fSize " cWhite", % vars.system.font
-	hwnd_old := vars.hwnd.ocr_tooltip.main, vars.hwnd.ocr_tooltip := {"main": hwnd_vaalareas, "type": "vaal areas"}
+	Gui, %GUI_name%: Font, % "s" settings.TLDR.fSize " cWhite", % vars.system.font
+	hwnd_old := vars.hwnd.TLDR.main, vars.hwnd.TLDR := {"main": hwnd_vaalareas, "type": "vaal areas"}
 	square1 := vars.client.h / 20, lines := {"player": [], "monsters": [], "boss": [], "area": [], "vessel": [], "z_unclear": []}
-	text := SubStr(vars.OCR.text, InStr(vars.OCR.text, ":",, 0) + 1), text := SubStr(text, InStr(text, "`n") + 1)
+	text := SubStr(vars.TLDR.text, InStr(vars.TLDR.text, ":",, 0) + 1), text := SubStr(text, InStr(text, "`n") + 1)
 
 	If !IsObject(db.vaalareas)
 		DB_Load("OCR")
@@ -571,7 +538,7 @@ OCR_VaalAreas()
 					regex := ""
 					Loop, Parse, % regex_array[index]
 					{
-						check := LLK_HasRegex(db.vaalareas, OCR_RegexCheck(regex_array_copy, index, regex . A_LoopField), 1, 1)
+						check := LLK_HasRegex(db.vaalareas, TLDR_RegexCheck(regex_array_copy, index, regex . A_LoopField), 1, 1)
 						regex .= check.Count() ? A_LoopField : (SubStr(regex, -1) = ".*" ? "" : ".*")
 						If (check.Count() = 1)
 						{
@@ -580,7 +547,7 @@ OCR_VaalAreas()
 						}
 					}
 				}
-			If ((check := LLK_HasRegex(db.vaalareas, OCR_RegexCheck(regex_array_copy, 0, ""), 1, 1)).Count() = 1) && !LLK_HasVal(lines[db.vaalareas[check.1].2], (line1 := db.vaalareas[check.1].1))
+			If ((check := LLK_HasRegex(db.vaalareas, TLDR_RegexCheck(regex_array_copy, 0, ""), 1, 1)).Count() = 1) && !LLK_HasVal(lines[db.vaalareas[check.1].2], (line1 := db.vaalareas[check.1].1))
 			{
 				If InStr(line1, "corr. packs") && !extra_pack
 				{
@@ -611,9 +578,9 @@ OCR_VaalAreas()
 			key := "unclear"
 		categories.Push(Lang_Trans("ocr_vaal" key))
 		If val.Count()
-			LLK_PanelDimensions(val, settings.OCR.fSize, w%key%, h%key%), wPanels := (w%key% > wPanels) ? w%key% : wPanels
+			LLK_PanelDimensions(val, settings.TLDR.fSize, w%key%, h%key%), wPanels := (w%key% > wPanels) ? w%key% : wPanels
 	}
-	LLK_PanelDimensions(categories, settings.OCR.fSize, wCategories, hCategories), added := -1, ini := IniBatchRead("ini\ocr - vaal areas.ini")
+	LLK_PanelDimensions(categories, settings.TLDR.fSize, wCategories, hCategories), added := -1, ini := IniBatchRead("ini\ocr - vaal areas.ini")
 	For key, val in lines
 	{
 		If !val.Count()
@@ -622,7 +589,7 @@ OCR_VaalAreas()
 			key := "unclear"
 		For index, line in val
 		{
-			rank := !Blank(check := ini["profile " settings.OCR.profile][StrReplace(line, "`n", ";")]) ? check : 0, colors := settings.OCR.colors[rank].Clone(), added += 1
+			rank := !Blank(check := ini["profile " settings.TLDR.profile][StrReplace(line, "`n", ";")]) ? check : 0, colors := settings.TLDR.colors[rank].Clone(), added += 1
 			Gui, %GUI_name%: Add, Text, % "xs x" wCategories - 1 . (added = 0 ? "" : " y+-1") " Section Border BackgroundTrans HWNDhwnd c" colors.1 " w" wPanels, % " " StrReplace(StrReplace(line, "`n", "`n "), "&", "&&") " "
 			Gui, %GUI_name%: Add, Progress, % "xp yp wp hp Border BackgroundBlack HWNDhwnd1 c" colors.2, 100
 			If (index = 1)
@@ -631,7 +598,7 @@ OCR_VaalAreas()
 				ControlGetPos, xControl, yControl, wControl, hControl,, ahk_id %hwnd%
 			}
 			(key != "unclear")
-				line := StrReplace(line, "`n", ";"), vars.hwnd.ocr_tooltip[line] := hwnd1, vars.hwnd.ocr_tooltip[line "_text"] := hwnd
+				line := StrReplace(line, "`n", ";"), vars.hwnd.TLDR[line] := hwnd1, vars.hwnd.TLDR[line "_text"] := hwnd
 		}
 		ControlGetPos, xControl1, yControl1, wControl1, hControl1,, ahk_id %hwnd%
 		Gui, %GUI_name%: Add, Text, % "x0 y" yControl " w" wCategories " h" yControl1 + hControl1 - yControl " Border BackgroundTrans Right 0x200", % Lang_Trans("ocr_vaal" key) " "
@@ -639,9 +606,9 @@ OCR_VaalAreas()
 	}
 	Gui, %GUI_name%: Show, NA x10000 y10000
 	WinGetPos,,, wWin, hWin, ahk_id %hwnd_vaalareas%
-	xPos := vars.OCR.coords.xMouse - wWin//2, yPos := vars.OCR.coords.yMouse - hWin
+	xPos := vars.TLDR.coords.xMouse - wWin//2, yPos := vars.TLDR.coords.yMouse - hWin
 	xPos := (xPos < vars.client.x) ? vars.client.x : (xPos + wWin >= vars.client.x + vars.client.w) ? vars.client.x + vars.client.w - wWin : xPos
 	yPos := (yPos < vars.client.y) ? vars.client.y : (yPos + hWin >= vars.client.y + vars.client.h) ? vars.client.y + vars.client.h - hWin : yPos
 	Gui, %GUI_name%: Show, % "NA x" xPos " y" yPos
-	LLK_Overlay(vars.hwnd.ocr_tooltip.main, "show",, GUI_name)
+	LLK_Overlay(vars.hwnd.TLDR.main, "show",, GUI_name)
 }

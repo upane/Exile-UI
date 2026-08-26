@@ -85,7 +85,7 @@ Init_legion(), LLK_Log("initialized seed-explorer settings")
 Init_Lootfilter(), LLK_Log("initialized FilterSpoon settings")
 Init_macros(), LLK_Log("initialized chat-macro settings")
 Init_mapinfo(), LLK_Log("initialized map-info settings")
-Init_OCR(), LLK_Log("initialized ocr settings")
+Init_TLDR(), LLK_Log("initialized TLDR-tooltip settings")
 Init_searchstrings(), LLK_Log("initialized search-strings settings")
 Init_leveltracker(), LLK_Log("initialized act-tracker settings")
 Init_actdecoder(), LLK_Log("initialized act-decoder settings")
@@ -534,6 +534,11 @@ Init_general()
 	}
 
 	IniWrite, 16402, ini\config.ini, versions, ini
+	If !Blank(ini.features["enable ocr"])
+	{
+		IniWrite, % ini.features["enable ocr"], % "ini" vars.poe_version "\config.ini", features, enable tldr-tooltips
+		IniDelete, % "ini" vars.poe_version "\config.ini", features, enable ocr
+	}
 	settings.general.character := ini.settings["active character"]
 	settings.general.build := !Blank(settings.general.character) ? ini.settings["active build"] : ""
 	settings.general.dev := !Blank(check := ini.settings["dev"]) ? check : 0
@@ -566,7 +571,7 @@ Init_general()
 	settings.features.actdecoder := !Blank(check := ini.features["enable act-decoder"]) ? check : 0
 	settings.features.maptracker := !Blank(check := ini.features["enable map tracker"]) ? check : 0
 	settings.features.mapinfo := (settings.general.lang_client != "unknown") && !Blank(check := ini.features["enable map-info panel"]) ? check : 0
-	settings.features.OCR := !vars.poe_version && !Blank(check := ini.features["enable ocr"]) ? check : 0
+	settings.features.TLDR := !vars.poe_version && !Blank(check := ini.features["enable tldr-tooltips"]) ? check : 0
 	settings.features.stash := !Blank(check := ini.features["enable stash-ninja"]) ? check : 0
 	settings.features.statlas := vars.poe_version && !Blank(check := ini.features["enable statlas"]) ? check : 0
 	settings.features.exchange := !Blank(check := ini.features["enable vaal street"]) ? check : 0
