@@ -244,7 +244,7 @@
 		global_databaseinfo		=	"database information"
 		global_current			=	"current"
 		global_updatewait		=	"try again later"
-		global_duration		=	"duration (sec)"
+		global_duration		=	"duration"
 		global_position		=	"position"
 		global_exchange		=	"currency exchange"
 		global_timeunits		=	"minute#minutes#hour#hours#day#days#week#weeks"
@@ -300,6 +300,9 @@
 		global_omnikey			=	"omni-key"
 		global_omnikey			=	"omni"
 		global_notification		=	"notification"
+		global_shared			=	"shared"			;## e.g. shared hotkey
+		global_separate		=	"separate"
+		global_style			=	"style"
 
 		mechanic_bestiary		=	"bestiary"
 		mechanic_betrayal		=	"betrayal"
@@ -1329,9 +1332,8 @@
 		m_ocr_error			=	"test requires at least 8 unique words"
 		m_ocr_error			=	"screen-cap too large"
 		m_ocr_finish			=	"press esc to finish setup"
-		m_ocr_hotkey			=	"<toggle highlighting> (in game):"
 		m_ocr_debug			=	"enable debug features"
-		m_ocr_unsupported		=	"720p and lower resolutions are not supported because screen-reading has a very high failure rate at low resolutions, making this feature almost unusable"
+		m_ocr_unsupported		=	"720p and lower resolutions are not supported because screen-reading has a very high failure rate at low resolutions, making this feature almost unusable."
 
 
 
