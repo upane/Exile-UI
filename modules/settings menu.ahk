@@ -1643,9 +1643,13 @@ Settings_donations()
 	LLK_PanelDimensions(dimensions, settings.general.fSize - 2, width, height), columns := 4
 	GUI := "settings_menu" vars.settings.GUI_toggle, x_anchor := vars.settings.x_anchor
 
-	Gui, %GUI%: Add, Text, % "Section x" x_anchor " y" vars.settings.ySelection " Border BackgroundTrans HWNDhwnd gURL cAqua", % " how to donate "
+	Gui, %GUI%: Add, Text, % "Section x" x_anchor " y" vars.settings.ySelection " Border BackgroundTrans HWNDhwnd gURL cAqua", % " more info "
 	Gui, %GUI%: Add, Progress, % "Disabled xp yp wp hp Border HWNDhwnd1 Background" vars.settings.cButtons2 " c" vars.settings.cButtons, 100
 	vars.URLs := {}, vars.URLs[hwnd] := "https://github.com/Lailloken/Exile-UI/discussions/407", vars.hwnd.help_tooltips["settings_donations howto"] := hwnd1
+
+	Gui, %GUI%: Add, Text, % "ys Border BackgroundTrans HWNDhwnd gURL cAqua", % " ko-fi.com "
+	Gui, %GUI%: Add, Progress, % "Disabled xp yp wp hp Border HWNDhwnd1 Background" vars.settings.cButtons2 " c" vars.settings.cButtons, 100
+	vars.URLs[hwnd] := "https://ko-fi.com/lailloken", vars.hwnd.help_tooltips["settings_donations kofi"] := hwnd1
 
 	Gui, %GUI%: Add, Text, % "Section xs y+" vars.settings.spacing, special thanks to these exiles who help me stay sane:
 	Gui, %GUI%: Font, % "s" settings.general.fSize - 2
@@ -6590,7 +6594,7 @@ Settings_TLDR()
 	GUI := "settings_menu" vars.settings.GUI_toggle, x_anchor := vars.settings.x_anchor, margin := vars.settings.line1, shared := settings.TLDR.hotkey_shared
 	Gui, %GUI%: Add, Text, % "Section x" x_anchor " y" vars.settings.ySelection " Border BackgroundTrans" (vars.client.h <= 720 ? "" : " gSettings_TLDR2") " HWNDhwnd" (settings.features.TLDR ? " cLime" : " cGray"), % " " Lang_Trans("global_enable") " "
 	Gui, %GUI%: Add, Progress, % "Disabled xp yp wp hp Border HWNDhwnd1 Background" vars.settings.cButtons2 " c" vars.settings.cButtons, 100
-	vars.hwnd.settings.enable := hwnd, vars.hwnd.help_tooltips["settings_ocr enable"] := hwnd1
+	vars.hwnd.settings.enable := hwnd, vars.hwnd.help_tooltips["settings_TLDR enable"] := hwnd1
 
 	Gui, %GUI%: Add, Text, % "ys Border BackgroundTrans HWNDhwnd gURL cAqua", % " wiki page "
 	Gui, %GUI%: Add, Progress, % "Disabled xp yp wp hp Border HWNDhwnd1 Background" vars.settings.cButtons2 " c" vars.settings.cButtons, 100
@@ -6653,23 +6657,23 @@ Settings_TLDR()
 	Gui, %GUI%: Add, Text, % "xp y+-1 w" (shared ? 2*wShared - 1 : wShared) " hp Border BackgroundTrans"
 	Gui, %GUI%: Add, Edit, % "xp yp wp hp Center Border HWNDhwnd2 cBlack gSettings_TLDR2", % (shared ? settings.TLDR.z_hotkey : settings.TLDR.hotkey)
 	Gui, %GUI%: Font, % "s" settings.general.fSize
-	vars.hwnd.settings.hotkey_shared := hwnd, vars.hwnd.help_tooltips["settings_ocr hotkey shared"] := hwnd1, vars.hwnd.settings.hotkey := vars.hwnd.help_tooltips["settings_ocr " (shared ? "z " : "") "hotkey"] := hwnd2
+	vars.hwnd.settings.hotkey_shared := hwnd, vars.hwnd.help_tooltips["settings_TLDR hotkey shared"] := hwnd1, vars.hwnd.settings.hotkey := vars.hwnd.help_tooltips["settings_TLDR " (shared ? "z " : "") "hotkey"] := hwnd2
 
 	Gui, %GUI%: Add, Text, % "ys " (shared ? "xp+" wShared - 1 : "x+-1") " w" wShared " Center Border BackgroundTrans gSettings_TLDR2 HWNDhwnd" (shared ? "" : " cLime"), % Lang_Trans("global_separate")
 	Gui, %GUI%: Add, Progress, % "Disabled xp yp wp hp Border HWNDhwnd1 Background" vars.settings.cButtons2 " c" vars.settings.cButtons, 100
-	vars.hwnd.settings.hotkey_separate := hwnd, vars.hwnd.help_tooltips["settings_ocr hotkey separate"] := hwnd1
+	vars.hwnd.settings.hotkey_separate := hwnd, vars.hwnd.help_tooltips["settings_TLDR hotkey separate"] := hwnd1
 	If !shared
 	{
 		Gui, %GUI%: Font, % "s" settings.general.fSize - 4
 		Gui, %GUI%: Add, Text, % "xp y+-1 w" wShared " hp Border BackgroundTrans"
 		Gui, %GUI%: Add, Edit, % "xp yp wp hp Center Border HWNDhwnd cBlack gSettings_TLDR2", % settings.TLDR.z_hotkey
 		Gui, %GUI%: Font, % "s" settings.general.fSize
-		vars.hwnd.settings.z_hotkey := vars.hwnd.help_tooltips["settings_ocr z hotkey"] := hwnd
+		vars.hwnd.settings.z_hotkey := vars.hwnd.help_tooltips["settings_TLDR z hotkey"] := hwnd
 	}
 
 	Gui, %GUI%: Add, Text, % "Section xs Center Border BackgroundTrans gSettings_TLDR2 HWNDhwnd" (settings.TLDR.debug ? " cLime" : " cGray"), % " " Lang_Trans("global_troubleshoot") " "
 	Gui, %GUI%: Add, Progress, % "Disabled xp yp wp hp Border HWNDhwnd1 Background" vars.settings.cButtons2 " c" vars.settings.cButtons, 100
-	vars.hwnd.settings.debug := hwnd, vars.hwnd.help_tooltips["settings_ocr debug"] := hwnd1
+	vars.hwnd.settings.debug := hwnd, vars.hwnd.help_tooltips["settings_TLDR debug"] := hwnd1
 
 	Gui, %GUI%: Font, bold underline
 	Gui, %GUI%: Add, Text, % "Section xs y+" vars.settings.spacing, % Lang_Trans("global_ui")
@@ -6688,7 +6692,7 @@ Settings_TLDR()
 	vars.hwnd.settings.font_plus := hwnd, vars.hwnd.help_tooltips["settings_font-size|||"] := hwnd1
 	Gui, %GUI%: Add, Text, % "xs Section", % Lang_Trans("m_iteminfo_highlight")
 	Gui, %GUI%: Add, Pic, % "ys hp w-1 HWNDhwnd", % "HBitmap:*" vars.pics.global.help
-	vars.hwnd.help_tooltips["settings_ocr colors"] := hwnd
+	vars.hwnd.help_tooltips["settings_TLDR colors"] := hwnd
 
 	For index, array in settings.TLDR.colors
 	{
@@ -6731,7 +6735,7 @@ Settings_TLDR2(cHWND)
 			Settings_menu("tldr-tooltips")
 
 		Case "debug":
-			IniWrite, % (settings.TLDR.debug := !settings.TLDR.debug), ini\ocr.ini, settings, enable debug
+			IniWrite, % (settings.TLDR.debug := !settings.TLDR.debug), ini\TLDR.ini, settings, enable debug
 			GuiControl, % "+c" (settings.TLDR.debug ? "Lime" : "Gray"), % cHWND
 			GuiControl, % "movedraw", % cHWND
 
@@ -6747,11 +6751,11 @@ Settings_TLDR2(cHWND)
 					input := StrReplace(input, A_LoopField)
 
 			If Blank(input)
-				IniWrite, % """""", % "ini" vars.poe_version "\ocr.ini", settings, toggle highlighting hotkey
+				IniWrite, % """""", % "ini" vars.poe_version "\TLDR.ini", settings, toggle highlighting hotkey
 			Else If GetKeyVK(input)
 			{
 				settings.TLDR.z_hotkey := input
-				IniWrite, % input, ini\ocr.ini, settings, toggle highlighting hotkey
+				IniWrite, % input, ini\TLDR.ini, settings, toggle highlighting hotkey
 				GuiControl, +cBlack, % cHWND
 			}
 			Else GuiControl, +cRed, % cHWND
@@ -6776,7 +6780,7 @@ Settings_TLDR2(cHWND)
 			If (shared && !Blank(settings.TLDR.z_hotkey) || !shared && !Blank(settings.TLDR.hotkey))
 				Hotkey, % "*" (!shared && settings.TLDR.hotkey_block ? "" : "~") . Hotkeys_Convert(settings.TLDR[shared ? "z_hotkey" : "hotkey"]), TLDR_Hotkey, Off
 
-			IniWrite, % """" (settings.TLDR[shared ? "z_hotkey" : "hotkey"] := input) """", ini\ocr.ini, settings, % (shared ? "toggle highlighting hotkey" : "hotkey")
+			IniWrite, % """" (settings.TLDR[shared ? "z_hotkey" : "hotkey"] := input) """", ini\TLDR.ini, settings, % (shared ? "toggle highlighting hotkey" : "hotkey")
 			settings.TLDR[(shared ? "z_hotkey" : "hotkey") "_single"] := input_check
 			Hotkey, % "*" (!shared && settings.TLDR.hotkey_block ? "" : "~") . Hotkeys_Convert(settings.TLDR[shared ? "z_hotkey" : "hotkey"]), TLDR_Hotkey
 			Settings_menu("tldr-tooltips")
@@ -6785,7 +6789,7 @@ Settings_TLDR2(cHWND)
 			SoundBeep
 			Hotkey, If, WinActive("ahk_id " vars.hwnd.poe_client) || WinActive("ahk_id " vars.hwnd.TLDR.main)
 			Hotkey, % "*" (settings.TLDR.hotkey_block ? "" : "~") . Hotkeys_Convert(settings.TLDR.hotkey), TLDR_Hotkey, Off
-			IniWrite, % (settings.TLDR.hotkey_block := !settings.TLDR.hotkey_block), ini\ocr.ini, settings, block native key-function
+			IniWrite, % (settings.TLDR.hotkey_block := !settings.TLDR.hotkey_block), ini\TLDR.ini, settings, block native key-function
 			Hotkey, % "*" (settings.TLDR.hotkey_block ? "" : "~") . Hotkeys_Convert(settings.TLDR.hotkey), TLDR_Hotkey, On
 			GuiControl, % "+c" (settings.TLDR.hotkey_block ? "Lime" : "Gray"), % cHWND
 			GuiControl, % "movedraw", % cHWND
@@ -6804,7 +6808,7 @@ Settings_TLDR2(cHWND)
 				If !Blank(settings.TLDR.z_hotkey)
 					Hotkey, % "*~" . Hotkeys_Convert(settings.TLDR.z_hotkey), TLDR_Hotkey, % (type = "shared" ? "On" : "Off")
 
-				IniWrite, % (settings.TLDR.hotkey_shared := (InStr(check, "shared") ? 1 : 0)), % "ini" vars.poe_version "\ocr.ini", settings, shared hotkeys
+				IniWrite, % (settings.TLDR.hotkey_shared := (InStr(check, "shared") ? 1 : 0)), % "ini" vars.poe_version "\TLDR.ini", settings, shared hotkeys
 				Settings_menu("tldr-tooltips")
 			}
 			Else If InStr(check, "font")
@@ -6817,7 +6821,7 @@ Settings_TLDR2(cHWND)
 					GuiControl, text, % vars.hwnd.settings.font_reset, % settings.TLDR.fSize
 					Sleep 150
 				}
-				IniWrite, % settings.TLDR.fSize, ini\ocr.ini, settings, font-size
+				IniWrite, % settings.TLDR.fSize, ini\TLDR.ini, settings, font-size
 				LLK_FontDimensions(settings.TLDR.fSize, height, width), settings.TLDR.fWidth := width, settings.TLDR.fHeight := height
 			}
 			Else If InStr(check, "color_")
@@ -6827,7 +6831,7 @@ Settings_TLDR2(cHWND)
 				If !Blank(color)
 				{
 					settings.TLDR.colors[pattern][type] := color
-					IniWrite, % settings.TLDR.colors[pattern].1 "," settings.TLDR.colors[pattern].2, ini\ocr.ini, UI, % "pattern " pattern
+					IniWrite, % settings.TLDR.colors[pattern].1 "," settings.TLDR.colors[pattern].2, ini\TLDR.ini, UI, % "pattern " pattern
 					Loop, 2
 					{
 						GuiControl, % "+c" settings.TLDR.colors[pattern][A_Index], % vars.hwnd.settings["color_" pattern "_text" A_Index]
@@ -6840,7 +6844,7 @@ Settings_TLDR2(cHWND)
 			Else LLK_ToolTip("no action: " check)
 
 			If (InStr(check, "color_") || InStr(check, "font")) && vars.hwnd.TLDR.main && WinExist("ahk_id " vars.hwnd.TLDR.main)
-				mode := vars.TLDR.last, OCR%mode%()
+				mode := vars.TLDR.last, TLDR%mode%()
 	}
 }
 

@@ -115,7 +115,7 @@ DB_Load(database)
 			}
 		}
 	}
-	Else If (database = "OCR")
+	Else If (database = "TLDR")
 	{
 		tldr := Json.Load(LLK_FileRead("data\english\TLDR-tooltips.json"))
 		db.altars := tldr["eldritch altars"].Clone()

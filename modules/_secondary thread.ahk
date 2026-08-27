@@ -217,7 +217,7 @@ StringReceive(wParam, string) ;based on example #4 on https://www.autohotkey.com
 #If vars.hwnd.stash.main && WinActive("ahk_id " vars.hwnd.poe_client) && WinExist("ahk_id " vars.hwnd.stash.main)
 #If vars.general.wMouse && (vars.general.wMouse = vars.hwnd.ClientFiller) ;prevent clicking and activating the filler GUI
 #If vars.TLDR.GUI ;sending inputs for screen-reading
-#If vars.hwnd.TLDR.main && vars.general.wMouse && (vars.general.wMouse = vars.hwnd.TLDR.main) ;hovering over the ocr tooltip
+#If vars.hwnd.TLDR.main && vars.general.wMouse && (vars.general.wMouse = vars.hwnd.TLDR.main) ;hovering over the TLDR tooltip
 #If vars.snipping_tool.GUI && WinActive("ahk_id " vars.hwnd.snipping_tool.main)
 #If vars.hwnd.TLDR.main && WinExist("ahk_id " vars.hwnd.TLDR.main)
 #If !vars.mapinfo.toggle && (vars.system.timeout = 0) && (vars.general.wMouse = vars.hwnd.poe_client) && WinExist("ahk_id "vars.hwnd.mapinfo.main) ;clicking the client to hide the map-info tooltip

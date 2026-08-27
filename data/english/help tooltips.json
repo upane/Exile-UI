@@ -328,6 +328,9 @@
     "donations howto": [
       "github thread with more info"
     ],
+    "donations kofi": [
+      "ko-fi.com/lailloken"
+    ],
     "exchange enable": [
       "ratio calculator, small ux improvements, trade logging, and balance tracking for the in-game currency exchange",
       "(/highlight)requires the <currency exchange> and <inventory> checks to be set up correctly in the <screen-checks> section",
@@ -988,36 +991,29 @@
       "simple lab layout overlay and tracker for casual runs",
       "while in lab or the aspirants' plaza, hold down the <widget-key> to activate the overlay"
     ],
-    "ocr enable": [
-      "(/highlight)experimental feature!",
+    "TLDR enable": [
       "screen-reading feature that scans the screen and displays certain information/text in customizable & compact tooltips",
       "currently supported: eldritch altars, vaal side areas"
     ],
-    "ocr compatibility": [
-      "screen-reading feature that scans the screen and displays certain information/text in customizable & compact tooltips",
-      "a compatibility test has to be done before this feature can be enabled",
-      "open the character-stats screen, then click this checkbox to open the windows snipping tool",
-      "use it to snip 4 to 5 lines of text from the character-stats"
-    ],
-    "ocr colors": [
+    "TLDR colors": [
       "customize the color patterns used to highlight specific mods/rewards"
     ],
-    "ocr debug": [
+    "TLDR debug": [
       "hold down <alt> while scanning to open a window that displays the screen-cap and scan result"
     ],
-    "ocr z hotkey": [
+    "TLDR z hotkey": [
       "enter the in-game hotkey for <toggle highlighting>",
       "for special keys, check the ahk-link above to find the proper names"
     ],
-    "ocr hotkey": [
+    "TLDR hotkey": [
       "enter the hotkey you want to use to activate this feature",
       "don't bind it to modifier-keys or keys used for chatting",
       "for special keys, check the ahk-link above to find the proper names"
     ],
-    "ocr hotkey separate": [
+    "TLDR hotkey separate": [
       "the feature will be activated by pressing a separate hotkey"
     ],
-    "ocr hotkey shared": [
+    "TLDR hotkey shared": [
       "the feature will be activated by holding down the in-game hotkey that toggles loot visibility (default: z)"
     ],
     "runeshaping auto-correct input": [

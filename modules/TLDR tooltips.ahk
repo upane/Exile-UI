@@ -6,14 +6,14 @@
 	If vars.poe_version
 		Return
 
-	If !FileExist("ini" vars.poe_version "\ocr.ini")
-		IniWrite, % "", % "ini" vars.poe_version "\ocr.ini", settings
-	If !FileExist("ini" vars.poe_version "\ocr - altars.ini")
-		IniWrite, % "", % "ini" vars.poe_version "\ocr - altars.ini", settings
-	If !FileExist("ini" vars.poe_version "\ocr - vaal areas.ini")
-		IniWrite, % "", % "ini" vars.poe_version "\ocr - vaal areas.ini", settings
+	If !FileExist("ini" vars.poe_version "\TLDR.ini")
+		IniWrite, % "", % "ini" vars.poe_version "\TLDR.ini", settings
+	If !FileExist("ini" vars.poe_version "\TLDR - altars.ini")
+		IniWrite, % "", % "ini" vars.poe_version "\TLDR - altars.ini", settings
+	If !FileExist("ini" vars.poe_version "\TLDR - vaal areas.ini")
+		IniWrite, % "", % "ini" vars.poe_version "\TLDR - vaal areas.ini", settings
 
-	ini := IniBatchRead("ini" vars.poe_version "\ocr.ini"), settings.TLDR := {"profile": 1} ;in case profiles are desired in the future
+	ini := IniBatchRead("ini" vars.poe_version "\TLDR.ini"), settings.TLDR := {"profile": 1} ;in case profiles are desired in the future
 	settings.TLDR.hotkey := !Blank(check := ini.settings["hotkey"]) ? check : ""
 	settings.TLDR.z_hotkey := !Blank(check := ini.settings["toggle highlighting hotkey"]) ? check : ""
 
@@ -25,7 +25,7 @@
 			Loop, Parse, % "+!^#"
 				settings.TLDR[key "_single"] := StrReplace(settings.TLDR[key "_single"], A_LoopField)
 		If !GetKeyVK(settings.TLDR[key "_single"])
-			IniWrite, % """" (settings.TLDR[key] := "") """", % "ini" vars.poe_version "\ocr.ini", settings, % val
+			IniWrite, % """" (settings.TLDR[key] := "") """", % "ini" vars.poe_version "\TLDR.ini", settings, % val
 	}
 
 	settings.TLDR.hotkey_block := !Blank(check := ini.settings["block native key-function"]) ? check : 0
@@ -63,21 +63,21 @@ TLDR(mode := "GUI")
 	If (mode = "GUI")
 	{
 		vars.TLDR.GUI := 1, square := vars.client.h / 10, square1 := vars.client.h / 20
-		Gui, ocr_GUI: New, -Caption -DPIScale +LastFound +AlwaysOnTop +ToolWindow +E0x02000000 +E0x00080000 HWNDocr_GUI
-		Gui, ocr_GUI: Color, Gray
+		Gui, TLDR_GUI: New, -Caption -DPIScale +LastFound +AlwaysOnTop +ToolWindow +E0x02000000 +E0x00080000 HWNDTLDR_GUI
+		Gui, TLDR_GUI: Color, Gray
 		WinSet, TransColor, Gray 75
 
-		Gui, ocr_GUI2: New, -Caption -DPIScale +LastFound +AlwaysOnTop +ToolWindow +E0x02000000 +E0x00080000 HWNDocr_GUI2 +Ownerocr_GUI
-		Gui, ocr_GUI2: Margin, 0, 0
-		Gui, ocr_GUI2: Color, Gray
+		Gui, TLDR_GUI2: New, -Caption -DPIScale +LastFound +AlwaysOnTop +ToolWindow +E0x02000000 +E0x00080000 HWNDTLDR_GUI2 +OwnerTLDR_GUI
+		Gui, TLDR_GUI2: Margin, 0, 0
+		Gui, TLDR_GUI2: Color, Gray
 		WinSet, TransColor, Gray 75
 
 		Loop
 		{
 			If (A_Index = 10)
 			{
-				Gui, ocr_GUI: Color, White
-				Gui, ocr_GUI2: Color, White
+				Gui, TLDR_GUI: Color, White
+				Gui, TLDR_GUI2: Color, White
 			}
 			MouseGetPos, xMouse, yMouse
 			wGUI := vars.TLDR.wGUI, hGUI := vars.TLDR.hGUI
@@ -85,17 +85,17 @@ TLDR(mode := "GUI")
 			yPos := (yMouse - hGUI < vars.client.y) ? vars.client.y : (yMouse + hGUI >= vars.client.y + vars.client.h) ? vars.client.y + vars.client.h - hGUI * 2 : yMouse - hGUI
 			xPos2 := (xMouse - square1 < vars.client.x) ? vars.client.x : (xMouse + square1 >= vars.client.x + vars.client.w) ? vars.client.x + vars.client.w - square : xMouse - square1
 			yPos2 := (yMouse - square1 < vars.client.y) ? vars.client.y : (yMouse + square1 >= vars.client.y + vars.client.h) ? vars.client.y + vars.client.h - square : yMouse - square1
-			Gui, ocr_GUI: Show, % "NA x" xPos " y" yPos " w" wGUI * 2 " h" hGUI * 2
-			Gui, ocr_GUI2: Show, % "NA x" xPos2 " y" yPos2 " w" square " h" square
+			Gui, TLDR_GUI: Show, % "NA x" xPos " y" yPos " w" wGUI * 2 " h" hGUI * 2
+			Gui, TLDR_GUI2: Show, % "NA x" xPos2 " y" yPos2 " w" square " h" square
 
 			If !GetKeyState(settings.TLDR.hotkey_single, "P") && !(settings.TLDR.hotkey_shared && GetKeyState(settings.TLDR.z_hotkey_single, "P"))
 			{
-				WinGetPos, xWin, yWin,,, ahk_id %ocr_GUI%
+				WinGetPos, xWin, yWin,,, ahk_id %TLDR_GUI%
 				vars.TLDR.coords := {"xMouse": xMouse, "yMouse": yMouse, "hPanel": 0}
 				If Blank(xWin) || Blank(yWin)
 					Continue
-				Gui, ocr_GUI: Destroy
-				While WinExist("ahk_id " ocr_GUI)
+				Gui, TLDR_GUI: Destroy
+				While WinExist("ahk_id " TLDR_GUI)
 					Sleep 100
 				xCap := xWin - vars.client.x, yCap := yWin - vars.client.y, wCap := 2*wGUI, hCap := 2*hGUI
 				vars.TLDR.GUI := 0
@@ -167,7 +167,7 @@ TLDR_Altars()
 	global db, vars, settings
 	static toggle := 0
 
-	vars.TLDR.toggle := toggle := !toggle, GUI_name := "ocr_tooltip" toggle
+	vars.TLDR.toggle := toggle := !toggle, GUI_name := "TLDR_tooltip" toggle
 	Gui, %GUI_name%: New, -Caption -DPIScale +LastFound +AlwaysOnTop +ToolWindow +E0x02000000 +E0x00080000 HWNDhwnd_altars
 	Gui, %GUI_name%: Color, Purple
 	WinSet, TransColor, Purple
@@ -178,7 +178,7 @@ TLDR_Altars()
 	text := vars.TLDR.text, square1 := vars.client.h / 20
 
 	If !IsObject(db.altars)
-		DB_Load("OCR")
+		DB_Load("TLDR")
 
 	Loop, Parse, text, `n, % "`r`t" A_Space
 	{
@@ -329,7 +329,7 @@ TLDR_Altars()
 	Else
 	{
 		LLK_PanelDimensions(panels.1, settings.TLDR.fSize, w1, h1), LLK_PanelDimensions(panels.2, settings.TLDR.fSize, w2, h2)
-		width := Max(w1, w2), ini := IniBatchRead("ini\ocr - altars.ini")
+		width := Max(w1, w2), ini := IniBatchRead("ini\TLDR - altars.ini")
 		For index, array in panels
 			For index1, panel_text in array
 			{
@@ -356,7 +356,7 @@ TLDR_Altars()
 	}
 }
 
-TLDR_Close()
+TLDR_Close(mode := "")
 {
 	local
 	global vars, settings
@@ -366,7 +366,7 @@ TLDR_Close()
 		WinActivate, % "ahk_id " vars.hwnd.poe_client
 		WinWaitActive, % "ahk_id " vars.hwnd.poe_client
 	}
-	If !settings.TLDR.hotkey_shared
+	If (mode = "ESC") || !settings.TLDR.hotkey_shared
 		SendInput, % "{" settings.TLDR.z_hotkey "}"
 	LLK_Overlay(vars.hwnd.TLDR.main, "destroy"), vars.hwnd.TLDR.main := ""
 }
@@ -376,20 +376,20 @@ TLDR_Error(error)
 	local
 	global vars, settings
 
-	Gui, ocr_tooltip: New, -Caption -DPIScale +LastFound +AlwaysOnTop +ToolWindow +E0x02000000 +E0x00080000 HWNDhwnd_altars
-	Gui, ocr_tooltip: Color, Black
-	Gui, ocr_tooltip: Margin, 0, 0
-	Gui, ocr_tooltip: Font, % "s" settings.TLDR.fSize * 1.5 " cRed", % vars.system.font
-	Gui, ocr_tooltip: Add, Text, % "Center Border", % " " error " "
+	Gui, TLDR_tooltip: New, -Caption -DPIScale +LastFound +AlwaysOnTop +ToolWindow +E0x02000000 +E0x00080000 HWNDhwnd_altars
+	Gui, TLDR_tooltip: Color, Black
+	Gui, TLDR_tooltip: Margin, 0, 0
+	Gui, TLDR_tooltip: Font, % "s" settings.TLDR.fSize * 1.5 " cRed", % vars.system.font
+	Gui, TLDR_tooltip: Add, Text, % "Center Border", % " " error " "
 	vars.hwnd.TLDR := {"main": hwnd_altars}
 
-	Gui, ocr_tooltip: Show, NA x10000 y10000
+	Gui, TLDR_tooltip: Show, NA x10000 y10000
 	WinGetPos, xWin, yWin, wWin, hWin, % "ahk_id " hwnd_altars
 	xPos := vars.TLDR.coords.xMouse - wWin / 2, yPos := vars.TLDR.coords.yMouse - hWin
 	xPos := (xPos < vars.client.x) ? vars.client.x : (xPos + wWin >= vars.client.x + vars.client.w) ? vars.client.x + vars.client.w - wWin : xPos
 	yPos := (yPos < vars.client.y) ? vars.client.y : (yPos + hWin >= vars.client.y + vars.client.h) ? vars.client.y + vars.client.h - hWin : yPos
-	Gui, ocr_tooltip: Show, % "NA x" xPos " y" yPos
-	LLK_Overlay(hwnd_altars, "show",, "ocr_tooltip")
+	Gui, TLDR_tooltip: Show, % "NA x" xPos " y" yPos
+	LLK_Overlay(hwnd_altars, "show",, "TLDR_tooltip")
 }
 
 TLDR_FilterInput(text) ;WIP, currently not in use
@@ -457,7 +457,7 @@ TLDR_Highlight(hotkey)
 	GuiControl, movedraw, % text_cHWND
 
 	If vars.hwnd.TLDR.type
-		IniWrite, % hotkey, % "ini\ocr - " vars.hwnd.TLDR.type ".ini", % "profile " settings.TLDR.profile (vars.hwnd.TLDR.type = "altars" ? " " category : ""), % mod
+		IniWrite, % hotkey, % "ini\TLDR - " vars.hwnd.TLDR.type ".ini", % "profile " settings.TLDR.profile (vars.hwnd.TLDR.type = "altars" ? " " category : ""), % mod
 	KeyWait, % hotkey0
 }
 
@@ -500,7 +500,7 @@ TLDR_VaalAreas()
 	global db, vars, settings
 	static toggle := 0
 
-	vars.TLDR.toggle := toggle := !toggle, GUI_name := "ocr_tooltip" toggle
+	vars.TLDR.toggle := toggle := !toggle, GUI_name := "TLDR_tooltip" toggle
 	Gui, %GUI_name%: New, -Caption -DPIScale +LastFound +AlwaysOnTop +ToolWindow +E0x02000000 +E0x00080000 HWNDhwnd_vaalareas
 	Gui, %GUI_name%: Color, Purple
 	WinSet, TransColor, Purple
@@ -511,7 +511,7 @@ TLDR_VaalAreas()
 	text := SubStr(vars.TLDR.text, InStr(vars.TLDR.text, ":",, 0) + 1), text := SubStr(text, InStr(text, "`n") + 1)
 
 	If !IsObject(db.vaalareas)
-		DB_Load("OCR")
+		DB_Load("TLDR")
 
 	Loop, Parse, text, `n, % " `r`t"
 	{
@@ -580,7 +580,7 @@ TLDR_VaalAreas()
 		If val.Count()
 			LLK_PanelDimensions(val, settings.TLDR.fSize, w%key%, h%key%), wPanels := (w%key% > wPanels) ? w%key% : wPanels
 	}
-	LLK_PanelDimensions(categories, settings.TLDR.fSize, wCategories, hCategories), added := -1, ini := IniBatchRead("ini\ocr - vaal areas.ini")
+	LLK_PanelDimensions(categories, settings.TLDR.fSize, wCategories, hCategories), added := -1, ini := IniBatchRead("ini\TLDR - vaal areas.ini")
 	For key, val in lines
 	{
 		If !val.Count()
