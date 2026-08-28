@@ -834,7 +834,7 @@
       "hides the panel instead of just graying it out whenever tracking is paused (after right-clicking the button in the menu-widget)"
     ],
     "maptracker mechanics": [
-      "logs certain mechanics you encounter while mapping"
+      "logs certain mechanics/content you encounter while mapping"
     ],
     "maptracker dialogue tracking": [
       "these mechanics can be tracked automatically via in-game dialogue",
@@ -930,7 +930,7 @@
       "type in map-mods (in-game wording) and press <enter> to list them below"
     ],
     "mapinfo roll highlight": [
-      "lets you highlight map rolls (quant, rarity, etc.) if they're above certain values"
+      "highlights map rolls (quant, rarity, etc.) if they're above certain values"
     ],
     "mapinfo roll colors": [
       "roll highlighting currently looks like this",

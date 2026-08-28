@@ -201,7 +201,7 @@ Gui_HelpToolTip(HWND_key)
 
 	toggle := !toggle, GUI_name := "help_tooltip" toggle
 	Gui, %GUI_name%: New, -Caption -DPIScale +LastFound +AlwaysOnTop +ToolWindow +Border +E0x20 +E0x02000000 +E0x00080000 HWNDtooltip
-	Gui, %GUI_name%: Color, 101030
+	Gui, %GUI_name%: Color, % vars.settings.cButtons
 	Gui, %GUI_name%: Margin, 0, 0
 	Gui, %GUI_name%: Font, % "s" settings.general.fSize - 2 " cWhite", % vars.system.font
 	hwnd_old := vars.hwnd.help_tooltips.main, vars.hwnd.help_tooltips.main := tooltip, vars.general.active_tooltip := vars.general.cMouse
@@ -474,6 +474,80 @@ Gui_MenuWidget(cHWND := "", mode := "", hotkey := 1)
 					Settings_menu()
 			}
 	}
+}
+
+Gui_MsgBox(usecase, title, text, coords := "[]", choices := "[]")
+{
+	local
+	global vars, settings
+
+	If !IsObject(vars.settings)
+		Settings_menu("init")
+
+	If (check := LLK_HasVal(vars.MsgBox, usecase,,,, 1))
+	{
+		control := LLK_HasVal(vars.MsgBox[check].hwnd, usecase), usecase := check
+		If (control = "title")
+		{
+			WinGetPos, xWin, yWin, width, height, % "ahk_id " vars.MsgBox[usecase].hwnd.main
+			MouseGetPos, xMouse, yMouse
+			While GetKeyState("LButton", "P")
+			{
+				LLK_Drag(width, height, x, y, 1, vars.MsgBox[check].name,, xMouse - xWin, yMouse - yWin)
+				Sleep 15
+			}
+			Return
+		}
+		Else KeyWait, LButton
+
+		vars.MsgBox[usecase].choice := control
+		LLK_Overlay(vars.MsgBox[usecase].hwnd.main, "destroy")
+		Return
+	}
+
+	If !IsObject(vars.MsgBox)
+		vars.MsgBox := {}
+
+	GUI := "MsgBox_" StrReplace(usecase, " ", "_")
+	Gui, %GUI%: New, -DPIScale -Caption +LastFound +AlwaysOnTop +ToolWindow +Border HWNDhwnd_msgbox +E0x02000000 +E0x00080000
+	Gui, %GUI%: Color, Black
+	Gui, %GUI%: Margin, -1, -1
+	Gui, %GUI%: Font, % "s" settings.general.fSize " cWhite", % vars.system.font
+	vars.MsgBox[usecase] := {"hwnd": {"main": hwnd_msgbox}, "name": GUI}, dimensions := []
+
+	Gui, %GUI%: Add, Text, % "x" 46*settings.general.fWidth - 1 " y-1" " w" 2*settings.general.fWidth " Center Border BackgroundTrans gGui_MsgBox HWNDhwnd1", x
+	Gui, %GUI%: Add, Progress, % "Disabled xp yp wp hp Border Background" vars.settings.cButtons2 " c" vars.settings.cButtons, 100
+	Gui, %GUI%: Add, Text, % "Section x-1 y-1 w" 48*settings.general.fWidth " Center Border BackgroundTrans HWNDhwnd gGui_MsgBox", % title
+	Gui, %GUI%: Add, Progress, % "Disabled xp yp wp hp Border Background404040 cBlack", 100
+	vars.MsgBox[usecase].hwnd.title := hwnd, vars.MsgBox[usecase].hwnd.close := hwnd1
+
+	For index, val in text
+		Gui, %GUI%: Add, Text, % "Section xs" (index = 1 ? " x" settings.general.fWidth " y+" settings.general.fWidth//2 : " y+" settings.general.fWidth//2) " w" 47*settings.general.fWidth " BackgroundTrans", % val
+	
+	If !choices.Count()
+		choices := ["ok"]
+	For index, val in choices
+		dimensions.Push(Lang_Trans("global_" val))
+	LLK_PanelDimensions(dimensions, settings.general.fSize, wButtons, hButtons)
+	
+	For index, val in choices
+	{
+		Gui, %GUI%: Add, Text, % (index = 1 ? "Section xs x" 24*settings.general.fWidth - (choices.Count() = 1 ? wButtons/2 : wButtons + settings.general.fWidth//2) " y+" settings.general.fHeight//2 : "ys x+" settings.general.fWidth) " w" wButtons " Center Border BackgroundTrans HWNDhwnd gGUI_MsgBox", % Lang_Trans("global_" val)
+		Gui, %GUI%: Add, Progress, % "Disabled xp yp wp hp Border Background" vars.settings.cButtons2 " c" vars.settings.cButtons, 100
+		vars.MsgBox[usecase].hwnd[val] := hwnd
+	}
+		
+	Gui, %GUI%: Add, Text, % "xs y+1 w10 h" settings.general.fHeight//2 " BackgroundTrans"
+	Gui, %GUI%: Show, % "NA x10000 y10000 w" 48*settings.general.fWidth - 2
+	WinGetPos,,, Width, Height, ahk_id %hwnd_msgbox%
+	Gui, %GUI%: Add, Progress, % "Disabled x-1 y" settings.general.fHeight - 2 " w" width " h" height - settings.general.fHeight + 1 " Border Background404040 cBlack", 100
+
+	Gui, %GUI%: Show, % "x" (Blank(coords.1) ? vars.client.x + vars.client.w//2 - width/2 : coords.1) " y" (Blank(coords.2) ? vars.client.y + vars.client.h//2 - height/2 : coords.2)
+	LLK_Overlay(hwnd_msgbox, "show", 0, GUI)
+
+	While Blank(vars.MsgBox[usecase].choice)
+		Sleep 200
+	Return RegexMatch(vars.MsgBox[usecase].choice, "i)yes|ok")
 }
 
 Gui_Name(GuiHWND)
