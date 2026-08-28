@@ -13,7 +13,7 @@
 	If !FileExist("ini" vars.poe_version "\TLDR - vaal areas.ini")
 		IniWrite, % "", % "ini" vars.poe_version "\TLDR - vaal areas.ini", settings
 
-	ini := IniBatchRead("ini" vars.poe_version "\TLDR.ini"), settings.TLDR := {"profile": 1} ;in case profiles are desired in the future
+	ini := IniBatchRead("ini" vars.poe_version "\TLDR.ini"), settings.TLDR := {"profile": 1, "highlighting": {}} ;in case profiles are desired in the future
 	settings.TLDR.hotkey := !Blank(check := ini.settings["hotkey"]) ? check : ""
 	settings.TLDR.z_hotkey := !Blank(check := ini.settings["toggle highlighting hotkey"]) ? check : ""
 
@@ -101,7 +101,7 @@ TLDR(mode := "GUI")
 				vars.TLDR.GUI := 0
 				Break
 			}
-			Sleep 10
+			Sleep 20
 		}
 	}
 
@@ -329,7 +329,15 @@ TLDR_Altars()
 	Else
 	{
 		LLK_PanelDimensions(panels.1, settings.TLDR.fSize, w1, h1), LLK_PanelDimensions(panels.2, settings.TLDR.fSize, w2, h2)
-		width := Max(w1, w2), ini := IniBatchRead("ini\TLDR - altars.ini")
+		If !IsObject(settings.TLDR.highlighting.altars)
+		{
+			settings.TLDR.highlighting.altars := {"boss": {}, "minions": {}, "player": {}}, profile := settings.TLDR.profile
+			ini := IniBatchRead("ini\TLDR - altars.ini")
+			For index, val in ["boss", "minions", "player"]
+				If ini["profile " profile " " val].Count()
+					settings.TLDR.highlighting.altars[val] := ini["profile " profile " " val].Clone()
+		}
+		width := Max(w1, w2)
 		For index, array in panels
 			For index1, panel_text in array
 			{
@@ -337,7 +345,7 @@ TLDR_Altars()
 					vars.TLDR.coords.hPanel := yControl + hControl
 				If (index1 = 1)
 					key := StrReplace(panel_text, ":")
-				rank := !Blank(check := ini["profile " settings.TLDR.profile " " key][panel_text]) ? check : 0
+				rank := !Blank(check := settings.TLDR.highlighting.altars[key][panel_text]) ? check : 0
 				colors := (index1 = 1) ? ["FFFFFF", "000000"] : settings.TLDR.colors[rank].Clone()
 				Gui, %GUI_name%: Add, Text, % (index = 2 && index1 = 1 ? "y+" vars.client.h / 10 : (index = 1 && index1 = 1) ? "" : "y+-1") " xs Section Center Border BackgroundTrans HWNDhwnd0 w" width " c" colors.1, % StrReplace(panel_text, "&", "&&")
 				Gui, %GUI_name%: Add, Progress, % "xp yp wp hp Border HWNDhwnd BackgroundBlack c" colors.2, 100
@@ -456,8 +464,13 @@ TLDR_Highlight(hotkey)
 	GuiControl, % "+c" settings.TLDR.colors[hotkey].1, % text_cHWND
 	GuiControl, movedraw, % text_cHWND
 
-	If vars.hwnd.TLDR.type
-		IniWrite, % hotkey, % "ini\TLDR - " vars.hwnd.TLDR.type ".ini", % "profile " settings.TLDR.profile (vars.hwnd.TLDR.type = "altars" ? " " category : ""), % mod
+	If (type := vars.hwnd.TLDR.type)
+	{
+		IniWrite, % hotkey, % "ini\TLDR - " type ".ini", % "profile " settings.TLDR.profile (type = "altars" ? " " category : ""), % mod
+		If (type = "altars")
+			settings.TLDR.highlighting.altars[category][mod] := hotkey
+		Else settings.TLDR.highlighting["vaal areas"][mod] := hotkey
+	}
 	KeyWait, % hotkey0
 }
 
@@ -580,7 +593,16 @@ TLDR_VaalAreas()
 		If val.Count()
 			LLK_PanelDimensions(val, settings.TLDR.fSize, w%key%, h%key%), wPanels := (w%key% > wPanels) ? w%key% : wPanels
 	}
-	LLK_PanelDimensions(categories, settings.TLDR.fSize, wCategories, hCategories), added := -1, ini := IniBatchRead("ini\TLDR - vaal areas.ini")
+	LLK_PanelDimensions(categories, settings.TLDR.fSize, wCategories, hCategories), added := -1
+
+	If !IsObject(settings.TLDR.highlighting["vaal areas"])
+	{
+		settings.TLDR.highlighting["vaal areas"] := {}
+		ini := IniBatchRead("ini\TLDR - vaal areas.ini")
+		If ini["profile " settings.TLDR.profile].Count()
+			settings.TLDR.highlighting["vaal areas"] := ini["profile " settings.TLDR.profile].Clone()
+	}	
+
 	For key, val in lines
 	{
 		If !val.Count()
@@ -589,7 +611,7 @@ TLDR_VaalAreas()
 			key := "unclear"
 		For index, line in val
 		{
-			rank := !Blank(check := ini["profile " settings.TLDR.profile][StrReplace(line, "`n", ";")]) ? check : 0, colors := settings.TLDR.colors[rank].Clone(), added += 1
+			rank := !Blank(check := settings.TLDR.highlighting["vaal areas"][StrReplace(line, "`n", ";")]) ? check : 0, colors := settings.TLDR.colors[rank].Clone(), added += 1
 			Gui, %GUI_name%: Add, Text, % "xs x" wCategories - 1 . (added = 0 ? "" : " y+-1") " Section Border BackgroundTrans HWNDhwnd c" colors.1 " w" wPanels, % " " StrReplace(StrReplace(line, "`n", "`n "), "&", "&&") " "
 			Gui, %GUI_name%: Add, Progress, % "xp yp wp hp Border BackgroundBlack HWNDhwnd1 c" colors.2, 100
 			If (index = 1)
