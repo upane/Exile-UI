@@ -5776,7 +5776,7 @@ Settings_screenchecks()
 		}
 	}
 	Else If !(active_pixel.Count() + active_image.Count())
-		Gui, %GUI%: Add, Text, % "Section xs cLime y+" vars.settings.spacing " w" settings.general.fWidth * 35, % Lang_Trans("m_screen_inactive")
+		Gui, %GUI%: Add, Text, % "Section xs cLime y+" vars.settings.spacing " w" settings.general.fWidth * vars.settings.min_width, % Lang_Trans("m_screen_inactive")
 }
 
 Settings_screenchecks2(cHWND := "")
@@ -6787,7 +6787,6 @@ Settings_TLDR2(cHWND)
 			Settings_menu("tldr-tooltips")
 
 		Case "hotkey_block":
-			SoundBeep
 			Hotkey, If, WinActive("ahk_id " vars.hwnd.poe_client) || WinActive("ahk_id " vars.hwnd.TLDR.main)
 			Hotkey, % "*" (settings.TLDR.hotkey_block ? "" : "~") . Hotkeys_Convert(settings.TLDR.hotkey), TLDR_Hotkey, Off
 			IniWrite, % (settings.TLDR.hotkey_block := !settings.TLDR.hotkey_block), ini\TLDR.ini, settings, block native key-function

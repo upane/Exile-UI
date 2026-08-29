@@ -1252,7 +1252,7 @@
 ;## these strings are displayed/required in the "screen-checks" section of the settings menu
 		m_screen_pixel			=	"list of required pixel-checks:"
 		m_screen_image			=	"list of required image-checks:"
-		m_screen_inactive		=	"the features that are currently enabled do not require any further setup"
+		m_screen_inactive		=	"the features that are currently enabled don't require any setup"
 		m_screen_gamescreen		=	"infopanel"									;## refers to the small panel in the top-right corner that shows area-name, server, league, etc.
 		m_screen_close_button	=	"close button"
 		m_screen_instructions	=	"read the instructions on;the <info> button!"
