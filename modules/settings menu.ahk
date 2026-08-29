@@ -5901,7 +5901,7 @@ Settings_ScreenChecksValid(type := "")
 	If (type = "image")
 		Return [active_image, valid]
 
-	GuiControl, % "+Background" (!valid ? "CC0000" : "404040"), % vars.hwnd.settings["background_screen-checks"]
+	GuiControl, % "+Background" (!valid ? "CC0000" : (vars.settings.active = "screen-checks" ? "6060FF" : "404040")), % vars.hwnd.settings["background_screen-checks"]
 }
 
 Settings_searchstrings()
