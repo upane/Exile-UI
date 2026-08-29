@@ -98,6 +98,7 @@ Init_statlas(), LLK_Log("initialized statlas settings")
 Init_Runeshape(), LLK_Log("initialized rune-ninja settings")
 Init_hotkeys(), LLK_Log("initialized hotkey settings")
 Resolution_check()
+Settings_menu("init")
 
 SetTimer, Loop, 1000
 SetTimer, Loop_main, 50

@@ -1,5 +1,14 @@
 [
   [
+	["1.64.3", 16403],
+	"august 29, 2026",
+	"chat macros:\n–> the widget size wasn't saved correctly",
+	"context-menu:\n–> added a link to a calculator for large cluster jewels",
+	"map-events:\n–> added opacity options",
+	"map-tracker:\n–> the <export> button wasn't working\n–> added support for atlas anomalies",
+	"tldr-tooltips:\n–> no longer experimental\n–> removed manual compatibility check\n–> added new hotkey settings"
+  ],
+  [
 	["1.64.2", 16402],
 	"august 10, 2026",
 	"chat macros:\n–> added fast-travel to the sovereign",
