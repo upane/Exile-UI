@@ -476,7 +476,7 @@ Gui_MenuWidget(cHWND := "", mode := "", hotkey := 1)
 	}
 }
 
-Gui_MsgBox(usecase, title, text, coords := "[]", choices := "[]")
+Gui_MsgBox(usecase, title, text, coords := "[]", choices := "[]", align := "Left")
 {
 	local
 	global vars, settings
@@ -522,7 +522,7 @@ Gui_MsgBox(usecase, title, text, coords := "[]", choices := "[]")
 	vars.MsgBox[usecase].hwnd.title := hwnd, vars.MsgBox[usecase].hwnd.close := hwnd1
 
 	For index, val in text
-		Gui, %GUI%: Add, Text, % "Section xs" (index = 1 ? " x" settings.general.fWidth " y+" settings.general.fWidth//2 : " y+" settings.general.fWidth//2) " w" 47*settings.general.fWidth " BackgroundTrans", % val
+		Gui, %GUI%: Add, Text, % "Section xs" (index = 1 ? " x" settings.general.fWidth - 1 " y+" settings.general.fWidth//2 : " y+" settings.general.fWidth//2) " w" 46*settings.general.fWidth " BackgroundTrans " align, % val
 	
 	If !choices.Count()
 		choices := ["ok"]
