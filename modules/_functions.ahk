@@ -601,7 +601,8 @@ OCR_Start(x, y, w, h, debug_key := "", usecase := "", opt_params := "[]", opt_ef
 	Run, % """" A_AhkPath """ """ A_ScriptDir "\modules\_ocr thread.ahk""", % A_ScriptDir, UseErrorLevel
 	If ErrorLevel
 	{
-		LLK_ToolTip(Lang_Trans("ocr_fail"), 2,,,, "Red")
+		If (usecase != "TLDR")
+			LLK_ToolTip(Lang_Trans("ocr_fail"), 2,,,, "Red")
 		Gui, ocr_comms: Destroy
 		Return
 	}
@@ -616,7 +617,7 @@ OCR_Start(x, y, w, h, debug_key := "", usecase := "", opt_params := "[]", opt_ef
 	If ocr_failed || (vars.ocr_comms.text = "OCR failed") || debug_key && GetKeyState(debug_key, "P")
 	{
 		WinWaitClose, OCR debug
-		If (vars.ocr_comms.text = "OCR failed") || !(debug_key && GetKeyState(debug_key, "P"))
+		If (usecase != "TLDR") && ((vars.ocr_comms.text = "OCR failed") || !(debug_key && GetKeyState(debug_key, "P")))
 			LLK_ToolTip(Lang_Trans("global_fail"), 1,,,, "Red")
 		KeyWait, % debug_key
 		Gui, ocr_comms: Destroy

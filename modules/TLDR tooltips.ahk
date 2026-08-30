@@ -105,51 +105,16 @@ TLDR(mode := "GUI")
 		}
 	}
 
-	text := OCR_Start(xCap, yCap, wCap, hCap, (settings.TLDR.debug ? "ALT" : ""),,, [[5, 0, 35, 0]])
-	If !text
-	{
-		vars.TLDR.in_progress := 0
-		Return
-	}
+	debug := (settings.TLDR.debug && GetKeyState("ALT", "P"))
+	text := OCR_Start(xCap, yCap, wCap, hCap, (settings.TLDR.debug ? "ALT" : ""), "TLDR",, [[5, 0, 35, 0]])
+	vars.TLDR.in_progress := 0
 	;pEffect := Gdip_CreateEffect(2, 0, 100), Gdip_BitmapApplyEffect(pBitmap, pEffect), Gdip_DisposeEffect(pEffect)
 
-	If (debug := GetKeyState("RCTRL", "P"))
+	If Blank(text)
 	{
-		Gui, compat_test: New, -Caption -DPIScale +LastFound +AlwaysOnTop +ToolWindow +Border +E0x02000000 +E0x00080000 HWNDhwnd_compat
-		Gui, compat_test: Color, Black
-		Gui, compat_test: Margin, % settings.general.fWidth, % settings.general.fWidth
-		Gui, compat_test: Font, % "s" settings.general.fSize " cWhite", % vars.system.font
-		vars.hwnd.compat_test := hwnd_compat
-
-		Gui, compat_test: Add, Pic, % "Section Border w" width * (mode = "compat" ? 2 : 1) " h-1", HBitmap:*%hBitmap%
-		If debug
-		{
-			vars.TLDR.debug := 1
-			Gui, compat_test: Font, % "s" settings.general.fSize - 4
-			Gui, compat_test: Add, Edit, % "ys Section cBlack", % !Blank(text) ? text : Lang_Trans("ocr_notext")
-			Gui, compat_test: Font, % "s" settings.general.fSize
-			Gui, compat_test: Add, Text, % "xs HWNDhwnd", % "client-res: " vars.client.w "x" vars.client.h " " Lang_Trans("omnikey_escape")
-			ControlFocus,, ahk_id %hwnd%
-		}
-
-		Gui, compat_test: Show, NA x10000 y10000
-		WinGetPos,,, w, h, ahk_id %hwnd_compat%
-		Gui, compat_test: Show, % "x" vars.monitor.x + vars.monitor.w / 2 - w//2 " y" vars.monitor.y + vars.monitor.h / 2 - h//2
-	}
-	vars.TLDR.in_progress := 0
-
-	If Blank(text) && !debug
-	{
-		TLDR_Error(Lang_Trans("ocr_notext"))
+		TLDR_Error((debug ? Lang_Trans("ocr_debug") : Lang_Trans("ocr_notext")) "`n" Lang_Trans("ocr_closetooltip"))
 		Return
 	}
-	Else If (mode = "compat") && (vars.TLDR.text_check.Count() < 8)
-	{
-		LLK_ToolTip(Lang_Trans("m_ocr_error"), 2.5,,,, "red")
-		Return
-	}
-	Else If (mode = "compat") || debug
-		Return text
 	Else
 	{
 		vars.TLDR.text := text
@@ -157,7 +122,7 @@ TLDR(mode := "GUI")
 			TLDR_VaalAreas()
 		Else If InStr(text, ":",,, 2)
 			TLDR_Altars()
-		Else TLDR_Error(Lang_Trans("ocr_nousecase"))
+		Else TLDR_Error(Lang_Trans("ocr_nousecase") "`n" Lang_Trans("ocr_closetooltip"))
 	}
 }
 
@@ -478,7 +443,7 @@ TLDR_Hotkey()
 {
 	local
 	global vars, settings
-	
+
 	If vars.hwnd.TLDR.main && WinExist("ahk_id " vars.hwnd.TLDR.main)
 		TLDR_Close(), close := 1
 	Else If settings.TLDR.hotkey_shared

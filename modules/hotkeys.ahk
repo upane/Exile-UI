@@ -155,18 +155,6 @@ Hotkeys_ESC()
 	}
 	Else If WinExist("ahk_id " vars.hwnd.stash.main)
 		Stash_Close()
-	Else If WinExist("ahk_id " vars.hwnd.compat_test)
-	{
-		Gui, compat_test: Destroy
-		If vars.TLDR.debug
-		{
-			vars.TLDR.debug := 0
-			SendInput, % "{" settings.TLDR.z_hotkey "}"
-		}
-		Else If settings.TLDR.allow
-			Settings_menu(vars.settings.active)
-		Else LLK_Overlay(vars.hwnd.settings.main, "show", 0)
-	}
 	Else If WinExist("ahk_id " vars.hwnd.TLDR.main)
 		TLDR_Close("ESC")
 	Else If WinExist("ahk_id " vars.hwnd.maptracker_logs.sum_tooltip)
@@ -534,7 +522,7 @@ SC038::Stash_Hotkeys("LAlt")
 *WheelDown::vars.TLDR.wGUI -= (vars.TLDR.wGUI - 30 >= vars.client.h / 10 + 30 && vars.TLDR.hGUI - 15 >= vars.client.h / 10 + 15) ? 30 : 0, vars.TLDR.hGUI -= (vars.TLDR.wGUI - 30 >= vars.client.h / 10 + 30 && vars.TLDR.hGUI - 15 >= vars.client.h / 10 + 15) ? 15 : 0
 
 #If vars.hwnd.TLDR.main && vars.general.wMouse && (vars.general.wMouse = vars.hwnd.TLDR.main) ;hovering over the TLDR tooltip
-*LButton::TLDR_Close()
+*LButton::Return
 *SC039::TLDR_Highlight("space")
 *SC002::TLDR_Highlight(1)
 *SC003::TLDR_Highlight(2)
