@@ -4686,8 +4686,8 @@ Settings_menu(section := "", mode := 0, NA := 1) ;mode parameter is used when ma
 
 	If vars.settings.wait
 		Return
-	Else If WinExist("ahk_id " vars.hwnd.cheatsheet_menu.main) || WinExist("ahk_id " vars.hwnd.searchstrings_menu.main) || WinExist("ahk_id "vars.hwnd.leveltracker_screencap.main)
-	|| WinExist("ahk_id " vars.hwnd.leveltracker_editor.main) || WinExist("ahk_id " vars.hwnd.leveltracker_gempickups.main)
+	Else If !settings.general.dev && (WinExist("ahk_id " vars.hwnd.cheatsheet_menu.main) || WinExist("ahk_id " vars.hwnd.searchstrings_menu.main) || WinExist("ahk_id "vars.hwnd.leveltracker_screencap.main)
+	|| WinExist("ahk_id " vars.hwnd.leveltracker_editor.main) || WinExist("ahk_id " vars.hwnd.leveltracker_gempickups.main))
 	{
 		LLK_ToolTip(Lang_Trans("global_configwindow"), 2,,,, "yellow")
 		Return
