@@ -1999,7 +1999,7 @@ Settings_general2(cHWND := "")
 			GuiControl, % "+c" (settings.general.dev_env ? "Lime" : "Gray"), % cHWND
 			GuiControl, % "movedraw", % cHWND
 		Case "kill_timeout":
-			input := Gui_Slider(cHWND, [0, settings.general.kill.2, 10], 10)
+			input := Gui_Slider(cHWND, [0, settings.general.kill.2, 10], 20)
 			IniWrite, % (settings.general.kill.1 := Blank(input) ? 0 : input), % "ini\config.ini", Settings, kill script		;these are still split into 2 for back-compat
 			IniWrite, % (settings.general.kill.2 := Blank(input) ? 0 : input), % "ini\config.ini", Settings, kill-timeout
 			GuiControl, % "+c" (input ? "Lime" : "Gray"), % cHWND

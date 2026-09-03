@@ -1,5 +1,10 @@
 [
   [
+	["1.65.0", 16500, 1],
+	"september 3, 2026",
+	"act-tracker:\n–> updated the poe2 guide for 0.5.5\n–> these updates will be applied the next time you reset your guide slot\n–> removed farrow quests in acts 1-3\n–> several stylistic/format tweaks\n–> various pathing and hint improvements(/highlight)"
+  ],
+  [
 	["1.64.3", 16403],
 	"august 29, 2026",
 	"chat macros:\n–> the widget size wasn't saved correctly",
