@@ -102,7 +102,7 @@
       "follow road: areaidg1_13_2 ;; ogham village"
     ],
     [
-      "(img:waypoint) to areaidg1_town (img:town) ;; clearfell encampment"
+      "(img:waypoint) to areaidg1_town (img:town2) ;; clearfell encampment"
     ],
     [
       "(img:quest_2) una: (quest:book)",
@@ -280,7 +280,7 @@
       "enter areaidg2_9_1 ;; path of mourning"
     ],
     [
-      "leaguestart: optional: dmg issues?: (img:waypoint) to (color:fec076)town (img:town)",
+      "leaguestart: optional: dmg issues?: (img:waypoint) to (color:fec076)town (img:town2)",
       "(hint)__ (quest:book): give (quest:letter) to (color:cc99ff)shambrin",
       "optional: (img:support) + <items> in (img:checkpoint) (color:cc99ff)hushed_urn",
       "reach (img:checkpoint) areaidg2_9_2 ;; the spires of deshar"
@@ -632,7 +632,7 @@
       "go (img:6) to areaidp2_2 ;; pools of khatal"
     ],
     [
-      "(img:waypoint) to areaidp2_town (img:town) ;; khari bazaar"
+      "(img:waypoint) to areaidp2_town (img:town2) ;; khari bazaar"
     ],
     [
       "(img:quest_2) hooded one: (color:cc99ff)mount_kriar",
@@ -717,7 +717,7 @@
       "(img:quest_2) jado || (img:portal) to areaidp2_town ;; the khari bazaar"
     ],
     [
-      "(color:red)timer-users: (img:waypoint) to areaidp1_town ;; the refuge",
+      "(color:red)timer-users: (img:waypoint) to areaidp1_town (img:town2) ;; the refuge",
       "(img:quest_2) hooded one: (color:cc99ff)ogham"
     ]
   ],

@@ -1100,7 +1100,7 @@ Leveltracker_GuideEditor(cHWND)
 				Return
 			Sleep 50
 			If InStr(check, "pastearea_")
-				Clipboard := "areaid" control (InStr(control, "_town") ? " (img:town)" : "") " `;`; " db.leveltracker.areaIDs[control].name
+				Clipboard := "areaid" control (InStr(control, "_town") ? " (img:town" StrReplace(vars.poe_version, " ") ")" : "") " `;`; " db.leveltracker.areaIDs[control].name
 			Else Clipboard := "(img:" control ")"
 			SendInput, ^{v}
 			Return
